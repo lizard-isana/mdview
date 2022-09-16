@@ -372,23 +372,18 @@ class MDVPluginChart extends HTMLElement {
 
 const scripts = [
   "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
-  //"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js",
-  //"https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js",
-  //"https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js",
-  //"https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
+  "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js"
 ]
 const styles = [
-  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css",
-  //"https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"
+  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
 ]
-
 ScriptLoader(scripts, () => {
   customElements.define('mdview-content', MarkdownViewer);
   customElements.define('mdview-toc', MarkdownToc);
-  customElements.define('mdview-plugins', MDVPlugin);
-  customElements.define('mdview-plugin-math', MDVPluginMath);
-  customElements.define('mdview-plugin-graph', MDVPluginGraph);
-  customElements.define('mdview-plugin-chart', MDVPluginChart);
 })
 StyleLoader(styles)
+
+customElements.define('mdview-plugins', MDVPlugin);
+customElements.define('mdview-plugin-math', MDVPluginMath);
+customElements.define('mdview-plugin-graph', MDVPluginGraph);
+customElements.define('mdview-plugin-chart', MDVPluginChart);
