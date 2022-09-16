@@ -1,5 +1,6 @@
 # MDView: Markdown Viewer Component
 
+## Inline Mode
 ```HTML
 <link rel="stylesheet" href="default.css">
 <script src="mdview.js"></script>
@@ -13,10 +14,9 @@
 </template>
 ```
 
-Or
-
+## Include Mode
 ```HTML
-<link rel="stylesheet" href="./css/default.css">
+<link rel="stylesheet" href="default.css">
 <script src="./js/mdview.js"></script>
 
 <markdown-viewer id="main" src="main.md">
