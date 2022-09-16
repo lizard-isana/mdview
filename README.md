@@ -1,5 +1,5 @@
 # MDView: Markdown Viewer Component
-The web components renders and displays markdown documents. It works by simply linking libraries and writing component tags, and supports both "inline mode" where markdown is written directly in the HTML file and "include mode" where markdown is read from an external file.
+The web components renders and displays markdown documents. It works by simply linking libraries and writing component tags.
 
 ## Inline mode
 Write markdown directly in the HTML file. It does not dynamically load the file, so it works even if you open the HTML file directly from a browser ("file://" will also work).
