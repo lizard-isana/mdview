@@ -1,1 +1,1 @@
-# mdview
+# MDView: Markdown Viewer Component
