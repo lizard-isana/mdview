@@ -8,12 +8,12 @@ import {ScriptLoader,StyleLoader,DataLoader} from './loaders.js'
 
 const GrobalStorage = {}
 GrobalStorage.highlight_exception = ["math","graph","chart"];
+GrobalStorage.plugins_loaded = false;
 
 class MarkdownViewer extends HTMLElement {
   constructor() {
     super();
     this.dataset.status = "assigned"
-    
     this.Storage = {};
     this.Storage.CodeHighlightHook = [];
     this.Storage.allowed_attributes = ['id', 'class', 'style'];
@@ -123,55 +123,6 @@ class MarkdownViewer extends HTMLElement {
       }
     }
 
-    //MathJax
-    /*
-    window.MathJax.startup.promise.then(() => {
-      var math_element = this.querySelectorAll(".language-math");
-      math_element.forEach((element, index) => {
-        MathJax.typesetPromise(element.childNodes);
-        const svg = document.createRange().createContextualFragment(element.innerHTML);
-        element.parentNode.insertBefore(svg, element);
-        element.style.display = "none";
-      })
-    })
-    */
-
-    //graph
-    /*
-    var graph_array = this.querySelectorAll(".language-graph");
-    graph_array.forEach((element,index)=>{
-      var p_node = element.parentNode;
-      var graph_code = JSON.parse(element.innerHTML);
-      var graph_id = "graph_" + index;
-      var graph_element = document.createElement('div');
-      graph_element.setAttribute("id", graph_id)
-      graph_element.setAttribute("class", "graph")
-      graph_element.style.width = "90%";
-      graph_element.style.padding = "0";
-      graph_element.style.margin = "0";
-      p_node.parentNode.insertBefore(graph_element, p_node);
-      p_node.style.display = "none";
-      graph_code.bindto = "#" + graph_id;
-      if (graph_code) {
-        var chart = c3.generate(graph_code)
-      }
-    })
-    */
-
-    //chart
-    /*
-    var chart_array = this.querySelectorAll(".language-chart");
-    chart_array.forEach((element,index)=>{
-      var p_node = element.parentNode;
-      var chart_element = document.createElement('pre');
-      chart_element.classList.add("mermaid");
-      chart_element.innerHTML = element.innerHTML;
-      p_node.parentNode.insertBefore(chart_element, p_node);
-      p_node.style.display = "none";
-    })
-    mermaid.initialize({ startOnLoad: true });
-    */
-
   }
   static get observedAttributes() {
     return ['data-status'];
@@ -181,11 +132,21 @@ class MarkdownViewer extends HTMLElement {
     this.init();
   }
   attributeChangedCallback(name, old_value, new_value){
-    console.log(this.id,name, old_value, new_value)
+    //console.log(this.id,name, new_value)
+    if(name =='data-status' && new_value == "loaded"){
+      if(GrobalStorage.plugins_loaded == false ){
+        customElements.define('mdview-plugins', MDViewPlugin);
+        customElements.define('mdview-plugin-math', MDViewPluginMath);
+        customElements.define('mdview-plugin-graph', MDViewPluginGraph);
+        customElements.define('mdview-plugin-chart', MDViewPluginChart);
+        GrobalStorage.plugins_loaded = true;
+      }
+    }
+  
   }
 }
 
-class MarkdownToc extends HTMLElement {
+class MDViewToc extends HTMLElement {
   constructor() {
     //console.log("MarkdownToc","constructor called")
     super();
@@ -256,10 +217,9 @@ class MarkdownToc extends HTMLElement {
   }
 }
 
-class MDVPlugin extends HTMLElement {
+class MDViewPlugin extends HTMLElement {
   constructor(){
     super();
-    console.log(this.children)
     const plugins = this.children;
     this.dataset.count = plugins.length;
     this.dataset.loaded = 0;
@@ -275,10 +235,11 @@ class MDVPlugin extends HTMLElement {
   }
 }
 
-class MDVPluginMath extends HTMLElement {
+class MDViewPluginMath extends HTMLElement {
   constructor(){
     //GrobalStorage.highlight_exception.push("math");
     super();
+    this.dataset.status = "assigned"
   }
   init(){
     window.MathJax.startup.promise.then(() => {
@@ -293,19 +254,26 @@ class MDVPluginMath extends HTMLElement {
       //this.remove();
     })
   }
+  static get observedAttributes() {
+    return ['data-status'];
+  }
   connectedCallback() {
+    this.dataset.status = "connected"
     ScriptLoader([
       "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
     ],()=>{
       this.init();
     })
   }
+  attributeChangedCallback(name, old_value, new_value){
+    console.log(this.tagName,name, new_value)
+  }
 }
 
-class MDVPluginGraph extends HTMLElement {
+class MDViewPluginGraph extends HTMLElement {
   constructor(){
-    //GrobalStorage.highlight_exception.push("graph");
     super();
+    this.dataset.status = "assigned"
   }
   init(){
     const viewer = this.closest('mdview-content');
@@ -329,7 +297,12 @@ class MDVPluginGraph extends HTMLElement {
     })
     //this.remove();
   }
+  static get observedAttributes() {
+    return ['data-status'];
+  }
   connectedCallback() {
+    this.dataset.status = "connected"
+
     ScriptLoader([
       "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"
@@ -340,12 +313,15 @@ class MDVPluginGraph extends HTMLElement {
       "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"
     ])
   }
+  attributeChangedCallback(name, old_value, new_value){
+    console.log(this.tagName,name, new_value)
+  }
 }
 
-class MDVPluginChart extends HTMLElement {
+class MDViewPluginChart extends HTMLElement {
   constructor(){
-    //GrobalStorage.highlight_exception.push("chart");
     super();
+    this.dataset.status = "assigned"
   }
   init(){
     const viewer = this.closest('mdview-content');
@@ -361,29 +337,36 @@ class MDVPluginChart extends HTMLElement {
     mermaid.initialize({ startOnLoad: true });
     //this.remove();
   }
+  static get observedAttributes() {
+    return ['data-status'];
+  }
   connectedCallback() {
+    this.dataset.status = "connected"
     ScriptLoader([
       "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
     ],()=>{
       this.init();
     })
   }
+  attributeChangedCallback(name, old_value, new_value){
+    console.log(this.tagName,name, new_value)
+  }
 }
 
 const scripts = [
+  //"https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.2.0/markdown-it.min.js",
+  //"https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.1.4/markdown-it-attrs.browser.js",
+  //"https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js",
+  //"https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js"
+  "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
+  //"https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"
 ]
 const styles = [
   "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
 ]
 ScriptLoader(scripts, () => {
   customElements.define('mdview-content', MarkdownViewer);
-  customElements.define('mdview-toc', MarkdownToc);
+  customElements.define('mdview-toc', MDViewToc);
 })
 StyleLoader(styles)
-
-customElements.define('mdview-plugins', MDVPlugin);
-customElements.define('mdview-plugin-math', MDVPluginMath);
-customElements.define('mdview-plugin-graph', MDVPluginGraph);
-customElements.define('mdview-plugin-chart', MDVPluginChart);

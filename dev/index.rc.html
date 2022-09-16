@@ -3,37 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <title>Markdown Viewer Component</title>
-  <link rel="stylesheet" href="./css/default.rc.css">
-  <script type="module" src="./js/mdview.rc.js"></script>
+  <link rel="stylesheet" href="./css/default.css">
+  <script src="./js/mdview.rc.js"></script>
 </head>
 <body>
 <main>
 
-<markdown-viewer id="main"></markdown-viewer>
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-math></mdview-plugin-math>
+    <mdview-plugin-graph></mdview-plugin-graph>
+    <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
+</mdview-content>
+
 <template data-target="main">
 <!-- markdown starts here -->
 
 # Markdown Viewer Component
 Markdownをレンダリングして表示する Web Component です。ライブラリをリンクして、タグを書き込むだけで動作します。MarkdownをHTMLファイル内に直接記述する「インラインモード」とMarkdownを外部ファイルから読み込む「インクルードモード」の両方に対応しています。
 
-<markdown-toc></markdown-toc>
+<mdview-toc></mdview-toc>
 
 ## Usage
 
 ### インラインモード
-HTMLファイル内に Markdown を直接記述します。
+HTMLファイル内に Markdown を直接記述します。ファイルの動的な読み込みを行わないので、ブラウザからHTMLファイルを直接開いても動きます(file://でも動作します)。
 
 1. スクリプトとスタイルシートを読みこむ
-2. `&lt;markdown-viewer&gt;`のタグを書く(任意の`id`を指定する)
+2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`を指定する)
 3. `&lt;template&gt;`に Markdown を書く(上の`id`と同じ値を`data-target`に指定する)
 
 ```HTML
 <link rel="stylesheet" href="./css/default.css">
 <script src="./js/mdview.js"></script>
 
-<markdown-viewer id="main">
+<mdview-content id="main">
   template内のmarkdownがレンダリングされてここに挿入される
-</markdown-viewer>
+</mdview-content>
 
 <template class="markdown" data-target="main">
   # Title
@@ -42,27 +49,19 @@ HTMLファイル内に Markdown を直接記述します。
 ```
 
 ### インクルードモード
-外部の Markdown ファイルを指定して読み込みます。
+外部の Markdown ファイルを指定して読み込みます。外部ファイルを動的に読み込むので動作にはWebサーバが必要です(http:// や https:// で運用する必要があります。file:// では動きません)。
 
 1. スクリプトとスタイルシートを読みこむ
-2. `&lt;markdown-viewer&gt;`のタグを書く(任意の`id`と外部markdownファイルを指定する)
+2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`と外部markdownファイルを指定する)
 
 ```HTML
 <link rel="stylesheet" href="./css/default.css">
 <script src="./js/mdview.js"></script>
 
-<markdown-viewer id="main" src="main.md">
+<mdview-content id="main" src="main.md">
   main.mdの内容がレンダリングされてここに挿入される
-</markdown-viewer>
+</mdview-content>
 ```
-
-## How it works
-
-### インラインモード
-`&lt;template&gt;`タグの ①ページの読み込み時にHTMLが解釈されず、②JavaScriptの実行もされない、という特徴を利用して、HTMLタグを含むMarkdownのコンテナとして使い、Web Components内にレンダリングして表示しています。ファイルの動的な読み込みを行わないので、ブラウザからHTMLファイルを直接開いても動きます(file://でも動作します)。
-
-### インクルードモード
-外部ファイルを Fetch API で取得して Web Components 内にレンダリングして表示しています。外部ファイルを動的に読み込むので動作にはWebサーバが必要になります(file://では動きません)。
 
 ## Features
 [CommonMark](https://spec.commonmark.org/)で使えるMarkdown記法（レンダリングには[markdown-it](https://github.com/markdown-it/markdown-it)を使用）に加えて、以下の機能が追加されています。
@@ -72,9 +71,6 @@ HTMLファイル内に Markdown を直接記述します。
 - id, class, style 属性の付加
 - コードハイライト
 - HTML直書き(Markdown内のJavaScriptの実行&スタイルの再適用)
-- 数式(MathJax)
-- グラフ(C3.js)
-- チャート（Mermaid.js）
 
 <!--
 #### 画像
@@ -83,16 +79,16 @@ HTMLファイル内に Markdown を直接記述します。
 
 ### 目次
 
-`<markdown-toc></markdown-toc>`のタグを挿入することで、目次を表示します。
+`<mdview-toc></mdview-toc>`のタグを挿入することで、目次を表示します。
 `data-initial="close"` にすると、初期状態が閉じた状態になります。
 
 ```HTML
 
-<markdown-toc data-initial="close"></markdown-toc>
+<mdview-toc data-initial="close"></mdview-toc>
 
 ```
 
-<markdown-toc data-initial="close"></markdown-toc>
+<mdview-toc data-initial="close"></mdview-toc>
 
 ### 脚注
 MarkdownのPandoc拡張記法で、脚注の表示ができます。
@@ -151,7 +147,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 ### コードハイライト
 
 ```HTML
-<markdown-viewer data-src="main"></markdown-viewer>
+<mdview-content data-src="main"></mdview-content>
 <template class="markdown" id="main">
   # H1
   Markdownをここに直接書く
@@ -166,6 +162,15 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">A life is like a garden. Perfect moments can be had, but not preserved, except in memory. LLAP</p>&mdash; Leonard Nimoy (@TheRealNimoy) <a href="https://twitter.com/TheRealNimoy/status/569762773204217857?ref_src=twsrc%5Etfw">February 23, 2015</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+## 組み込みプラグイン
+以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にコンポーネントを追記することでアクティブになります。
+
+- 数式(MathJax)
+- グラフ(C3.js)
+- チャート（Mermaid.js）
+
 
 ### MathJax(数式)
 
@@ -187,6 +192,16 @@ x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
 x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
 \]
 です。
+```
+
+---
+
+この機能はプラグインとして提供されています。`&lt;mdview-content&gt;`内に`&lt;markdown-plugin-math&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <markdown-plugin-math></markdown-plugin-math>
+</mdview-content>
 ```
 
 ### グラフ(C3.js)
@@ -243,8 +258,18 @@ cf. ([c3.js](https://c3js.org/))
 }
 ```
 
+---
 
-### チャート（Mermaid.js）
+この機能はプラグインとして提供されています。`&lt;mdview-content&gt;`内に`&lt;markdown-plugin-graph&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <markdown-plugin-graph></markdown-plugin-graph>
+</mdview-content>
+```
+
+
+### チャート（Mermaid.js）※optional
 コードブロックに `chart`を指定すると Mermaid.js でレンダリングして表示します。
 
 ```chart
@@ -261,18 +286,28 @@ sequenceDiagram
     Bob-->>John: Jolly good!
 ```
 
+---
+
+この機能はプラグインとして提供されています。`&lt;mdview-content&gt;`内に`&lt;markdown-plugin-chart&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <markdown-plugin-chart></markdown-plugin-chart>
+</mdview-content>
+```
+
 <!-- markdown ends here -->
 </template>
 
-<markdown-viewer id="sub"></markdown-viewer>
+<mdview-content id="sub"></mdview-content>
 <template data-target="sub">
 <!-- markdown starts here -->
 ## これは二つ目のMarkdownです
 
-`&lt;markdown-viewer&gt;`の`id`と `&lt;template&gt;` の `data-target` の組み合わせを変えることで、複数のmarkdownを記述できます。
+`&lt;mdview-content&gt;`の`id`と `&lt;template&gt;` の `data-target` の組み合わせを変えることで、複数のmarkdownを記述できます。
 
 ```HTML
-<markdown-viewer id="sub"></markdown-viewer>
+<mdview-content id="sub"></mdview-content>
 <template data-target="sub">
   ## これは二つ目のMarkdownです
 </template>
@@ -281,13 +316,9 @@ sequenceDiagram
 <!-- markdown ends here -->
 </template>
 
-<markdown-viewer id="include" src="include.md"></markdown-viewer>
-
-<markdown-viewer id="memo" src="memo.md"></markdown-viewer>
-
 </main>
 <footer>
-  <markdown-viewer id="footer" src="footer.md"></markdown-viewer>
+
 </footer>
 </body>
 </html>

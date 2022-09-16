@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Markdown Viewer Component</title>
-  <link rel="stylesheet" href="./css/default.css">
-  <script type="module" src="./js/mdview.js"></script>
+  <link rel="stylesheet" href="default.css">
+  <script src="mdview.js"></script>
 </head>
 <body>
 <main>
@@ -35,8 +35,8 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 3. `&lt;template&gt;`に Markdown を書く(上の`id`と同じ値を`data-target`に指定する)
 
 ```HTML
-<link rel="stylesheet" href="./dist/default.css">
-<script src="./dist/mdview.js"></script>
+<link rel="stylesheet" href="./css/default.css">
+<script src="./js/mdview.js"></script>
 
 <mdview-content id="main">
   template内のmarkdownがレンダリングされてここに挿入される
@@ -55,8 +55,8 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`と外部markdownファイルを指定する)
 
 ```HTML
-<link rel="stylesheet" href="./dist/default.css">
-<script src="./dist/mdview.js"></script>
+<link rel="stylesheet" href="./css/default.css">
+<script src="./js/mdview.js"></script>
 
 <mdview-content id="main" src="main.md">
   main.mdの内容がレンダリングされてここに挿入される
@@ -299,26 +299,31 @@ sequenceDiagram
 <!-- markdown ends here -->
 </template>
 
-<mdview-content id="sub"></mdview-content>
-<template data-target="sub">
-<!-- markdown starts here -->
-## これは二つ目のMarkdownです
-
-`&lt;mdview-content&gt;`の`id`と `&lt;template&gt;` の `data-target` の組み合わせを変えることで、複数のmarkdownを記述できます。
-
-```HTML
-<mdview-content id="sub"></mdview-content>
-<template data-target="sub">
-  ## これは二つ目のMarkdownです
-</template>
-```
-
 <!-- markdown ends here -->
 </template>
 
 </main>
 <footer>
+<mdview-content id="footer"></mdview-content>
+<template data-target="footer">
+Powered by [MDView](https://github.com/lizard-isana/mdview) &copy; Isana Kashiwai{.footer}
+<style>
+.footer{
+  text-align:right;
+  color:#bbb;
+  font-size:10px;
+  padding: 5px;
+}
+.footer a{
+  color:#bbb;
+  text-decoration:none;
+}
+.footer a:hover{
+  text-decoration:underline;
+}
+</style>
 
+</template>
 </footer>
 </body>
 </html>

@@ -13,8 +13,7 @@ module.exports = [
     ],
     output: {
       file: 'dev/js/mdview.rc.js',
-      name: 'mdview',
-      format: 'umd',
+      format: 'iife',
     },
   }
 ];

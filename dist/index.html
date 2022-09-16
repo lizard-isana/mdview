@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>MDView: Markdown Viewer Component</title>
+  <link rel="stylesheet" href="default.css">
+  <script src="mdview.js"></script>
+</head>
+<body>
+  <main>
+
+    <mdview-content id="main">
+      <mdview-plugins>
+        <mdview-plugin-math></mdview-plugin-math>
+        <mdview-plugin-graph></mdview-plugin-graph>
+        <mdview-plugin-chart></mdview-plugin-chart>
+      </mdview-plugins>
+    </mdview-content>
+
+<template data-target="main">
+<!-- markdown starts here -->
+
+# MDView: Markdown Viewer Component
+The web components renders and displays markdown documents. It works by simply linking libraries and writing component tags.
+
+## Source
+https://github.com/lizard-isana/mdview
+
+## Usage
+
+### Inline mode
+Write markdown directly in the HTML file. It does not dynamically load the file, so it works even if you open the HTML file directly from a browser ("file://" will also work).
+
+```HTML
+<link rel="stylesheet" href="default.css">
+<script src="mdview.js"></script>
+
+<mdview-content id="main">
+  The HTML document will be rendered here.
+</mdview-content>
+
+<template class="markdown" data-target="main">
+  # The markdown document is here.
+</template>
+```
+
+### Include mode
+Loads an external markdown file. Since the external file is loaded dynamically, a web server is required ("https://" or "http://" is required, "file://" will not work).
+
+```HTML
+<link rel="stylesheet" href="default.css">
+<script src="mdview.js"></script>
+
+<mdview-content id="main" src="main.md">
+  The main.md will be rendered here.
+</mdview-content>
+```
+
+## Documentation/Sample site
+日本語: [Sample Site](usage.ja.html)
+English: WIP
+
+
+## License
+© 2022 Isana Kashiwai ([MIT license](https://github.com/lizard-isana/mdview/blob/main/LICENSE))
+
+<!-- markdown ends here -->
+</template>
+</main>
+<footer>
+<mdview-content id="footer"></mdview-content>
+<template data-target="footer">
+Powered by [MDView](https://github.com/lizard-isana/mdview) &copy; Isana Kashiwai{.footer}
+<style>
+.footer{
+  text-align:right;
+  color:#bbb;
+  font-size:10px;
+  padding: 5px;
+}
+.footer a{
+  color:#bbb;
+  text-decoration:none;
+}
+.footer a:hover{
+  text-decoration:underline;
+}
+</style>
+
+</template>
+</footer>
+</body>
+</html>
