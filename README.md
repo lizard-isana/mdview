@@ -2,8 +2,8 @@
 
 ## Inline mode
 ```HTML
-<link rel="stylesheet" href="default.css">
-<script src="mdview.js"></script>
+<link rel="stylesheet" href="./dist/default.css">
+<script src="./dist/mdview.js"></script>
 
 <markdown-viewer id="main">
   The HTML document will be rendered here.
@@ -16,8 +16,8 @@
 
 ## Include mode
 ```HTML
-<link rel="stylesheet" href="default.css">
-<script src="./js/mdview.js"></script>
+<link rel="stylesheet" href="./dist/default.css">
+<script src="./dist/mdview.js"></script>
 
 <markdown-viewer id="main" src="main.md">
   The main.md will be rendered here.
