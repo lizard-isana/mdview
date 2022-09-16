@@ -8,9 +8,9 @@ Write markdown directly in the HTML file. It does not dynamically load the file,
 <link rel="stylesheet" href="./dist/default.css">
 <script src="./dist/mdview.js"></script>
 
-<markdown-viewer id="main">
+<mdview-content id="main">
   The HTML document will be rendered here.
-</markdown-viewer>
+</mdview-content>
 
 <template class="markdown" data-target="main">
   # The markdown document is here.
@@ -18,13 +18,13 @@ Write markdown directly in the HTML file. It does not dynamically load the file,
 ```
 
 ## Include mode
-Loads an external markdown file. Since external files are loaded dynamically, a web server is required for operation ("https://" or "http://" is required, "file://" will not work).
+Loads an external markdown file. Since the external file is loaded dynamically, a web server is required ("https://" or "http://" is required, "file://" will not work).
 
 ```HTML
 <link rel="stylesheet" href="./dist/default.css">
 <script src="./dist/mdview.js"></script>
 
-<markdown-viewer id="main" src="main.md">
+<mdview-content id="main" src="main.md">
   The main.md will be rendered here.
-</markdown-viewer>
+</mdview-content>
 ```

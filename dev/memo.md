@@ -24,10 +24,15 @@
   	- コンポーネントにsrcがあるかないかで、インラインとファイル読み込みを切り替える → OK
 	- URLクエリでファイルを読み込む
 
+## Plugin
 
-ちなみにこのメモも外部ファイルを読み込んで表示しています。
 ```HTML
-
-<markdown-viewer id="memo" src="memo.md"></markdown-viewer>
-
+<mdview-content id="main" src="memo.md">
+  <mdview-plugins>
+    <mdview-plugin-math></mdview-plugin-math>
+    <mdview-plugin-graph></mdview-plugin-graph>
+    <mdview-plugin-chart></mdview-plugin-chart>  
+  </mdview-plugins>
+</mdview-content>
+<template data-target="main"></template>
 ```

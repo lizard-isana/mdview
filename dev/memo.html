@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Markdown Viewer Component</title>
+  <link rel="stylesheet" href="./css/default.css">
+  <script type="module" src="./js/mdview.js"></script>
+</head>
+<body>
+<main>
+
+<markdown-viewer id="main" src="memo.md">
+  <markdown-plugin-math></markdown-plugin-math>
+  <markdown-plugin-graph></markdown-plugin-graph>
+  <markdown-plugin-chart></markdown-plugin-chart>
+</markdown-viewer>
+
+</main>
+<footer>
+  <markdown-viewer id="footer" src="footer.md"></markdown-viewer>
+</footer>
+</body>
+</html>

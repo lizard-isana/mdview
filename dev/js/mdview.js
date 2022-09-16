@@ -4,174 +4,16 @@ import * as markdown_it_footnote from './vendors/markdown-it-footnote.js';
 import * as markdown_it_task_lists from './vendors/markdown-it-task-lists.js';
 import * as markdown_it_attrs from './vendors/markdown-it-attrs.js';
 import * as purify from './vendors/purify.js'
+import {ScriptLoader,StyleLoader,DataLoader} from './loaders.js'
 
-const LoadedScripts = [];
-const LoadedStyles = [];
-
-const ScriptLoader = (scripts, callback) => {
-  var len = scripts.length;
-  var i = 0;
-  const AppendScript = () => {
-    if (LoadedScripts.indexOf(scripts[i]) < 0 && scripts[i] !== undefined) {
-      var script = document.createElement("script");
-      script.src = scripts[i];
-      document.getElementsByTagName("head")[0].appendChild(script);
-      LoadedScripts.push(scripts[i]);
-      i++;
-      if (i == len) {
-        
-        if (callback) {
-          script.onload = callback;
-        }
-        return;
-      }
-      script.onload = AppendScript;
-    } else if (scripts[i] == undefined && i != len) {
-      i++;
-      AppendScript();
-    } else {
-      return;
-    }
-  }
-  AppendScript();
-};
-
-const StyleLoader = (styles) => {
-  var len = styles.length;
-  var i = 0;
-  const AppendStyle = () => {
-    if (LoadedStyles.indexOf(styles[i]) < 0 && styles[i] !== undefined) {
-      var link = document.createElement("link");
-      link.href = styles[i];
-      link.rel = "stylesheet";
-      document.getElementsByTagName("head")[0].appendChild(link);
-      LoadedStyles.push(styles[i]);
-      i++;
-      link.onload = AppendStyle;
-    } else if (styles[i] == undefined && i != len) {
-      i++;
-      AppendStyle();
-    } else {
-      return;
-    }
-
-  }
-  AppendStyle();
-};
-
-const DataLoader = class{
-  
-  /*
-  // DataLoaderをオプションなしで初期化してload()にURLを渡すと、
-  // 拡張子(txt/json/html/xml)からフォーマットを判断してデータを返す。
-  // callbackが必要ないとか、拡張子と内容がずれているとかがなければこれでOK
-  const loader = new DataLoader();
-  const data = await loader.load("/data/iss.txt");
-
-  // 細かいオプションを設定したければ、初期化時にオプションを設定して
-  const loader = new DataLoader({
-    "url":"/data/iss.txt", // optional 上と同じくload()で指定してもOK。
-    "format":"text",
-    "callback":(data)=>{
-      console.log(data);
-    }
-  });
-  // そのままload()すると、callbackが実行される。
-  loader.load();
-  // awaitで待てばデータが返ってくる（上の例だとcallbackも実行される）。
-  const data = await loader.load();
-  // load()にURLを渡すと、先の設定で指定したurlを取得して、callbackが実行される。
-  loader.load(/data/iss2.txt);
-
-  */
-
-  constructor(option = {}){
-      this.option = option;
-  }
-
-  _get_format = (url) => {
-    const extention = url.split('.').pop(); 
-    let format;
-    switch(extention){
-      case "json":
-        format = "json";
-        break;
-      case "txt":
-        format = "text";
-        break;
-      case "xml":
-        format = "xml";
-        break;
-      case "html":
-        format = "html";
-        break;
-      default:
-        format = "text";
-        break;
-    }
-    return format;
-  }
-
-  load  = async (url) =>{
-    let request;
-    if(url){
-      request = new Request(url);
-    }else if(this.url){
-      request = new Request(this.option.url);
-    }
-    let format;
-    if(this.option.format){
-      format = this.option.format;
-    }else{
-      format = this._get_format(url);
-    }
-
-    const response =  await fetch(request)
-    .then(response => {
-      if (response.status === 200) {
-        switch(format){
-          case "json":
-            return response.json();
-          case "text":
-            return response.text();
-          case "html":
-          case "xml":
-            return response.text();
-          default:
-            return response.text();
-        }
-      } else {
-        throw new Error("Error: " + response.status);
-      }
-    })
-    .then(response => {
-      if(this.option.callback){
-        this.option.callback(response)
-      }
-      switch(format){
-        case "xml":
-          var parser = new DOMParser();
-          const xml = parser.parseFromString(response, "text/xml");
-          return xml
-        case "html":
-          var parser = new DOMParser();
-          const html = parser.parseFromString(response, "text/html");
-          return html
-        default:
-          return response;
-      }
-    }).catch(error => {
-      console.error(error);
-    });
-    return response;
-  }
-}
-
+const GrobalStorage = {}
+GrobalStorage.highlight_exception = ["math","graph","chart"];
 
 class MarkdownViewer extends HTMLElement {
-
   constructor() {
     super();
+    this.dataset.status = "assigned"
+    
     this.Storage = {};
     this.Storage.CodeHighlightHook = [];
     this.Storage.allowed_attributes = ['id', 'class', 'style'];
@@ -181,7 +23,6 @@ class MarkdownViewer extends HTMLElement {
     this.config = {}
     if(this.dataset.config){
       this.config = JSON.parse(this.dataset.config);
-      console.log(this.config);
     }else{
       if(this.config.html == undefined){this.config.html = true}
       if(this.config.sanitize == undefined){this.config.sanitize = false}
@@ -235,7 +76,7 @@ class MarkdownViewer extends HTMLElement {
     });
 
     this.code_highlight_hook((code, lang) => {
-      if (['math'].indexOf(lang) < 0) {
+      if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
         return hljs.highlightAuto(code, [lang]).value;
       }
     });
@@ -260,6 +101,7 @@ class MarkdownViewer extends HTMLElement {
     const html = this.renderer.render(markdown);
     let dom = document.createRange().createContextualFragment(html);
     this.appendChild(dom)
+    this.dataset.status = "loaded"
 
     var code_array = document.querySelectorAll(`code[class*="language"]`)
     for (var i in code_array) {
@@ -267,7 +109,7 @@ class MarkdownViewer extends HTMLElement {
       if (class_list && class_list.value.match(/language/)) {
         var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
         code_array[i].setAttribute("data-language", lang);
-        if (["math"].indexOf(lang) < 0) {
+        if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
           code_array[i].setAttribute("data-highlight", true);
         } else {
           code_array[i].setAttribute("data-highlight", false);
@@ -282,6 +124,7 @@ class MarkdownViewer extends HTMLElement {
     }
 
     //MathJax
+    /*
     window.MathJax.startup.promise.then(() => {
       var math_element = this.querySelectorAll(".language-math");
       math_element.forEach((element, index) => {
@@ -291,8 +134,10 @@ class MarkdownViewer extends HTMLElement {
         element.style.display = "none";
       })
     })
+    */
 
     //graph
+    /*
     var graph_array = this.querySelectorAll(".language-graph");
     graph_array.forEach((element,index)=>{
       var p_node = element.parentNode;
@@ -311,8 +156,10 @@ class MarkdownViewer extends HTMLElement {
         var chart = c3.generate(graph_code)
       }
     })
+    */
 
     //chart
+    /*
     var chart_array = this.querySelectorAll(".language-chart");
     chart_array.forEach((element,index)=>{
       var p_node = element.parentNode;
@@ -323,16 +170,24 @@ class MarkdownViewer extends HTMLElement {
       p_node.style.display = "none";
     })
     mermaid.initialize({ startOnLoad: true });
-
+    */
 
   }
+  static get observedAttributes() {
+    return ['data-status'];
+  }
   connectedCallback() {
+    this.dataset.status = "connected"
     this.init();
+  }
+  attributeChangedCallback(name, old_value, new_value){
+    console.log(this.id,name, old_value, new_value)
   }
 }
 
 class MarkdownToc extends HTMLElement {
   constructor() {
+    //console.log("MarkdownToc","constructor called")
     super();
   } 
 
@@ -354,7 +209,7 @@ class MarkdownToc extends HTMLElement {
       breaks: true,
       typographer: true,
     });
-    const element = this.closest('markdown-viewer');
+    const element = this.closest('mdview-content');
     var header_array = element.querySelectorAll(`h2, h3`)
     var toc_str_array = []
     toc_str_array.push(`## Contents`)
@@ -401,22 +256,139 @@ class MarkdownToc extends HTMLElement {
   }
 }
 
+class MDVPlugin extends HTMLElement {
+  constructor(){
+    super();
+    console.log(this.children)
+    const plugins = this.children;
+    this.dataset.count = plugins.length;
+    this.dataset.loaded = 0;
+  }
+  static get observedAttributes() {
+    return ['data-count','data-loaded'];
+  }
+  connectedCallback() {
+
+  }
+  attributeChangedCallback(name, old_value, new_value){
+    console.log(this.id,name, old_value, new_value)
+  }
+}
+
+class MDVPluginMath extends HTMLElement {
+  constructor(){
+    //GrobalStorage.highlight_exception.push("math");
+    super();
+  }
+  init(){
+    window.MathJax.startup.promise.then(() => {
+      const viewer = this.closest('mdview-content');
+      var math_element = viewer.querySelectorAll(".language-math");
+      math_element.forEach((element, index) => {
+        MathJax.typesetPromise(element.childNodes);
+        const svg = document.createRange().createContextualFragment(element.innerHTML);
+        element.parentNode.insertBefore(svg, element);
+        element.style.display = "none";
+      })
+      //this.remove();
+    })
+  }
+  connectedCallback() {
+    ScriptLoader([
+      "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+    ],()=>{
+      this.init();
+    })
+  }
+}
+
+class MDVPluginGraph extends HTMLElement {
+  constructor(){
+    //GrobalStorage.highlight_exception.push("graph");
+    super();
+  }
+  init(){
+    const viewer = this.closest('mdview-content');
+    var graph_array = viewer.querySelectorAll(".language-graph");
+    graph_array.forEach((element,index)=>{
+      var p_node = element.parentNode;
+      var graph_code = JSON.parse(element.innerHTML);
+      var graph_id = "graph_" + index;
+      var graph_element = document.createElement('div');
+      graph_element.setAttribute("id", graph_id)
+      graph_element.setAttribute("class", "graph")
+      graph_element.style.width = "90%";
+      graph_element.style.padding = "0";
+      graph_element.style.margin = "0";
+      p_node.parentNode.insertBefore(graph_element, p_node);
+      p_node.style.display = "none";
+      graph_code.bindto = "#" + graph_id;
+      if (graph_code) {
+        var chart = c3.generate(graph_code)
+      }
+    })
+    //this.remove();
+  }
+  connectedCallback() {
+    ScriptLoader([
+      "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"
+    ],()=>{
+      this.init();
+    })
+    StyleLoader([
+      "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"
+    ])
+  }
+}
+
+class MDVPluginChart extends HTMLElement {
+  constructor(){
+    //GrobalStorage.highlight_exception.push("chart");
+    super();
+  }
+  init(){
+    const viewer = this.closest('mdview-content');
+    var chart_array = viewer.querySelectorAll(".language-chart");
+    chart_array.forEach((element,index)=>{
+      var p_node = element.parentNode;
+      var chart_element = document.createElement('pre');
+      chart_element.classList.add("mermaid");
+      chart_element.innerHTML = element.innerHTML;
+      p_node.parentNode.insertBefore(chart_element, p_node);
+      p_node.style.display = "none";
+    })
+    mermaid.initialize({ startOnLoad: true });
+    //this.remove();
+  }
+  connectedCallback() {
+    ScriptLoader([
+      "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
+    ],()=>{
+      this.init();
+    })
+  }
+}
+
 const scripts = [
   "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
-  "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js",
-  "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
+  //"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js",
+  //"https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js",
+  //"https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js",
+  //"https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
 ]
 const styles = [
   "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css",
-  "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"
+  //"https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"
 ]
 
 ScriptLoader(scripts, () => {
-  customElements.define('markdown-viewer', MarkdownViewer);
-  customElements.define('markdown-toc', MarkdownToc);
+  customElements.define('mdview-content', MarkdownViewer);
+  customElements.define('mdview-toc', MarkdownToc);
+  customElements.define('mdview-plugins', MDVPlugin);
+  customElements.define('mdview-plugin-math', MDVPluginMath);
+  customElements.define('mdview-plugin-graph', MDVPluginGraph);
+  customElements.define('mdview-plugin-chart', MDVPluginChart);
 })
 StyleLoader(styles)
-
