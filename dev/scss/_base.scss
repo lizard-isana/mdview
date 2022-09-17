@@ -16,11 +16,13 @@ html {
   font-size: 16px;
   scroll-behavior: smooth;
 }
+/*
 @include sp{
   html{ 
     font-size: calc(16*$sp_ratio)+px;
   }
 }
+*/
 body {
   background: white;
   font-family: 'Noto Sans JP', sans-serif;
