@@ -1,7 +1,7 @@
 # MDView: Markdown Viewer Component
 The web components renders and displays markdown documents. It works by simply linking libraries and writing component tags.
 
-https://github.com/lizard-isana/mdview/
+https://lizard-isana.github.io/mdview/
 
 ## Usage
 
