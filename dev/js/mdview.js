@@ -145,13 +145,15 @@ class MarkdownViewer extends HTMLElement {
           href.match(/^(?!http(|s)).*/) &&
           href.match(/^(?!\#).*/) &&
           href.match(/^(?!.*(\/|=)).*/)
+          && href.split('.').pop() == 'md'
         ) {
           link_array[i].href = "?" + this.option.link_target + "=" + href;
           link_array[i].addEventListener('click',(e)=>{
             e.preventDefault();
-            this.load(href);
-            const url =  "?" + this.option.link_target + "=" + href;
-            window.history.pushState({}, '', url);
+            const file = e.currentTarget.href.split("=")[1];
+            const url = "?" + this.option.link_target + "=" + file;
+            this.load(file);
+            window.history.pushState({}, '',url);
           })
         }
       }
