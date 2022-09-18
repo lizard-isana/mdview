@@ -17,6 +17,7 @@ class MarkdownViewer extends HTMLElement {
     this.Storage = {};
     this.Storage.CodeHighlightHook = [];
     this.Storage.allowed_attributes = ['id', 'class', 'style'];
+    this.query = this.QueryDecoder();
     this.SetDefaults();
   } 
   SetDefaults = () => {
@@ -42,11 +43,143 @@ class MarkdownViewer extends HTMLElement {
     if(this.option.sanitize == undefined){this.option.sanitize = true}
     if(this.option.format == undefined){this.option.format = "markdown"}
     if(this.option.spa == undefined){this.option.spa = true}
-    if(this.option.path == undefined){this.option.path = "./"}
+    if(this.option.link_target == undefined){this.option.link_target = this.id}
+
   }
+
+  EscapeEntity = function (str) {
+    return str.replace(/&/g, '&amp;')
+      .replace(/>/g, '&gt;')
+      .replace(/</g, '&lt;')
+      .replace(/\"/g, '&quot;')
+      .replace(/\'/g, '&#039;')
+  }
+  
+  UnescapeEntity = function (str) {
+    return str.replace(/&amp;/g, '&')
+      .replace(/&gt;/g, '>')
+      .replace(/&lt;/g, '<')
+      .replace(/&quot;/g, '\"')
+      .replace(/&#039;/g, '\'')
+  }
+  
+  QueryDecoder = function () {
+    var query = [];
+    var search = decodeURIComponent(location.search);
+    var q = search.replace(/^\?/, "&").split("&");
+    for (var i = 1, l = q.length; i < l; i++) {
+      var tmp_array = q[i].split("=");
+      var name = this.EscapeEntity(tmp_array[0]);
+      var value = this.EscapeEntity(tmp_array[1]);
+      if (value === "true") {
+        value = true;
+      } else if (value === "false") {
+        value = false;
+      }
+      query[name] = value;
+    }
+  
+    return query;
+  };
 
   code_highlight_hook = (f) => {
     this.Storage.CodeHighlightHook.push(f);
+  }
+
+  load = async (target) => {
+    let markdown;
+    let src = this.getAttribute("src")
+    this.option.default_path = './'
+
+    
+    if(src){
+      this.Storage.mode = 'include';
+      const path_array = src.split("/");
+      if(path_array.length>1){
+        path_array.pop()
+        this.option.default_path = path_array.join("/")+"/"
+      }
+
+      let file;
+      if(target){
+        file = this.option.default_path+target;
+
+      }else if (Object.keys(this.query).length > 0) {
+        for (var key in this.query) {
+          const tgt_elem = document.getElementById(key);
+          if(!tgt_elem){continue};
+          if (key == this.id) {
+            file = this.option.default_path+this.query[key].split("/").reverse()[0];
+          }
+        }
+      }else{
+        file = src;
+      }
+
+      const loader = new DataLoader();
+      markdown = await loader.load(file);
+    }else{
+      const md_element = document.querySelector(`template[data-target="${this.id}"]`);
+      if(md_element){
+        this.Storage.mode = 'inline';
+        markdown = md_element.innerHTML;
+        markdown = markdown.replace(/(&gt;)/g, '>');
+        markdown = markdown.replace(/(&lt;)/g, '<');
+      }else{
+        console.error("No markdown document is found.")
+      }
+    }
+
+    let html = this.renderer.render(markdown);
+    if (this.option.sanitize == true) {
+      html = DOMPurify.sanitize(html);
+    };
+    let dom = document.createRange().createContextualFragment(html);
+
+    if(this.Storage.mode == 'include'){
+      const link_array = dom.querySelectorAll("a");
+      let href;
+      for (var i = 0, ln = link_array.length; i < ln; i++) {
+        href = link_array[i].getAttribute("href");
+        if (
+          href.match(/^(?!http(|s)).*/) &&
+          href.match(/^(?!\#).*/) &&
+          href.match(/^(?!.*(\/|=)).*/)
+        ) {
+          link_array[i].href = "?" + this.option.link_target + "=" + href;
+          link_array[i].addEventListener('click',(e)=>{
+            e.preventDefault();
+            this.load(href);
+            const url =  "?" + this.option.link_target + "=" + href;
+            window.history.pushState({}, '', url);
+          })
+        }
+      }
+    }
+
+    this.innerHTML = "";
+    this.appendChild(dom)
+    this.dataset.status = "loaded"
+
+    var code_array = document.querySelectorAll(`code[class*="language"]`)
+    for (var i in code_array) {
+      var class_list = code_array[i].classList;
+      if (class_list && class_list.value.match(/language/)) {
+        var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
+        code_array[i].setAttribute("data-language", lang);
+        if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
+          code_array[i].setAttribute("data-highlight", true);
+        } else {
+          code_array[i].setAttribute("data-highlight", false);
+        }
+      }
+      if (code_array[i].parentNode) {
+        code_array[i].parentNode.classList.add("code")
+      }
+      if (code_array[i].dataset && code_array[i].dataset.highlight && code_array[i].dataset.highlight == "true") {
+        hljs.lineNumbersBlock(code_array[i],{singleLine: false});
+      }
+    }
   }
 
   init = async () => {
@@ -78,6 +211,8 @@ class MarkdownViewer extends HTMLElement {
       .use(markdownItAttrs, {
       allowedAttributes: this.Storage.allowed_attributes
     });
+    
+    //--
 
     this.code_highlight_hook((code, lang) => {
       if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
@@ -85,51 +220,8 @@ class MarkdownViewer extends HTMLElement {
       }
     });
 
-    let markdown;
-    const src = this.getAttribute("src")
-    if(src){
-      this.Storage.mode = 'include';
-      const loader = new DataLoader();
-      markdown = await loader.load(src);
-    }else{
-      const md_element = document.querySelector(`template[data-target="${this.id}"]`);
-      if(md_element){
-        this.Storage.mode = 'inline';
-        markdown = md_element.innerHTML;
-      }else{
-        console.error("No markdown document is found.")
-      }
-    }
 
-    markdown = markdown.replace(/(&gt;)/g, '>');
-    markdown = markdown.replace(/(&lt;)/g, '<');
-    let html = this.renderer.render(markdown);
-    if (this.option.sanitize == true) {
-      html = DOMPurify.sanitize(html);
-    };
-    let dom = document.createRange().createContextualFragment(html);
-    this.appendChild(dom)
-    this.dataset.status = "loaded"
-
-    var code_array = document.querySelectorAll(`code[class*="language"]`)
-    for (var i in code_array) {
-      var class_list = code_array[i].classList;
-      if (class_list && class_list.value.match(/language/)) {
-        var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
-        code_array[i].setAttribute("data-language", lang);
-        if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
-          code_array[i].setAttribute("data-highlight", true);
-        } else {
-          code_array[i].setAttribute("data-highlight", false);
-        }
-      }
-      if (code_array[i].parentNode) {
-        code_array[i].parentNode.classList.add("code")
-      }
-      if (code_array[i].dataset && code_array[i].dataset.highlight && code_array[i].dataset.highlight == "true") {
-        hljs.lineNumbersBlock(code_array[i],{singleLine: false});
-      }
-    }
+    this.load()
 
   }
   static get observedAttributes() {
