@@ -20,15 +20,14 @@ class MarkdownViewer extends HTMLElement {
     this.SetDefaults();
   } 
   SetDefaults = () => {
-    this.config = {}
-    if(this.dataset.config){
-      this.config = JSON.parse(this.dataset.config);
+    this.option = {}
+    if(this.dataset.option){
+      this.option = JSON.parse(this.dataset.option);
     }else{
-      if(this.config.html == undefined){this.config.html = true}
-      if(this.config.sanitize == undefined){this.config.sanitize = false}
-      if(this.config.format == undefined){this.config.format = "markdown"}
-      if(this.config.query == undefined){this.config.query = true}
-      if(this.config.query == undefined){this.config.query_path = "./"}
+      if(this.dataset.html){this.option.html = JSON.parse(this.dataset.html)}
+      if(this.dataset.sanitize){this.option.sanitize = JSON.parse(this.dataset.sanitize)}
+      if(this.dataset.format){this.option.format = this.dataset.format}
+      if(this.dataset.spa){this.option.spa = JSON.parse(this.dataset.spa)}
       /*
       const config = {
         "html":true,
@@ -39,6 +38,11 @@ class MarkdownViewer extends HTMLElement {
       }
       */
     }
+    if(this.option.html == undefined){this.option.html = false}
+    if(this.option.sanitize == undefined){this.option.sanitize = true}
+    if(this.option.format == undefined){this.option.format = "markdown"}
+    if(this.option.spa == undefined){this.option.spa = true}
+    if(this.option.path == undefined){this.option.path = "./"}
   }
 
   code_highlight_hook = (f) => {
@@ -47,7 +51,7 @@ class MarkdownViewer extends HTMLElement {
 
   init = async () => {
     this.renderer = window.markdownit({
-      html: this.config.html,
+      html: this.option.html,
       linkify: true,
       breaks: true,
       typographer: true,
@@ -96,9 +100,13 @@ class MarkdownViewer extends HTMLElement {
         console.error("No markdown document is found.")
       }
     }
+
     markdown = markdown.replace(/(&gt;)/g, '>');
     markdown = markdown.replace(/(&lt;)/g, '<');
-    const html = this.renderer.render(markdown);
+    let html = this.renderer.render(markdown);
+    if (this.option.sanitize == true) {
+      html = DOMPurify.sanitize(html);
+    };
     let dom = document.createRange().createContextualFragment(html);
     this.appendChild(dom)
     this.dataset.status = "loaded"
