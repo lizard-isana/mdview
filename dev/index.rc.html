@@ -303,7 +303,6 @@ sequenceDiagram
 
 <mdview-content id="sub"></mdview-content>
 <template data-target="sub">
-<!-- markdown starts here -->
 ## これは二つ目のMarkdownです
 
 `&lt;mdview-content&gt;`の`id`と `&lt;template&gt;` の `data-target` の組み合わせを変えることで、複数のmarkdownを記述できます。
@@ -314,13 +313,28 @@ sequenceDiagram
   ## これは二つ目のMarkdownです
 </template>
 ```
-
-<!-- markdown ends here -->
 </template>
 
 </main>
 <footer>
-
+<mdview-content id="footer" data-html="true"></mdview-content>
+<template data-target="footer">
+Powered by [MDView](https://github.com/lizard-isana/mdview) &copy; Isana Kashiwai{.footer}
+<style>
+.footer{
+  text-align:right;
+  color:#bbb;
+  font-size:10px;
+  padding: 5px;
+}
+.footer a{
+  color:#bbb;
+  text-decoration:none;
+}
+.footer a:hover{
+  text-decoration:underline;
+}
+</style>
 </footer>
 </body>
 </html>
