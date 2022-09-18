@@ -20,7 +20,6 @@
 </mdview-content>
 
 <template data-target="main">
-<!-- markdown starts here -->
 
 # Markdown Viewer Component
 Markdownをレンダリングして表示する Web Component です。ライブラリをリンクして、タグを書き込むだけで動作します。MarkdownをHTMLファイル内に直接記述する「インラインモード」とMarkdownを外部ファイルから読み込む「インクルードモード」の両方に対応しています。
@@ -357,12 +356,11 @@ MDView depends on below superb libraries.
 - [C3.js](https://c3js.org/) ([The MIT License](https://github.com/c3js/c3/blob/master/LICENSE))
 - [Mermaid.js](https://mermaid-js.github.io/) ([MIT License](https://github.com/mermaid-js/mermaid/blob/develop/LICENSE))
 
-<!-- markdown ends here -->
 </template>
 
 </main>
 <footer>
-<mdview-content id="footer"></mdview-content>
+<mdview-content id="footer" data-html="true"></mdview-content>
 <template data-target="footer">
 Powered by [MDView](https://github.com/lizard-isana/mdview) &copy; Isana Kashiwai{.footer}
 <style>
