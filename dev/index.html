@@ -4,360 +4,68 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown Viewer Component</title>
+  <title>MDView: Markdown Viewer Component</title>
   <link rel="stylesheet" href="./css/default.css">
   <script type="module" src="./js/mdview.js"></script>
 </head>
 <body>
-<main>
+  <main>
 
-<mdview-content id="main" data-html="true" data-sanitize="false">
-  <mdview-plugins>
-    <mdview-plugin-math></mdview-plugin-math>
-    <mdview-plugin-graph></mdview-plugin-graph>
-    <mdview-plugin-chart></mdview-plugin-chart>
-  </mdview-plugins>
-</mdview-content>
+    <mdview-content id="main">
+      <mdview-plugins>
+        <mdview-plugin-math></mdview-plugin-math>
+        <mdview-plugin-graph></mdview-plugin-graph>
+        <mdview-plugin-chart></mdview-plugin-chart>
+      </mdview-plugins>
+    </mdview-content>
 
 <template data-target="main">
 
-# Markdown Viewer Component
-Markdownをレンダリングして表示する Web Component です。ライブラリをリンクして、タグを書き込むだけで動作します。MarkdownをHTMLファイル内に直接記述する「インラインモード」とMarkdownを外部ファイルから読み込む「インクルードモード」の両方に対応しています。
-
-<mdview-toc></mdview-toc>
+# MDView: Markdown Viewer Component
+The web components renders and displays markdown documents. It works by simply linking libraries and writing component tags.
 
 ## Source
 https://github.com/lizard-isana/mdview
 
 ## Usage
 
-### インラインモード
-HTMLファイル内に Markdown を直接記述します。ファイルの動的な読み込みを行わないので、ブラウザからHTMLファイルを直接開いても動きます(file://でも動作します)。
-
-1. スクリプトとスタイルシートを読みこむ
-2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`を指定する)
-3. `&lt;template&gt;`に Markdown を書く(上の`id`と同じ値を`data-target`に指定する)
+### Inline mode
+Write markdown directly in the HTML file. It does not dynamically load the file, so it works even if you open the HTML file directly from a browser ("file://" will also work).
 
 ```HTML
 <link rel="stylesheet" href="default.css">
 <script src="mdview.js"></script>
 
 <mdview-content id="main">
-  template内のmarkdownがレンダリングされてここに挿入される
+  The HTML document will be rendered here.
 </mdview-content>
 
 <template class="markdown" data-target="main">
-  # Title
-  Markdownをここに直接書く
+  # The markdown document is here.
 </template>
 ```
 
-### インクルードモード
-外部の Markdown ファイルを指定して読み込みます。外部ファイルを動的に読み込むので動作にはWebサーバが必要です(http:// や https:// で運用する必要があります。file:// では動きません)。
-
-1. スクリプトとスタイルシートを読みこむ
-2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`と外部markdownファイルを指定する)
+### Include mode
+Loads an external markdown file. Since the external file is loaded dynamically, a web server is required ("https://" or "http://" is required, "file://" will not work).
 
 ```HTML
 <link rel="stylesheet" href="default.css">
 <script src="mdview.js"></script>
 
 <mdview-content id="main" src="main.md">
-  main.mdの内容がレンダリングされてここに挿入される
+  The main.md will be rendered here.
 </mdview-content>
 ```
 
-## Features
-[CommonMark](https://spec.commonmark.org/)で使えるMarkdown記法（レンダリングには[markdown-it](https://github.com/markdown-it/markdown-it)を使用）に加えて、以下の機能が追加されています。
-- 目次
-- 脚注
-- タスクリスト
-- id, class, style 属性の付加
-- コードハイライト
-- HTML直書き(Markdown内のJavaScriptの実行&スタイルの再適用)
-
-<!--
-#### 画像
-![alt text](https://picsum.photos/seed/picsum/1200/900/ "Title")
--->
-
-### 目次
-
-`<mdview-toc></mdview-toc>`のタグを挿入することで、目次を表示します。
-`data-initial="close"` にすると、初期状態が閉じた状態になります。
-
-```HTML
-
-<mdview-toc data-initial="close"></mdview-toc>
-
-```
-
-<mdview-toc data-initial="close"></mdview-toc>
-
-### 脚注
-MarkdownのPandoc拡張記法で、脚注の表示ができます。
-```
-こんな感じで[^1]、脚注の表示ができます^[行内に書くパターン]。
-
-[^1]:脚注部分を別行に書くパターン。
-```
-
-こんな感じで[^1]、脚注の表示ができます^[行内に書くパターン]。
-
-[^1]:脚注部分を別行に書くパターン。
-
-表示には[markdown-it-footnote](https://github.com//markdown-it/markdown-it-footnote)を利用しています。
+## Documentation/Sample site
+日本語: [Sample Site](usage.ja.html)
+English: WIP
 
 
-### タスクリスト
-MarkdownのGithub拡張記法で、タスクリスト(チェックボックス)の表示ができます。ただし、ページ上でクリックしてもMarkdownは更新されません。
-
-```
-- [x] 項目1
-- [ ] 項目2
-  - [ ] 項目2-2
-```
-
-- [x] 項目1
-- [ ] 項目2
-  - [ ] 項目2-2
-
-表示には[markdown-it-task-lists](https://github.com/revin/markdown-it-task-lists)を利用しています。
-
-### id, class, style 属性の付加
-MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定ができます。
-
-```
-クラスを指定(スタイルタグと組み合わせてCSSを適用することができます){.custom_class}
-
-<style>.custom_class{color:steelblue}</style>
-
-スタイルを直接指定することもできます{style="color:red"}
-
-ただし、それ以外の属性を指定しても無視されます。{onmouseover="alert('alert!')"}
-```
-
-クラスを指定(スタイルタグと組み合わせてCSSを適用することができます){.custom_class}
-
-<style>.custom_class{color:steelblue}</style>
-
-スタイルを直接指定することもできます{style="color:red"}
-
-ただし、それ以外の属性を指定しても無視されます。{onmouseover="alert('alert!')"}
-
-表示には[markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)を利用しています。
-
-
-### コードハイライト
-
-```HTML
-<mdview-content id="main"></mdview-content>
-<template class="markdown" data-target="main">
-  # H1
-  Markdownをここに直接書く
-</template>
-```
-
-### HTML直書き／スクリプトタグの埋め込み
-
-以下のように、optionで `data-html="true"`を指定すると本文中でHTMLタグが使えるようになり、さらに `data-sanitize="false"`を指定するとスクリプトが使えるようになります。
-
-```HTML
-<mdview-content id="main" data-html="true" data-sanitize="false"></mdview-content>
-<template class="markdown" data-target="main">
-  # H1
-  Markdownをここに直接書く
-</template>
-```
-
-以下の例では、スクリプトタグを含む Twitter の埋め込みタグを表示しています。
-
-```HTML
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">A life is like a garden. Perfect moments can be had, but not preserved, except in memory. LLAP</p>&mdash; Leonard Nimoy (@TheRealNimoy) <a href="https://twitter.com/TheRealNimoy/status/569762773204217857?ref_src=twsrc%5Etfw">February 23, 2015</a></blockquote>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-```
-
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">A life is like a garden. Perfect moments can be had, but not preserved, except in memory. LLAP</p>&mdash; Leonard Nimoy (@TheRealNimoy) <a href="https://twitter.com/TheRealNimoy/status/569762773204217857?ref_src=twsrc%5Etfw">February 23, 2015</a></blockquote>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-
-## 組み込みプラグイン
-以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にプラグインコンポーネントを追記することでアクティブになります。
-
-- 数式(MathJax)
-- グラフ(C3.js)
-- チャート(Mermaid.js）
-
-```HTML
-<mdview-content id="main">
-  <mdview-plugins>
-    <mdview-plugin-math></mdview-plugin-math>
-    <mdview-plugin-graph></mdview-plugin-graph>
-    <mdview-plugin-chart></mdview-plugin-chart>
-  </mdview-plugins>
-</mdview-content>
-```
-
-### 数式(MathJax)
-
-コードブロックに `math`を指定するとMathJaxでレンダリングして表示します
-
-````plaintext
-```math
-二次方程式 \(ax^{2}+bx+c=0\) の解は
-\[
-x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
-\]
-です。
-```
-````
-
-```math
-二次方程式 \(ax^{2}+bx+c=0\) の解は
-\[
-x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
-\]
-です。
-```
-
----
-
-この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-math&gt;`コンポーネントを追加することでアクティブになります。
-
-```HTML
-<mdview-content id="main">
-  <mdview-plugins>
-    <mdview-plugin-math></mdview-plugin-math>
-  </mdview-plugins>
-</mdview-content>
-```
-
-### グラフ(C3.js)
-コードブロックに `graph`を指定すると c3.js でレンダリングして表示します。
-cf. ([c3.js](https://c3js.org/))
-
-````
-```graph
-{
-    "data": {
-    "columns": [
-        ["data1", 30, 200, 100, 400, 150, 250],
-        ["data2", 50, 20, 10, 40, 15, 25]
-    ]
-    }
-}
-```
-````
-
-```graph
-{
-    "data": {
-    "columns": [
-        ["data1", 30, 200, 100, 400, 150, 250],
-        ["data2", 50, 20, 10, 40, 15, 25]
-    ]
-    }
-}
-```
-
-````
-```graph
-{
-  "data": {
-    "type": "pie",
-    "columns": [
-        ["data1", 30],
-        ["data2", 120]
-    ]
-  }
-}
-```
-````
-
-```graph
-{
-  "data": {
-    "type": "pie",
-    "columns": [
-        ["data1", 30],
-        ["data2", 120]
-    ]
-  }
-}
-```
-
----
-
-この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-graph&gt;`コンポーネントを追加することでアクティブになります。
-
-```HTML
-<mdview-content id="main">
-  <mdview-plugins>
-    <mdview-plugin-graph></mdview-plugin-graph>
-  </mdview-plugins>
-</mdview-content>
-```
-
-
-### チャート(Mermaid.js)
-コードブロックに `chart`を指定すると Mermaid.js でレンダリングして表示します。
-
-````
-```chart
-sequenceDiagram
-  participant Alice
-  participant Bob
-  Alice->>John: Hello John, how are you?
-  loop Healthcheck
-      John->>John: Fight against hypochondria
-  end
-  Note right of John: Rational thoughts <br/>prevail!
-  John-->>Alice: Great!
-  John->>Bob: How about you?
-  Bob-->>John: Jolly good!
-```
-````
-
-```chart
-sequenceDiagram
-  participant Alice
-  participant Bob
-  Alice->>John: Hello John, how are you?
-  loop Healthcheck
-      John->>John: Fight against hypochondria
-  end
-  Note right of John: Rational thoughts <br/>prevail!
-  John-->>Alice: Great!
-  John->>Bob: How about you?
-  Bob-->>John: Jolly good!
-```
-
----
-
-この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-chart&gt;`コンポーネントを追加することでアクティブになります。
-
-```HTML
-<mdview-content id="main">
-  <mdview-plugins>
-    <mdview-plugin-chart></mdview-plugin-chart>
-  </mdview-plugins>
-</mdview-content>
-```
-
-## Copyrights/Credits
-MDView depends on below superb libraries.
-- [markdown-it.js](https://github.com/markdown-it/markdown-it) ([MIT License](https://github.com/markdown-it/markdown-it/blob/master/LICENSE))
-- [markdown-it-footnote](https://github.com//markdown-it/markdown-it-footnote) ([MIT License](https://github.com/markdown-it/markdown-it-footnote/blob/master/LICENSE))
-- [markdown-it-task-lists.js](https://github.com/revin/markdown-it-task-lists) ([ISC License](https://github.com/revin/markdown-it-task-lists/blob/master/LICENSE))
-- [markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)([MIT License](https://github.com/arve0/markdown-it-attrs/blob/master/LICENSE))
-- [DOMPurify](https://github.com/cure53/DOMPurify)([Apache/Mozilla Public License](https://github.com/cure53/DOMPurify/blob/master/LICENSE))
-- [highlight.js](https://highlightjs.org/) ([BSD License](https://github.com/highlightjs/highlight.js/blob/master/LICENSE))
-- [MathJax](https://www.mathjax.org/) ([Apache License 2.0](https://github.com/mathjax/MathJax/blob/master/LICENSE))
-- [C3.js](https://c3js.org/) ([The MIT License](https://github.com/c3js/c3/blob/master/LICENSE))
-- [Mermaid.js](https://mermaid-js.github.io/) ([MIT License](https://github.com/mermaid-js/mermaid/blob/develop/LICENSE))
+## License
+© 2022 Isana Kashiwai ([MIT license](https://github.com/lizard-isana/mdview/blob/main/LICENSE))
 
 </template>
-
 </main>
 <footer>
 <mdview-content id="footer" data-html="true"></mdview-content>

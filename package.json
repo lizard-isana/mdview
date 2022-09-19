@@ -7,9 +7,9 @@
     "build:js": "npm run js",
     "build:sass": "sass dev/scss/default.scss:dev/css/default.rc.css --style expanded --no-source-map",
     "build:postcss": "postcss dev/css/default.rc.css -u autoprefixer -o dev/css/default.rc.css",
-    "build:copy_js": "node -e \"require('fs').copyFileSync('./dev/js/mdview.rc.js', './dist/mdview.js')\"",
-    "build:copy_css": "node -e \"require('fs').copyFileSync('./dev/css/default.rc.css', './dist/default.css')\"",
-    "build:copy_doc":"cpx -C \"./dist/**\" \"./docs\"",
+    "build:copy_js": "node -e \"require('fs').copyFileSync('./dev/js/mdview.rc.js', './dist/js/mdview.js')\"",
+    "build:copy_css": "node -e \"require('fs').copyFileSync('./dev/css/default.rc.css', './dist/css/default.css')\"",
+    "build:copy_doc": "cpx -C \"./dist/**\" \"./docs\"",
     "watch:css": "watch \"npm run css\" ./dev/scss",
     "watch:server": "browser-sync start --config browser-sync.config.js",
     "build": "npm-run-all -p build:*",
@@ -29,5 +29,6 @@
     "rollup-plugin-terser": "^7.0.2",
     "sass": "^1.52.1",
     "watch": "^1.0.2"
-  }
+  },
+  "dependencies": {}
 }
