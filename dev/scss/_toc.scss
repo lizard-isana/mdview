@@ -26,14 +26,6 @@
       font-size:0.85em;
       color:#bbb;    
     }
-    &.close{
-      &:after{
-        content:" [show]";
-      }
-    }
-  }
-  .toc-close{
-    display:none;
   }
   ul{
     list-style-position: outside;
@@ -55,9 +47,14 @@
       }
     }
   }
-  &::after{
-    content: "";
-    clear: both;
-    display: table;
+  &.close {
+    h2{
+      &:after{
+        content:" [show]";
+      }
+    }
+    ul{
+      display: none;
+    }
   }
 }

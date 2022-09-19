@@ -2,7 +2,7 @@
 
 [include.md](include.md)
 
-<mdview-toc></mdview-toc>
+t{.toc}
 
 ### Math
 ```math
