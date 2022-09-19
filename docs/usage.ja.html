@@ -13,6 +13,7 @@
 
 <mdview-content id="main" data-html="true" data-sanitize="false">
   <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
     <mdview-plugin-math></mdview-plugin-math>
     <mdview-plugin-graph></mdview-plugin-graph>
     <mdview-plugin-chart></mdview-plugin-chart>
@@ -22,9 +23,9 @@
 <template data-target="main">
 
 # Markdown Viewer Component
-Markdownをレンダリングして表示する Web Component です。JavaScriptなどを記述することなく、HTMLファイルにライブラリをリンクして、タグを書き込むだけで動作します。
+Markdownをレンダリングして表示する Web Component です。ライブラリをリンクして、タグを書き込むだけで動作します。MarkdownをHTMLファイル内に直接記述する「インラインモード」とMarkdownを外部ファイルから読み込む「インクルードモード」の両方に対応しています。
 
-<mdview-toc></mdview-toc>
+toc{.toc}
 
 ## Source
 https://github.com/lizard-isana/mdview
@@ -32,7 +33,7 @@ https://github.com/lizard-isana/mdview
 ## Usage
 
 ### インラインモード
-HTMLファイル内にMarkdownを直接記述します。ファイルの動的な読み込みを行わないので、ブラウザからHTMLファイルを直接開いても動きます(file://でも動作します)。
+HTMLファイル内に Markdown を直接記述します。ファイルの動的な読み込みを行わないので、ブラウザからHTMLファイルを直接開いても動きます(file://でも動作します)。
 
 1. スクリプトとスタイルシートを読みこむ
 2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`を指定する)
@@ -67,21 +68,6 @@ HTMLファイル内にMarkdownを直接記述します。ファイルの動的�
 </mdview-content>
 ```
 
-### SPA(Single Page Application) モード
-インクルードモードで以下のように`data-spa="true"`を指定すると、読み込まれたMarkdown ファイルからリンクされている別のMarkdown ファイルをページ遷移なしで開く SPA モードが使えます。
-
-```HTML
-<link rel="stylesheet" href="default.css">
-<script src="mdview.js"></script>
-
-<mdview-content id="main" src="main.md" data-spa="true">
-  ページを開くとmain.mdの内容がレンダリングされてここに挿入され、
-  main.md内からリンクされたMarkdownファイル(.md)をクリックすると、
-  同じくこのエリアに読み込まれて表示されます。
-</mdview-content>
-```
-
-
 ## Features
 [CommonMark](https://spec.commonmark.org/)で使えるMarkdown記法（レンダリングには[markdown-it](https://github.com/markdown-it/markdown-it)を使用）に加えて、以下の機能が追加されています。
 - 目次
@@ -90,24 +76,6 @@ HTMLファイル内にMarkdownを直接記述します。ファイルの動的�
 - id, class, style 属性の付加
 - コードハイライト
 - HTML直書き(Markdown内のJavaScriptの実行&スタイルの再適用)
-
-<!--
-#### 画像
-![alt text](https://picsum.photos/seed/picsum/1200/900/ "Title")
--->
-
-### 目次
-
-`<mdview-toc></mdview-toc>`のタグを挿入することで、目次を表示します。
-`data-initial="close"` にすると、初期状態が閉じた状態になります。
-
-```HTML
-
-<mdview-toc data-initial="close"></mdview-toc>
-
-```
-
-<mdview-toc data-initial="close"></mdview-toc>
 
 ### 脚注
 MarkdownのPandoc拡張記法で、脚注の表示ができます。
@@ -199,6 +167,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 ## 組み込みプラグイン
 以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にプラグインコンポーネントを追記することでアクティブになります。
 
+- 目次
 - 数式(MathJax)
 - グラフ(C3.js)
 - チャート(Mermaid.js）
@@ -206,9 +175,43 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 ```HTML
 <mdview-content id="main">
   <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
     <mdview-plugin-math></mdview-plugin-math>
     <mdview-plugin-graph></mdview-plugin-graph>
     <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
+</mdview-content>
+```
+
+### 目次
+
+MarkdownのPandoc拡張記法で任意の文字列に`{.toc}`のクラスを指定することで目次を表示します。
+文字列は要素を生成するためのダミーなので、なんでも構いません。生成後は削除されます。
+
+```HTML
+
+toc{.toc}
+
+```
+
+toc{.toc}
+
+以下のように、`.close`のクラスを追加すると、初期状態で閉じた状態になります。
+
+```HTML
+
+toc{.toc .close}
+
+```
+
+toc{.toc .close}
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-toc&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
   </mdview-plugins>
 </mdview-content>
 ```
