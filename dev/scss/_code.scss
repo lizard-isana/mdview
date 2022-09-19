@@ -3,8 +3,11 @@ code{
   border-radius: 3px;
   padding: 0 3px;
   line-height: 1.5;
+  width: 100%;
   display: inline-block;
-  white-space: pre-wrap;
+  //white-space: pre-wrap;
+  word-break: break-word;
+  white-space: break-spaces;
 }
 
 pre{
@@ -16,6 +19,7 @@ pre{
   &.code{
     background-color: #fff;
     margin: 0;
+    width: 100%;
     &>code{
       background: transparent;
       margin: 0;
