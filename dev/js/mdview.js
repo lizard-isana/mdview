@@ -285,7 +285,7 @@ class MDViewPlugin extends HTMLElement {
 
   }
   attributeChangedCallback(name, old_value, new_value){
-    console.log(this.id,name, old_value, new_value)
+    //console.log(this.id,name, old_value, new_value)
   }
 }
 
@@ -332,7 +332,6 @@ class MDViewPluginToc extends HTMLElement {
     const toc_array = mdview_content.querySelectorAll(".toc");
     let toc_title;
     toc_array.forEach((element,index)=>{
-      console.log(element)
       element.innerHTML = toc_html;
       toc_title = element.querySelector("h2");
       toc_title.addEventListener('click',(e)=>{
