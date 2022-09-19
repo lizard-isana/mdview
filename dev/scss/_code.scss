@@ -3,8 +3,8 @@ code{
   border-radius: 3px;
   padding: 0 3px;
   line-height: 1.5;
-  width: 100%;
   display: inline-block;
+  vertical-align: text-top;
   white-space: pre-wrap;
   overflow: auto;
 }
@@ -19,6 +19,7 @@ pre{
     background-color: #fff;
     margin: 0;
     width: 100%;
+    margin-bottom: 1rem;
     &>code{
       background: transparent;
       margin: 0;
