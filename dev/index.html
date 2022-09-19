@@ -59,6 +59,19 @@ Loads an external markdown file. Since the external file is loaded dynamically, 
 </mdview-content>
 ```
 
+### SPA(Single Page Application) Mode
+If you specify `data-spa=true` in the include mode as follows, you can use SPA mode to open another Markdown file linked from the loaded Markdown file without page transition. 
+
+```HTML
+<link rel="stylesheet" href="default.css">
+<script src="mdview.js"></script>
+
+<mdview-content id="main" src="main.md" data-spa="true">
+  The main.md will be rendered here.
+  And links within main.md will be open and rendered here.
+</mdview-content>
+```
+
 ## Documentation/Sample site
 日本語: [Sample Site](usage.ja.html)
 English: WIP
