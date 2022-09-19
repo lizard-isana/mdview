@@ -18,6 +18,7 @@ class MarkdownViewer extends HTMLElement {
     this.Storage.CodeHighlightHook = [];
     this.Storage.allowed_attributes = ['id', 'class', 'style'];
     this.query = this.QueryDecoder();
+    this.status;
     this.SetDefaults();
   } 
   SetDefaults = () => {
@@ -87,11 +88,14 @@ class MarkdownViewer extends HTMLElement {
   }
 
   load = async (target) => {
+    if(this.status != 'reloading'){
+      this.status = 'loading';
+      this.dataset.status = "loading";
+    }
     let markdown;
     let src = this.getAttribute("src")
     this.option.default_path = './'
 
-    
     if(src){
       this.Storage.mode = 'include';
       const path_array = src.split("/");
@@ -99,11 +103,9 @@ class MarkdownViewer extends HTMLElement {
         path_array.pop()
         this.option.default_path = path_array.join("/")+"/"
       }
-
       let file;
       if(target){
         file = this.option.default_path+target;
-
       }else if (Object.keys(this.query).length > 0) {
         for (var key in this.query) {
           const tgt_elem = document.getElementById(key);
@@ -152,15 +154,32 @@ class MarkdownViewer extends HTMLElement {
             e.preventDefault();
             const file = e.currentTarget.href.split("=")[1];
             const url = "?" + this.option.link_target + "=" + file;
+            this.status = "reloading";
+            this.dataset.status = "loading";
             this.load(file);
             window.history.pushState({}, '',url);
+            this.setAttribute("src", this.option.default_path+file);
           })
         }
       }
     }
+    let current_section = document.querySelector(`#${this.id}>section`);
+    if(current_section){
+      current_section.remove()
+    }
+    
+    const new_section = document.createElement("section");
+    new_section.appendChild(dom);
+    this.appendChild(new_section);
 
-    this.innerHTML = "";
-    this.appendChild(dom)
+    if(this.status == 'reloading'){
+      const plugins = this.querySelector('mdview-plugins').children;
+      const plugins_array = [...plugins]
+      plugins_array.forEach((element,index)=>{
+        element.dataset.status = "reloaded";
+      })
+    }
+    this.status =  "loaded";
     this.dataset.status = "loaded"
 
     var code_array = document.querySelectorAll(`code[class*="language"]`)
@@ -221,8 +240,6 @@ class MarkdownViewer extends HTMLElement {
         return hljs.highlightAuto(code, [lang]).value;
       }
     });
-
-
     this.load()
 
   }
@@ -234,7 +251,6 @@ class MarkdownViewer extends HTMLElement {
     this.init();
   }
   attributeChangedCallback(name, old_value, new_value){
-    //console.log(this.id,name, new_value)
     if(name =='data-status' && new_value == "loaded"){
       if(GrobalStorage.plugins_loaded == false ){
         customElements.define('mdview-plugins', MDViewPlugin);
@@ -252,7 +268,7 @@ class MDViewToc extends HTMLElement {
   constructor() {
     //console.log("MarkdownToc","constructor called")
     super();
-  } 
+  }
 
   crc32 = (str) => {
     // checksum - JavaScript CRC32 - Stack Overflow https://stackoverflow.com/questions/18638900/javascript-crc32
@@ -313,7 +329,9 @@ class MDViewToc extends HTMLElement {
       })
     })
   }
-
+  static get observedAttributes() {
+    return ['data-status'];
+  }
   connectedCallback() {
     this.init();
   }
@@ -346,13 +364,15 @@ class MDViewPluginMath extends HTMLElement {
   init(){
     window.MathJax.startup.promise.then(() => {
       const viewer = this.closest('mdview-content');
-      var math_element = viewer.querySelectorAll(".language-math");
-      math_element.forEach((element, index) => {
-        MathJax.typesetPromise(element.childNodes);
-        const svg = document.createRange().createContextualFragment(element.innerHTML);
-        element.parentNode.insertBefore(svg, element);
-        element.style.display = "none";
-      })
+      if(viewer){
+        var math_element = viewer.querySelectorAll(".language-math");
+        math_element.forEach((element, index) => {
+          MathJax.typesetPromise(element.childNodes);
+          const svg = document.createRange().createContextualFragment(element.innerHTML);
+          element.parentNode.insertBefore(svg, element);
+          element.style.display = "none";
+        })
+      }
       //this.remove();
     })
   }
@@ -365,10 +385,15 @@ class MDViewPluginMath extends HTMLElement {
       "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
     ],()=>{
       this.init();
+      this.dataset.status = "loaded"
     })
   }
   attributeChangedCallback(name, old_value, new_value){
     console.log(this.tagName,name, new_value)
+    if(new_value == "reloaded"){
+      this.init();
+      this.dataset.status = "loaded"
+    }
   }
 }
 
@@ -379,25 +404,27 @@ class MDViewPluginGraph extends HTMLElement {
   }
   init(){
     const viewer = this.closest('mdview-content');
-    var graph_array = viewer.querySelectorAll(".language-graph");
-    graph_array.forEach((element,index)=>{
-      var p_node = element.parentNode;
-      var graph_code = JSON.parse(element.innerHTML);
-      var graph_id = "graph_" + index;
-      var graph_element = document.createElement('div');
-      graph_element.setAttribute("id", graph_id)
-      graph_element.setAttribute("class", "graph")
-      graph_element.style.width = "90%";
-      graph_element.style.padding = "0";
-      graph_element.style.margin = "0";
-      p_node.parentNode.insertBefore(graph_element, p_node);
-      p_node.style.display = "none";
-      graph_code.bindto = "#" + graph_id;
-      if (graph_code) {
-        var chart = c3.generate(graph_code)
-      }
-    })
-    //this.remove();
+    if(viewer){
+      var graph_array = viewer.querySelectorAll(".language-graph");
+      graph_array.forEach((element,index)=>{
+        var p_node = element.parentNode;
+        var graph_code = JSON.parse(element.innerHTML);
+        var graph_id = "graph_" + index;
+        var graph_element = document.createElement('div');
+        graph_element.setAttribute("id", graph_id)
+        graph_element.setAttribute("class", "graph")
+        graph_element.style.width = "90%";
+        graph_element.style.padding = "0";
+        graph_element.style.margin = "0";
+        p_node.parentNode.insertBefore(graph_element, p_node);
+        p_node.style.display = "none";
+        graph_code.bindto = "#" + graph_id;
+        if (graph_code) {
+          var chart = c3.generate(graph_code)
+        }
+      })
+    }
+  //this.remove();
   }
   static get observedAttributes() {
     return ['data-status'];
@@ -410,6 +437,7 @@ class MDViewPluginGraph extends HTMLElement {
       "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"
     ],()=>{
       this.init();
+      this.dataset.status = "loaded"
     })
     StyleLoader([
       "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"
@@ -417,6 +445,10 @@ class MDViewPluginGraph extends HTMLElement {
   }
   attributeChangedCallback(name, old_value, new_value){
     console.log(this.tagName,name, new_value)
+    if(new_value == "reloaded"){
+      this.init();
+      this.dataset.status = "loaded"
+    }
   }
 }
 
@@ -427,17 +459,20 @@ class MDViewPluginChart extends HTMLElement {
   }
   init(){
     const viewer = this.closest('mdview-content');
-    var chart_array = viewer.querySelectorAll(".language-chart");
-    chart_array.forEach((element,index)=>{
-      var p_node = element.parentNode;
-      var chart_element = document.createElement('pre');
-      chart_element.classList.add("mermaid");
-      chart_element.innerHTML = element.innerHTML;
-      p_node.parentNode.insertBefore(chart_element, p_node);
-      p_node.style.display = "none";
-    })
-    mermaid.initialize({ startOnLoad: true });
-    //this.remove();
+    if(viewer){
+      var chart_array = viewer.querySelectorAll(".language-chart");
+      chart_array.forEach((element,index)=>{
+        var p_node = element.parentNode;
+        var chart_element = document.createElement('pre');
+        chart_element.classList.add("mermaid");
+        chart_element.innerHTML = element.innerHTML;
+        p_node.parentNode.insertBefore(chart_element, p_node);
+        p_node.style.display = "none";
+      })
+      mermaid.initialize({ startOnLoad: false });
+      mermaid.init()
+      //this.remove();
+    }
   }
   static get observedAttributes() {
     return ['data-status'];
@@ -448,10 +483,15 @@ class MDViewPluginChart extends HTMLElement {
       "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
     ],()=>{
       this.init();
+      this.dataset.status = "loaded"
     })
   }
   attributeChangedCallback(name, old_value, new_value){
     console.log(this.tagName,name, new_value)
+    if(new_value == "reloaded"){
+      this.init();
+      this.dataset.status = "loaded"
+    }
   }
 }
 
