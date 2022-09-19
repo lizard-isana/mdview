@@ -4,21 +4,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown Viewer Component</title>
+  <title>MDView - Markdown Viewer Component | Usage</title>
   <link rel="stylesheet" href="./css/default.css">
   <script src="./js/mdview.js"></script>
 </head>
 <body>
 <main>
-
-<mdview-content id="main" data-html="true" data-sanitize="false">
-  <mdview-plugins>
-    <mdview-plugin-toc></mdview-plugin-toc>
-    <mdview-plugin-math></mdview-plugin-math>
-    <mdview-plugin-graph></mdview-plugin-graph>
-    <mdview-plugin-chart></mdview-plugin-chart>
-  </mdview-plugins>
-</mdview-content>
 
 <template data-target="main">
 
@@ -43,28 +34,42 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 <link rel="stylesheet" href="default.css">
 <script src="mdview.js"></script>
 
-<mdview-content id="main">
-  template内のmarkdownがレンダリングされてここに挿入される
-</mdview-content>
-
 <template class="markdown" data-target="main">
   # Title
-  Markdownをここに直接書く
+  Markdownをここに直接書くと...
 </template>
+
+<mdview-content id="main">
+  templateタグ内のMarkdownがレンダリングされてここに表示されます。
+</mdview-content>
+
 ```
 
 ### インクルードモード
 外部の Markdown ファイルを指定して読み込みます。外部ファイルを動的に読み込むので動作にはWebサーバが必要です(http:// や https:// で運用する必要があります。file:// では動きません)。
 
 1. スクリプトとスタイルシートを読みこむ
-2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`と外部markdownファイルを指定する)
+2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`と外部Markdownファイルを指定する)
 
 ```HTML
 <link rel="stylesheet" href="default.css">
 <script src="mdview.js"></script>
 
 <mdview-content id="main" src="main.md">
-  main.mdの内容がレンダリングされてここに挿入される
+  main.mdの内容が読み込まれ、内容がレンダリングされてここに表示されます。
+</mdview-content>
+```
+
+### SPA(Single Page Application) モード
+インクルードモードで以下のように`data-spa=true`を指定すると、読み込まれたMarkdownファイルからリンクされている別のMarkdownファイルをページ遷移なしで開くSPAモードが使えます。 
+
+```HTML
+<link rel="stylesheet" href="default.css">
+<script src="mdview.js"></script>
+
+<mdview-content id="main" src="main.md" data-spa="true">
+  main.mdからリンクされた別のMarkdownファイルをクリックすると
+  ファイルが読み込まれ、内容がレンダリングされて、ここに表示されます。
 </mdview-content>
 ```
 
@@ -375,6 +380,15 @@ MDView depends on below superb libraries.
 - [Mermaid.js](https://mermaid-js.github.io/) ([MIT License](https://github.com/mermaid-js/mermaid/blob/develop/LICENSE))
 
 </template>
+
+<mdview-content id="main" data-html="true" data-sanitize="false">
+  <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
+    <mdview-plugin-math></mdview-plugin-math>
+    <mdview-plugin-graph></mdview-plugin-graph>
+    <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
+</mdview-content>
 
 </main>
 <footer>

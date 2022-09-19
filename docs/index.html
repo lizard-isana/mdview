@@ -37,13 +37,14 @@ Write markdown directly in the HTML file. It does not dynamically load the file,
 <link rel="stylesheet" href="default.css">
 <script src="mdview.js"></script>
 
+<template class="markdown" data-target="main">
+  # The markdown document is here.
+</template>
+
 <mdview-content id="main">
   The HTML document will be rendered here.
 </mdview-content>
 
-<template class="markdown" data-target="main">
-  # The markdown document is here.
-</template>
 ```
 
 ### Include mode
