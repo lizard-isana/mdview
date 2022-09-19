@@ -1,4 +1,4 @@
-# SPA Mode Test
+# SPA Mode Test 2
 
 [include.md](include.md)
 

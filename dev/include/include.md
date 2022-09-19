@@ -1,3 +1,3 @@
-## 外部ファイル読み込み 
+# SPA Mode Test
 
 [include2.md](include2.md)
