@@ -43,7 +43,7 @@ class MarkdownViewer extends HTMLElement {
     if(this.option.html == undefined){this.option.html = false}
     if(this.option.sanitize == undefined){this.option.sanitize = true}
     if(this.option.format == undefined){this.option.format = "markdown"}
-    if(this.option.spa == undefined){this.option.spa = true}
+    if(this.option.spa == undefined){this.option.spa = false}
     if(this.option.link_target == undefined){this.option.link_target = this.id}
 
   }
@@ -106,7 +106,7 @@ class MarkdownViewer extends HTMLElement {
       let file;
       if(target){
         file = this.option.default_path+target;
-      }else if (Object.keys(this.query).length > 0) {
+      }else if(this.option.spa == true && Object.keys(this.query).length > 0) {
         for (var key in this.query) {
           const tgt_elem = document.getElementById(key);
           if(!tgt_elem){continue};
@@ -138,7 +138,7 @@ class MarkdownViewer extends HTMLElement {
     };
     let dom = document.createRange().createContextualFragment(html);
 
-    if(this.Storage.mode == 'include'){
+    if(this.Storage.mode == 'include' && this.option.spa == true){
       const link_array = dom.querySelectorAll("a");
       let href;
       for (var i = 0, ln = link_array.length; i < ln; i++) {
