@@ -22,7 +22,7 @@
 <template data-target="main">
 
 # Markdown Viewer Component
-Markdownをレンダリングして表示する Web Component です。ライブラリをリンクして、タグを書き込むだけで動作します。MarkdownをHTMLファイル内に直接記述する「インラインモード」とMarkdownを外部ファイルから読み込む「インクルードモード」の両方に対応しています。
+Markdownをレンダリングして表示する Web Component です。JavaScriptなどを記述することなく、ライブラリをリンクして、タグを書き込むだけで動作します。
 
 <mdview-toc></mdview-toc>
 
@@ -30,6 +30,7 @@ Markdownをレンダリングして表示する Web Component です。ライブ
 https://github.com/lizard-isana/mdview
 
 ## Usage
+①MarkdownをHTMLファイル内に直接記述する「インラインモード」と ② Markdownを外部ファイルから読み込む「インクルードモード」、さらに ③ 読み込んだMarkdown ファイルからリンクされた別のMarkdown ファイルをページ遷移せずに開く「SPAモード」の3つのモードに対応しています。
 
 ### インラインモード
 HTMLファイル内に Markdown を直接記述します。ファイルの動的な読み込みを行わないので、ブラウザからHTMLファイルを直接開いても動きます(file://でも動作します)。
@@ -66,6 +67,21 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
   main.mdの内容がレンダリングされてここに挿入される
 </mdview-content>
 ```
+
+### SPA(Single Page Application) モード
+インクルードモードで以下のように`data-spa="true"`を指定すると、読み込まれたMarkdown ファイルからリンクされている別のMarkdown ファイルをページ遷移なしで開く SPA モードが使えます。
+
+```HTML
+<link rel="stylesheet" href="default.css">
+<script src="mdview.js"></script>
+
+<mdview-content id="main" src="main.md" data-spa="true">
+  ページを開くとmain.mdの内容がレンダリングされてここに挿入され、
+  main.md内からリンクされたMarkdownファイル(.md)をクリックすると、
+  同じくこのエリアに読み込まれて表示されます。
+</mdview-content>
+```
+
 
 ## Features
 [CommonMark](https://spec.commonmark.org/)で使えるMarkdown記法（レンダリングには[markdown-it](https://github.com/markdown-it/markdown-it)を使用）に加えて、以下の機能が追加されています。

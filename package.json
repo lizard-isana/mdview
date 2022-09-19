@@ -9,7 +9,7 @@
     "build:postcss": "postcss dev/css/default.rc.css -u autoprefixer -o dev/css/default.rc.css",
     "build:copy_js": "node -e \"require('fs').copyFileSync('./dev/js/mdview.rc.js', './dist/js/mdview.js')\"",
     "build:copy_css": "node -e \"require('fs').copyFileSync('./dev/css/default.rc.css', './dist/css/default.css')\"",
-    "build:copy_doc": "cpx -C \"./dist/**\" \"./docs\"",
+    "build:copy_doc": "cpx \"./dist/**\" \"./docs\"",
     "watch:css": "watch \"npm run css\" ./dev/scss",
     "watch:server": "browser-sync start --config browser-sync.config.js",
     "build": "npm-run-all -p build:*",
