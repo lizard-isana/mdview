@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Viewer Component</title>
   <link rel="stylesheet" href="../../css/default.css">
-  <script type="module" src="../../js/mdview.js"></script>
+  <script src="../../js/mdview.rc.js"></script>
 </head>
 <body>
 <main>
-<!--
+
 <mdview-content id="main" data-html="true" data-sanitize="false">
   <mdview-plugins>
     <mdview-plugin-math></mdview-plugin-math>
@@ -20,20 +20,29 @@
 </mdview-content>
 
 <template data-target="main">
-# Test Bench
+# SPA(Single Page Application) モード
+インクルードモードで以下のように`data-spa=true`を指定すると、読み込まれたMarkdownファイルからリンクされている別のMarkdownファイルをページ遷移なしで開くSPAモードが使えます。 
 
-   > 引用文
+```HTML
+<link rel="stylesheet" href="default.css">
+<script src="mdview.js"></script>
+
+<mdview-content id="main" src="main.md" data-spa="true">
+  main.mdからリンクされた別のMarkdownファイルをクリックすると
+  ファイルが読み込まれ、内容がレンダリングされて、ここに表示されます。
+</mdview-content>
+```
+  
+（ここから下は main.md に書かれている内容です）
 </template>
 
--->
-
-<mdview-content id="include" src="include.md" data-spa="true">
+<mdview-content id="include" src="main.md" data-spa="true">
   <mdview-plugins>
     <mdview-plugin-toc></mdview-plugin-toc>
     <mdview-plugin-math></mdview-plugin-math>
     <mdview-plugin-graph></mdview-plugin-graph>
     <mdview-plugin-chart></mdview-plugin-chart>
-  </mdview-plugins>
+  </mdview-plugins>  
 </mdview-content>
 
 </template>

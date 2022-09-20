@@ -44,7 +44,7 @@ footer{
   }
 }
 
-markdown-viewer,main,footer{
+mdview-content > section{
   p {margin-bottom: 1rem;}
 
   h1, h2, h3, h4, h5 {

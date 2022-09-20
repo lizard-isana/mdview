@@ -1,8 +1,17 @@
-# SPA Mode Test 2
+---
+## サブページ(sub.md)
 
-[include.md](include.md)
+以下のリンクをクリックすると、ページ遷移せずにこの領域が切り替わります。
+[メインページへのリンク(main.md)](main.md)
 
-t{.toc}
+```Markdown
+以下のリンクをクリックすると、ページ遷移せずにこの領域が切り替わります。
+[メインページへのリンク(main.md)](main.md)
+```
+
+### SPA モードでのプラグインの動作
+
+toc{.toc}
 
 ### Math
 ```math
