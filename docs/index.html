@@ -34,8 +34,8 @@ https://github.com/lizard-isana/mdview
 Write markdown directly in the HTML file. It does not dynamically load the file, so it works even if you open the HTML file directly from a browser ("file://" will also work).
 
 ```HTML
-<link rel="stylesheet" href="default.css">
-<script src="mdview.js"></script>
+<link rel="stylesheet" href="/dist/css/default.css">
+<script src="/dist/js/mdview.js"></script>
 
 <template class="markdown" data-target="main">
   # The markdown document is here.
@@ -51,8 +51,8 @@ Write markdown directly in the HTML file. It does not dynamically load the file,
 Loads an external markdown file. Since the external file is loaded dynamically, a web server is required ("https://" or "http://" is required, "file://" will not work).
 
 ```HTML
-<link rel="stylesheet" href="default.css">
-<script src="mdview.js"></script>
+<link rel="stylesheet" href="/dist/css/default.css">
+<script src="/dist/js/mdview.js"></script>
 
 <mdview-content id="main" src="main.md">
   The main.md will be rendered here.
@@ -63,8 +63,8 @@ Loads an external markdown file. Since the external file is loaded dynamically, 
 If you specify `data-spa=true` in the include mode as follows, you can use SPA mode to open another Markdown file linked from the loaded Markdown file without page transition. 
 
 ```HTML
-<link rel="stylesheet" href="default.css">
-<script src="mdview.js"></script>
+<link rel="stylesheet" href="/dist/css/default.css">
+<script src="/dist/js/mdview.js"></script>
 
 <mdview-content id="main" src="main.md" data-spa="true">
   The main.md will be rendered here.
