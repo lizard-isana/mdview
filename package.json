@@ -9,26 +9,25 @@
     "build:postcss": "postcss dev/css/default.rc.css -u autoprefixer -o dev/css/default.rc.css",
     "build:copy_js": "node -e \"require('fs').copyFileSync('./dev/js/mdview.rc.js', './dist/js/mdview.js')\"",
     "build:copy_css": "node -e \"require('fs').copyFileSync('./dev/css/default.rc.css', './dist/css/default.css')\"",
-    "build:copy_doc": "cpx \"./dist/**\" \"./docs\"",
+    "build:copy_doc": "node -e \"require('fs-extra').copySync('./dist/', './docs/')\"",
     "watch:css": "watch \"npm run css\" ./dev/scss",
     "watch:server": "browser-sync start --config browser-sync.config.js",
     "build": "npm-run-all -p build:*",
     "start": "npm-run-all -p watch:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.0",
-    "@babel/preset-env": "^7.18.0",
+    "@babel/core": "^7.19.1",
+    "@babel/preset-env": "^7.19.1",
     "@rollup/plugin-babel": "^5.3.1",
-    "autoprefixer": "^10.4.7",
+    "autoprefixer": "^10.4.11",
     "browser-sync": "^2.27.10",
-    "cpx": "^1.5.0",
+    "fs-extra": "^10.1.0",
     "npm-run-all": "^4.1.5",
-    "postcss": "^8.4.14",
-    "postcss-cli": "^9.1.0",
-    "rollup": "^2.74.1",
+    "postcss": "^8.4.16",
+    "postcss-cli": "^10.0.0",
+    "rollup": "^2.79.0",
     "rollup-plugin-terser": "^7.0.2",
-    "sass": "^1.52.1",
-    "watch": "^1.0.2"
-  },
-  "dependencies": {}
+    "sass": "^1.54.9",
+    "watch": "^0.13.0"
+  }
 }
