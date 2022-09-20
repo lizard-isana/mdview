@@ -3,6 +3,12 @@ The web components renders and displays markdown documents. It works by simply l
 
 https://lizard-isana.github.io/mdview/
 
+## CDN
+```HTML
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/js/mdview.js"></script>
+```
+
 ## Usage
 
 ### Inline mode
