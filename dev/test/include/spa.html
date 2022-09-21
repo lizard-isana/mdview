@@ -6,9 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Viewer Component</title>
   <link rel="stylesheet" href="../../css/default.css">
-  <script src="../../js/mdview.rc.js"></script>
+  <script type="module" src="../../js/mdview.js"></script>
 </head>
 <body>
+  <header>
+    <mdview-content id="header" src="header.md" data-html="true" data-sanitize="false" data-spa="true" data-link_target="include">
+    </mdview-content>
+  </header>
 <main>
 
 <mdview-content id="main" data-html="true" data-sanitize="false">

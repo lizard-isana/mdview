@@ -12,14 +12,18 @@ const ScriptLoader = (scripts, callback) => {
       LoadedScripts.push(scripts[i]);
       i++;
       if (i == len) {
-        
         if (callback) {
-          script.onload = callback;
+          script.onload = ()=>{ 
+            callback("loaded");
+          }
         }
         return;
       }
       script.onload = AppendScript;
-    } else if (scripts[i] == undefined && i != len) {
+    } else if (scripts[i] !== undefined && i != len) {
+      if (callback) {
+          callback("exist");
+      }
       i++;
       AppendScript();
     } else {
