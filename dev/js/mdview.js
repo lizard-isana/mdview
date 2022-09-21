@@ -9,7 +9,7 @@ import {ScriptLoader,StyleLoader,DataLoader} from './loaders.js'
 const GrobalStorage = {}
 GrobalStorage.highlight_exception = ["math","graph","chart"];
 GrobalStorage.plugins_loaded = false;
-
+GrobalStorage.popstate;
 class MarkdownViewer extends HTMLElement {
   constructor() {
     super();
@@ -296,12 +296,22 @@ class MarkdownViewer extends HTMLElement {
         return hljs.highlightAuto(code, [lang]).value;
       }
     });
-    this.load()
+    this.load();
 
+    // browser back
+    if(this.Storage.mode == 'include' && this.option.spa == true){
+      GrobalStorage.popstate = window.addEventListener("popstate", () => {
+        const file = window.location.search.split('=')[1];
+        if(file){
+          this.dataset.status = "reloading";
+          this.load(file)
+        }
+      });
+    }
   }
   static get observedAttributes() {
     return ['data-status'];
-  }
+  };
   connectedCallback() {
     this.dataset.status = "connected"
     this.init();
