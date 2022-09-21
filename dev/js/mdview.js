@@ -7,12 +7,16 @@ import * as purify from './vendors/purify.js'
 import {ScriptLoader,StyleLoader,DataLoader} from './loaders.js'
 
 const GrobalStorage = {}
+GrobalStorage.mdview = [];
 GrobalStorage.highlight_exception = ["math","graph","chart"];
 GrobalStorage.plugins_loaded = false;
 GrobalStorage.popstate;
 class MarkdownViewer extends HTMLElement {
   constructor() {
     super();
+    if(GrobalStorage.mdview.indexOf(this.id)<0){
+      GrobalStorage.mdview.push(this.id);
+    }
     this.dataset.status = "assigned"
     this.Storage = {};
     this.Storage.CodeHighlightHook = [];
@@ -301,10 +305,18 @@ class MarkdownViewer extends HTMLElement {
     // browser back
     if(this.Storage.mode == 'include' && this.option.spa == true){
       GrobalStorage.popstate = window.addEventListener("popstate", () => {
-        const file = window.location.search.split('=')[1];
-        if(file){
-          this.dataset.status = "reloading";
-          this.load(file)
+        const q = this.QueryDecoder();
+        if(q[this.id]){
+            this.dataset.status = "reloading";
+            this.load(q[this.id])
+        }else{
+          //const query_keys = Object.keys(q);
+          const query_keys = Object.keys(q).filter(i => GrobalStorage.mdview.indexOf(i) >= 0);
+          if(query_keys.length==0){
+            this.dataset.status = "reloading";
+            const src =  this.getAttribute("src")
+            this.load(src)
+          }
         }
       });
     }

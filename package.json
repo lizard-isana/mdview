@@ -12,7 +12,7 @@
     "build:copy_doc": "node -e \"require('fs-extra').copySync('./dist/', './docs/')\"",
     "watch:css": "watch \"npm run css\" ./dev/scss",
     "watch:server": "browser-sync start --config browser-sync.config.js",
-    "build": "npm-run-all -p build:*",
+    "build": "npm-run-all -s build:*",
     "start": "npm-run-all -p watch:*"
   },
   "devDependencies": {
