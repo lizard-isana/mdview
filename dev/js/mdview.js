@@ -11,6 +11,18 @@ GrobalStorage.mdview = [];
 GrobalStorage.highlight_exception = ["math","graph","chart"];
 GrobalStorage.plugins_loaded = false;
 GrobalStorage.popstate;
+
+const ChangePluginStatus = (target,message)=>{
+  const plugins_wrapper = target.querySelector('mdview-plugins');
+  if(plugins_wrapper){
+    const plugins = plugins_wrapper.children;
+    const plugins_array = [...plugins]
+    plugins_array.forEach((element,index)=>{
+        element.dataset.status = message;
+    })
+  }  
+}
+
 class MarkdownViewer extends HTMLElement {
   constructor() {
     super();
@@ -88,21 +100,13 @@ class MarkdownViewer extends HTMLElement {
     return query;
   };
 
-  ChangePluginStatus = (target,message)=>{
-    const plugins_wrapper = target.querySelector('mdview-plugins');
-    if(plugins_wrapper){
-      const plugins = plugins_wrapper.children;
-      const plugins_array = [...plugins]
-      plugins_array.forEach((element,index)=>{
-          element.dataset.status = message;
-      })
-    }  
-  }
   code_highlight_hook = (f) => {
     this.Storage.CodeHighlightHook.push(f);
   }
 
   load = async (target) => {
+
+    const mdview_content = document.querySelector(`mdview-content#${this.id}`);
 
     let loading_target;
     if(target && this.id !== this.option.link_target){
@@ -168,6 +172,9 @@ class MarkdownViewer extends HTMLElement {
       }
     }
 
+      ChangePluginStatus(mdview_content, "markdown_loaded");
+
+
     let html = this.renderer.render(markdown);
     if (this.option.sanitize == true) {
       html = DOMPurify.sanitize(html);
@@ -230,17 +237,14 @@ class MarkdownViewer extends HTMLElement {
 
     let message;
     if(loading_target.dataset.status == "reloading"){ 
-      message = "reloaded"
+      message = "content_reloaded"
     }else{
-      message = "loaded"
+      message = "content_loaded"
     }
-    this.ChangePluginStatus(loading_target,message);
+    ChangePluginStatus(loading_target,message);
 
-
-
-
-    this.status =  "loaded";
-    this.dataset.status = "loaded"
+    this.status =  message;
+    this.dataset.status = message
 
     var code_array = document.querySelectorAll(`code[class*="language"]`)
     for (var i in code_array) {
@@ -329,7 +333,8 @@ class MarkdownViewer extends HTMLElement {
     this.init();
   }
   attributeChangedCallback(name, old_value, new_value){
-    if(name =='data-status' && new_value == "loaded"){
+    console.log(this.tagName,this.id ,name, new_value);
+    if(name =='data-status' && new_value == "content_loaded"){
       if(GrobalStorage.plugins_loaded == false ){
         customElements.define('mdview-plugins', MDViewPlugin);
         customElements.define('mdview-plugin-toc', MDViewPluginToc);
@@ -352,14 +357,22 @@ class MDViewPlugin extends HTMLElement {
     this.dataset.status = "assigned"
   }
   static get observedAttributes() {
-    return ['data-count','data-loaded'];
+    return ['data-loaded','data-status'];
   }
   connectedCallback() {
     this.dataset.status = "connected"
-
   }
   attributeChangedCallback(name, old_value, new_value){
-    //console.log(this.id,name, old_value, new_value)
+    //console.log(this.id ,name, old_value, new_value);
+    const mdview_content = this.closest('mdview-content');
+    if(name == "data-status" && new_value !== "connected"){
+      ChangePluginStatus(mdview_content, new_value);
+      return
+    }
+    if(name == "data-loaded" && this.dataset.count == this.dataset.loaded ){
+      ChangePluginStatus(mdview_content, "plugin_loaded");
+      mdview_content.dataset.status = "plugin_loaded";
+    }
   }
 }
 
@@ -420,10 +433,12 @@ class MDViewPluginToc extends HTMLElement {
   }
   connectedCallback() {
     this.dataset.status = "connected"
+    const mdview_plugins = this.closest('mdview-plugins');
+    mdview_plugins.dataset.loaded++
   }
   attributeChangedCallback(name, old_value, new_value){
-    //console.log(this.tagName,name, new_value)
-    if(new_value == "loaded"|| new_value == "reloaded"){
+    console.log(this.tagName,name, new_value)
+    if(new_value == "content_loaded"|| new_value == "content_reloaded"){
       this.init();
     }
   }
@@ -453,15 +468,17 @@ class MDViewPluginMath extends HTMLElement {
     ScriptLoader([
       "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
     ],(message)=>{
+      const mdview_plugins = this.closest('mdview-plugins');
+      mdview_plugins.dataset.loaded++
       if(message=="loaded"){
         this.init();
-        this.dataset.status = "loaded"
+        //this.dataset.status = "loaded"
       }
     })
   }
   attributeChangedCallback(name, old_value, new_value){
     //console.log (this.parentNode.parentNode.id, this.tagName, name, new_value)
-    if(new_value == "reloaded"){
+    if(new_value == "content_reloaded"){
       this.init();
     }
   }
@@ -502,9 +519,10 @@ class MDViewPluginGraph extends HTMLElement {
       "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"
     ],(message)=>{
+      const mdview_plugins = this.closest('mdview-plugins');
+      mdview_plugins.dataset.loaded++
       if(message==='loaded'){
         this.init();
-        this.dataset.status = "loaded"
       }
     })
     StyleLoader([
@@ -513,7 +531,7 @@ class MDViewPluginGraph extends HTMLElement {
   }
   attributeChangedCallback(name, old_value, new_value){
     //console.log(this.tagName,name, new_value)
-    if(new_value == "reloaded"){
+    if(new_value == "content_reloaded"){
       this.init();
     }
   }
@@ -549,6 +567,8 @@ class MDViewPluginChart extends HTMLElement {
     ScriptLoader([
       "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
     ],(message)=>{
+    const mdview_plugins = this.closest('mdview-plugins');
+    mdview_plugins.dataset.loaded++
       if(message==='loaded'){
         this.init();
         this.dataset.status = "loaded"
@@ -557,7 +577,7 @@ class MDViewPluginChart extends HTMLElement {
   }
   attributeChangedCallback(name, old_value, new_value){
     //console.log(this.tagName,name, new_value)
-    if(new_value == "reloaded"){
+    if(new_value == "content_reloaded"){
       this.init();
     }
   }
