@@ -15,5 +15,9 @@ module.exports = [
       file: 'dev/js/mdview.rc.js',
       format: 'iife',
     },
+    onwarn: (warning, defaultHandler) => {
+      if (warning.code === 'THIS_IS_UNDEFINED') return;
+      defaultHandler(warning)
+    }
   }
 ];
