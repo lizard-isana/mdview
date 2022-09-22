@@ -20,13 +20,21 @@
 
 <div class="hamburger"><span></span><span></span><span></span><span></span></div>
 <script>
-  const hamburger = document.querySelector(".hamburger");
+  var hamburger = document.querySelector(".hamburger");
   hamburger.addEventListener('click',(e)=>{
     var hamburger = e.currentTarget;
     var section = hamburger.closest('section');
-    section.classList.toggle("open")
+    if(section.classList.contains("open")){
+      section.classList.add("close");
+      section.classList.remove("open")
+      window.setTimeout(()=>{
+        section.classList.remove("close")
+      },500)
+    }else{
+      section.classList.add("open");
+    }
   })
-  const link = document.querySelectorAll("header ul li a");
+  var link = document.querySelectorAll("header ul li a");
   link.forEach((element,index)=>{
     element.addEventListener('click',(e)=>{
       var section = e.currentTarget.closest('section');
@@ -35,12 +43,15 @@
   })
 </script>
 <style>
+    header {
+    position:relative;
+  }
   .hamburger{
-    position: relative;
-    width: 57px;
+    position:absolute;
+    right:10px;
+    top:10px;
+    width: 44px;
     height: 44px;
-    top: 26px;
-    right: 22px;
     z-index: 1000;
     cursor: pointer;
   }
@@ -50,31 +61,21 @@
     left: 0;
     right: 0;
     margin: auto;
-    width: 38px;
-    height: 1px;
-    background: #666;
+    width: 30px;
+    height: 1.5px;
+    background: #999;
     -webkit-transition: 200ms ease-in-out;
     transition: 200ms ease-in-out;
   }
   .hamburger>span:nth-child(1) {
     top: 10px;
   }
-  .hamburger>span:nth-child(2) {
-    top: 20px;
-  }
-  .hamburger>span:nth-child(3) {
+  .hamburger>span:nth-child(2),
+  .hamburger>span:nth-child(3){
     top: 20px;
   }
   .hamburger>span:nth-child(4) {
     top: 30px;
-  }
-  header {
-    position:relative;
-  }
-  .hamburger{
-    position:absolute;
-    right:10px;
-    top:10px;
   }
   header section.open .hamburger>span:nth-child(1) {
     transform: translateY(-6px);
@@ -92,30 +93,64 @@
   }
   header section ul{
     z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    display: none;
     flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
     position: absolute;
+    overflow: scroll;
     margin: 0;
-    padding-top: 60px;
+    padding: 20px;
+    padding-top: 120px;
+    padding-bottom: 60px;
     width: 100vw;
     height: 100vh;
     top: 0;
     left: 0;
-    background-color:#bbb;
-    opacity:0;
-    -webkit-transition: 200ms ease-in-out;
-    transition: 200ms ease-in-out;
+    background-color: rgba(0,0,0,0.7);
+    opacity: 0;
     backdrop-filter: blur(12px);
   }
   header section ul li{
     grid-column:1/2;
     grid-row:1/2;
     width:fit-content;
-    align-self:center;
+    font-size:1.2rem;
+    line-height:2;
+  }
+  header section ul a:hover {
+    border-bottom:1px solid #fff;
+  }
+  header section ul a:visited {
+    color :#fff;
+  }
+  header section ul li::after{
+    content:none;
   }
   header section.open ul{
-    opacity:0.85;
+    opacity:1;
+    display:flex;
+    animation: fade-in .2s cubic-bezier(0, 0, 0.2, 1) 0s forwards;
+  }
+  header section.close ul{
+    opacity:1;
+    display:flex;
+    animation: fade-out .2s cubic-bezier(0, 0, 0.2, 1) 0s forwards;
+  }
+  @keyframes fade-in {
+    0%{
+      opacity: 0;
+    }
+    100%{
+      opacity: 1;
+    }
+  }
+  @keyframes fade-out {
+    0%{
+      opacity: 1;
+    }
+    100%{
+      opacity: 0;
+    }
   }
 </style>

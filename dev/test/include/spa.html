@@ -5,42 +5,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Viewer Component</title>
-  <link rel="stylesheet" href="../../css/default.css">
-  <script type="module" src="../../js/mdview.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/css/default.css">
+  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/js/mdview.js"></script>
 </head>
 <body>
   <header>
-    <mdview-content id="header" src="header.md" data-html="true" data-sanitize="false" data-spa="true" data-link_target="include">
+    <mdview-content id="header" src="./header.md" data-html="true" data-sanitize="false" data-spa="true" data-link_target="main">
     </mdview-content>
   </header>
 <main>
 
-<mdview-content id="main" data-html="true" data-sanitize="false">
-  <mdview-plugins>
-    <mdview-plugin-math></mdview-plugin-math>
-    <mdview-plugin-graph></mdview-plugin-graph>
-    <mdview-plugin-chart></mdview-plugin-chart>
-  </mdview-plugins>
-</mdview-content>
-
-<template data-target="main">
-# SPA(Single Page Application) モード
-インクルードモードで以下のように`data-spa=true`を指定すると、読み込まれたMarkdownファイルからリンクされている別のMarkdownファイルをページ遷移なしで開くSPAモードが使えます。 
-
-```HTML
-<link rel="stylesheet" href="default.css">
-<script src="mdview.js"></script>
-
-<mdview-content id="main" src="main.md" data-spa="true">
-  main.mdからリンクされた別のMarkdownファイルをクリックすると
-  ファイルが読み込まれ、内容がレンダリングされて、ここに表示されます。
-</mdview-content>
-```
-  
-（ここから下は main.md に書かれている内容です）
-</template>
-
-<mdview-content id="include" src="main.md" data-spa="true">
+<mdview-content id="main" src="./main.md" data-html="true" data-sanitize="false" data-spa="true">
   <mdview-plugins>
     <mdview-plugin-toc></mdview-plugin-toc>
     <mdview-plugin-math></mdview-plugin-math>
@@ -48,8 +23,6 @@
     <mdview-plugin-chart></mdview-plugin-chart>
   </mdview-plugins>  
 </mdview-content>
-
-</template>
 
 </main>
 <footer>
