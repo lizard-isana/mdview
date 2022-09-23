@@ -64,15 +64,6 @@ class MarkdownViewer extends HTMLElement {
       if(this.dataset.format){this.option.format = this.dataset.format}
       if(this.dataset.spa){this.option.spa = JSON.parse(this.dataset.spa)}
       if(this.dataset.link_target){this.option.link_target = this.dataset.link_target}
-      /*
-      const config = {
-        "html":true,
-        "sanitize":false,
-        "format":"markdown",
-        "query":true,
-        "query_path":"./"
-      }
-      */
     }
     if(this.option.html == undefined){this.option.html = false}
     if(this.option.sanitize == undefined){this.option.sanitize = true}
@@ -117,9 +108,6 @@ class MarkdownViewer extends HTMLElement {
     return query;
   };
 
-  code_highlight_hook = (f) => {
-    this.Storage.CodeHighlightHook.push(f);
-  }
 
   load = async (target) => {
     const mdview_content = document.querySelector(`mdview-content#${this.id}`);
@@ -240,29 +228,6 @@ class MarkdownViewer extends HTMLElement {
         GrobalStorage.Hook[this.id].content_loaded[i](loading_target);
       }
     }
-    /*
-    var code_array = loading_target.querySelectorAll(`code[class*="language"]`)
-    for (var i in code_array) {
-      var class_list = code_array[i].classList;
-      if (class_list && class_list.value.match(/language/)) {
-        var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
-        //console.log(code_array[i].innerHTML)
-        code_array[i].setAttribute("data-language", lang);
-        if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
-          code_array[i].setAttribute("data-highlight", true);
-        } else {
-          code_array[i].setAttribute("data-highlight", false);
-        }
-      }
-      if (code_array[i].parentNode) {
-        code_array[i].parentNode.classList.add("code")
-      }
-      if (code_array[i].dataset && code_array[i].dataset.highlight && code_array[i].dataset.highlight == "true") {
-        hljs.lineNumbersBlock(code_array[i],{singleLine: false});
-      }
-    }
-    */
-
   }
 
   init = async () => {
@@ -280,16 +245,6 @@ class MarkdownViewer extends HTMLElement {
             );
           }
         }
-        /*
-        if (this.Storage.CodeHighlightHook.length > 0) {
-          for (var i in this.Storage.CodeHighlightHook) {
-            code = this.Storage.CodeHighlightHook[i](
-              code,
-              lang
-            );
-          }
-        }
-        */
         return code;
       }
     });
@@ -305,14 +260,6 @@ class MarkdownViewer extends HTMLElement {
       allowedAttributes: this.Storage.allowed_attributes
     });
     
-    //--
-
-    this.code_highlight_hook((code, lang) => {
-      if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
-        return hljs.highlightAuto(code, [lang]).value;
-      }
-    });
-
     // browser back
     if(this.Storage.mode == 'include' && this.option.spa == true){
       GrobalStorage.popstate = window.addEventListener("popstate", () => {
@@ -321,7 +268,6 @@ class MarkdownViewer extends HTMLElement {
             this.dataset.status = "reloading";
             this.load(q[this.id])
         }else{
-          //const query_keys = Object.keys(q);
           const query_keys = Object.keys(q).filter(i => GrobalStorage.mdview.indexOf(i) >= 0);
           if(query_keys.length==0){
             this.dataset.status = "reloading";
@@ -349,16 +295,6 @@ class MarkdownViewer extends HTMLElement {
     if(name =='data-status' && new_value == "plugin_loaded"){
       this.load();
     }
-    
-    /*
-    if(name =='data-status' && new_value == "content_loaded"){
-        customElements.define('mdview-plugins', MDViewPlugin);
-        customElements.define('mdview-plugin-toc', MDViewPluginToc);
-        customElements.define('mdview-plugin-math', MDViewPluginMath);
-        customElements.define('mdview-plugin-graph', MDViewPluginGraph);
-        customElements.define('mdview-plugin-chart', MDViewPluginChart);
-    }
-    */  
   }
 }
 
@@ -501,36 +437,22 @@ class MDViewPluginHighlight extends HTMLElement {
   }
   connectedCallback() {
     this.dataset.status = "connected"
-
-    //const mdview_content = this.closest('mdview-content');
-
-      const scripts = [
-        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
-      ]
-      const styles = [
-        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
-      ]
-      ScriptLoader(scripts, () => {
-        this.init();
-        const mdview_plugins = this.closest('mdview-plugins');
-        mdview_plugins.dataset.loaded++
-      })
-      StyleLoader(styles)
+    const scripts = [
+      "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
+    ]
+    const styles = [
+      "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
+    ]
+    ScriptLoader(scripts, () => {
+      this.init();
+      const mdview_plugins = this.closest('mdview-plugins');
+      mdview_plugins.dataset.loaded++
+    })
+    StyleLoader(styles)
   }
   attributeChangedCallback(name, old_value, new_value){
-    console.log(this.tagName,name, new_value)
-    
-    /*
-    if(new_value == "content_loaded"){
-      this.init();
-    }    
-
-    if(new_value == "content_reloaded"){
-      this.init();
-    }
-    */
-
+   // console.log(this.tagName,name, new_value)
   }
 }
 

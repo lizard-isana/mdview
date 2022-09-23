@@ -14757,7 +14757,33 @@
   var GrobalStorage = {};
   GrobalStorage.mdview = [];
   GrobalStorage.highlight_exception = ["math", "graph", "chart"];
-  GrobalStorage.plugins_loaded = false;
+  GrobalStorage.Hook = {};
+
+  var ChangePluginStatus = function ChangePluginStatus(target, message) {
+    var plugins_wrapper = target.querySelector('mdview-plugins');
+
+    if (plugins_wrapper) {
+      var plugins = plugins_wrapper.children;
+
+      var plugins_array = _toConsumableArray(plugins);
+
+      plugins_array.forEach(function (element, index) {
+        element.dataset.status = message;
+      });
+    }
+  };
+
+  var GrobalAddHook = function GrobalAddHook(id, hook, f) {
+    if (!GrobalStorage.Hook[id]) {
+      GrobalStorage.Hook[id] = {};
+    }
+
+    if (!GrobalStorage.Hook[id][hook]) {
+      GrobalStorage.Hook[id][hook] = [];
+    }
+
+    GrobalStorage.Hook[id][hook].push(f);
+  };
 
   var MarkdownViewer = /*#__PURE__*/function (_HTMLElement) {
     _inherits(MarkdownViewer, _HTMLElement);
@@ -14796,16 +14822,6 @@
           if (_this.dataset.link_target) {
             _this.option.link_target = _this.dataset.link_target;
           }
-          /*
-          const config = {
-            "html":true,
-            "sanitize":false,
-            "format":"markdown",
-            "query":true,
-            "query_path":"./"
-          }
-          */
-
         }
 
         if (_this.option.html == undefined) {
@@ -14859,37 +14875,20 @@
         return query;
       });
 
-      _defineProperty(_assertThisInitialized(_this), "ChangePluginStatus", function (target, message) {
-        var plugins_wrapper = target.querySelector('mdview-plugins');
-
-        if (plugins_wrapper) {
-          var plugins = plugins_wrapper.children;
-
-          var plugins_array = _toConsumableArray(plugins);
-
-          plugins_array.forEach(function (element, index) {
-            element.dataset.status = message;
-          });
-        }
-      });
-
-      _defineProperty(_assertThisInitialized(_this), "code_highlight_hook", function (f) {
-        _this.Storage.CodeHighlightHook.push(f);
-      });
-
       _defineProperty(_assertThisInitialized(_this), "load", /*#__PURE__*/function () {
         var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(target) {
-          var loading_target, markdown, src, path_array, file, key, tgt_elem, loader, md_element, html, dom, link_array, href, i, ln, new_section, loading_target_section, message, code_array, class_list, lang;
+          var mdview_content, loading_target, markdown, src, path_array, file, key, tgt_elem, loader, md_element, html, dom, link_array, href, i, ln, new_section, loading_target_section, message;
           return _regeneratorRuntime().wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
+                  mdview_content = document.querySelector("mdview-content#".concat(_this.id));
+
                   if (target && _this.id !== _this.option.link_target) {
                     loading_target = document.querySelector("#".concat(_this.option.link_target));
                   } else {
                     loading_target = document.querySelector("#".concat(_this.id));
-                  } //console.log(this,Object.keys(this.query).length > 0)
-
+                  }
 
                   if (target) {
                     loading_target.dataset.status = "reloading";
@@ -14897,19 +14896,12 @@
                     loading_target.dataset.status = "loading";
                     _this.status = 'loading';
                   }
-                  /*
-                   if(this.status != 'reloading'){
-                    this.status = 'loading';
-                    this.dataset.status = "loading";
-                  }
-                  */
-
 
                   src = _this.getAttribute("src");
                   _this.option.default_path = './';
 
                   if (!src) {
-                    _context.next = 32;
+                    _context.next = 33;
                     break;
                   }
 
@@ -14922,25 +14914,25 @@
                   }
 
                   if (!target) {
-                    _context.next = 12;
+                    _context.next = 13;
                     break;
                   }
 
                   file = _this.option.default_path + target;
-                  _context.next = 26;
+                  _context.next = 27;
                   break;
 
-                case 12:
+                case 13:
                   if (!(_this.option.spa == true && Object.keys(_this.query).length > 0)) {
-                    _context.next = 25;
+                    _context.next = 26;
                     break;
                   }
 
                   _context.t0 = _regeneratorRuntime().keys(_this.query);
 
-                case 14:
+                case 15:
                   if ((_context.t1 = _context.t0()).done) {
-                    _context.next = 23;
+                    _context.next = 24;
                     break;
                   }
 
@@ -14948,13 +14940,13 @@
                   tgt_elem = document.getElementById(key);
 
                   if (tgt_elem) {
-                    _context.next = 19;
+                    _context.next = 20;
                     break;
                   }
 
-                  return _context.abrupt("continue", 14);
+                  return _context.abrupt("continue", 15);
 
-                case 19:
+                case 20:
 
                   if (key == _this.id) {
                     file = _this.option.default_path + _this.query[key].split("/").reverse()[0];
@@ -14962,27 +14954,27 @@
                     file = src;
                   }
 
-                  _context.next = 14;
+                  _context.next = 15;
                   break;
 
-                case 23:
-                  _context.next = 26;
+                case 24:
+                  _context.next = 27;
                   break;
-
-                case 25:
-                  file = src;
 
                 case 26:
+                  file = src;
+
+                case 27:
                   loader = new DataLoader();
-                  _context.next = 29;
+                  _context.next = 30;
                   return loader.load(file);
 
-                case 29:
+                case 30:
                   markdown = _context.sent;
-                  _context.next = 34;
+                  _context.next = 35;
                   break;
 
-                case 32:
+                case 33:
                   md_element = document.querySelector("template[data-target=\"".concat(_this.id, "\"]"));
 
                   if (md_element) {
@@ -14994,7 +14986,8 @@
                     console.error("No markdown document is found.");
                   }
 
-                case 34:
+                case 35:
+                  ChangePluginStatus(mdview_content, "markdown_loaded");
                   html = _this.renderer.render(markdown);
 
                   if (_this.option.sanitize == true) {
@@ -15028,24 +15021,6 @@
                       }
                     }
                   }
-                  /*
-                  const change_status = (tgt) => {
-                    const plugins_wrapper = tgt.querySelector('mdview-plugins');
-                    console.log(plugins_wrapper)
-                    if(plugins_wrapper){
-                      const plugins = plugins_wrapper.children;
-                      const plugins_array = [...plugins]
-                      plugins_array.forEach((element,index)=>{
-                        if(tgt.dataset.status == 'reloading'){
-                          element.dataset.status = "reloaded";
-                        }else{
-                          element.dataset.status = "loaded";
-                        }
-                      })
-                    }  
-                  }
-                  */
-
 
                   new_section = document.createElement("section");
                   new_section.appendChild(dom);
@@ -15058,43 +15033,22 @@
                   loading_target.appendChild(new_section);
 
                   if (loading_target.dataset.status == "reloading") {
-                    message = "reloaded";
+                    message = "content_reloaded";
                   } else {
-                    message = "loaded";
+                    message = "content_loaded";
                   }
 
-                  _this.ChangePluginStatus(loading_target, message);
+                  ChangePluginStatus(loading_target, message);
+                  _this.status = message;
+                  _this.dataset.status = message;
 
-                  _this.status = "loaded";
-                  _this.dataset.status = "loaded";
-                  code_array = document.querySelectorAll("code[class*=\"language\"]");
-
-                  for (i in code_array) {
-                    class_list = code_array[i].classList;
-
-                    if (class_list && class_list.value.match(/language/)) {
-                      lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
-                      code_array[i].setAttribute("data-language", lang);
-
-                      if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
-                        code_array[i].setAttribute("data-highlight", true);
-                      } else {
-                        code_array[i].setAttribute("data-highlight", false);
-                      }
-                    }
-
-                    if (code_array[i].parentNode) {
-                      code_array[i].parentNode.classList.add("code");
-                    }
-
-                    if (code_array[i].dataset && code_array[i].dataset.highlight && code_array[i].dataset.highlight == "true") {
-                      hljs.lineNumbersBlock(code_array[i], {
-                        singleLine: false
-                      });
+                  if (GrobalStorage.Hook[_this.id].content_loaded) {
+                    for (i in GrobalStorage.Hook[_this.id].content_loaded) {
+                      GrobalStorage.Hook[_this.id].content_loaded[i](loading_target);
                     }
                   }
 
-                case 50:
+                case 51:
                 case "end":
                   return _context.stop();
               }
@@ -15118,9 +15072,9 @@
                   breaks: true,
                   typographer: true,
                   highlight: function highlight(code, lang) {
-                    if (_this.Storage.CodeHighlightHook.length > 0) {
-                      for (var i in _this.Storage.CodeHighlightHook) {
-                        code = _this.Storage.CodeHighlightHook[i](code, lang);
+                    if (GrobalStorage.Hook[_this.id].code_highlight) {
+                      for (var i in GrobalStorage.Hook[_this.id].code_highlight) {
+                        code = GrobalStorage.Hook[_this.id].code_highlight[i](code, lang);
                       }
                     }
 
@@ -15134,16 +15088,7 @@
 
                 _this.renderer.use(markdownitFootnote).use(markdownitTaskLists).use(markdownItAttrs, {
                   allowedAttributes: _this.Storage.allowed_attributes
-                }); //--
-
-
-                _this.code_highlight_hook(function (code, lang) {
-                  if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
-                    return hljs.highlightAuto(code, [lang]).value;
-                  }
-                });
-
-                _this.load(); // browser back
+                }); // browser back
 
 
                 if (_this.Storage.mode == 'include' && _this.option.spa == true) {
@@ -15155,7 +15100,6 @@
 
                       _this.load(q[_this.id]);
                     } else {
-                      //const query_keys = Object.keys(q);
                       var query_keys = Object.keys(q).filter(function (i) {
                         return GrobalStorage.mdview.indexOf(i) >= 0;
                       });
@@ -15171,7 +15115,7 @@
                   });
                 }
 
-              case 6:
+              case 4:
               case "end":
                 return _context2.stop();
             }
@@ -15179,11 +15123,22 @@
         }, _callee2);
       })));
 
+      GrobalStorage.Hook[_this.id] = {};
+
       if (GrobalStorage.mdview.indexOf(_this.id) < 0) {
         GrobalStorage.mdview.push(_this.id);
       }
 
       _this.dataset.status = "assigned";
+
+      var plugins = _this.querySelector("mdview-plugins");
+
+      if (plugins) {
+        _this.is_plugin = true;
+      } else {
+        _this.is_plugin = false;
+      }
+
       _this.Storage = {};
       _this.Storage.CodeHighlightHook = [];
       _this.Storage.allowed_attributes = ['id', 'class', 'style'];
@@ -15200,19 +15155,18 @@
       value: function connectedCallback() {
         this.dataset.status = "connected";
         this.init();
+
+        if (this.is_plugin === false) {
+          this.load();
+        }
       }
     }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, old_value, new_value) {
-        if (name == 'data-status' && new_value == "loaded") {
-          if (GrobalStorage.plugins_loaded == false) {
-            customElements.define('mdview-plugins', MDViewPlugin);
-            customElements.define('mdview-plugin-toc', MDViewPluginToc);
-            customElements.define('mdview-plugin-math', MDViewPluginMath);
-            customElements.define('mdview-plugin-graph', MDViewPluginGraph);
-            customElements.define('mdview-plugin-chart', MDViewPluginChart);
-            GrobalStorage.plugins_loaded = true;
-          }
+        console.log(this.tagName, this.id, name, new_value);
+
+        if (name == 'data-status' && new_value == "plugin_loaded") {
+          this.load();
         }
       }
     }], [{
@@ -15250,12 +15204,24 @@
       }
     }, {
       key: "attributeChangedCallback",
-      value: function attributeChangedCallback(name, old_value, new_value) {//console.log(this.id,name, old_value, new_value)
+      value: function attributeChangedCallback(name, old_value, new_value) {
+        //console.log(this.id ,name, old_value, new_value);
+        var mdview_content = this.closest('mdview-content');
+
+        if (name == "data-status" && new_value !== "connected") {
+          ChangePluginStatus(mdview_content, new_value);
+          return;
+        }
+
+        if (name == "data-loaded" && this.dataset.count == this.dataset.loaded) {
+          ChangePluginStatus(mdview_content, "plugin_loaded");
+          mdview_content.dataset.status = "plugin_loaded";
+        }
       }
     }], [{
       key: "observedAttributes",
       get: function get() {
-        return ['data-count', 'data-loaded'];
+        return ['data-loaded', 'data-status'];
       }
     }]);
 
@@ -15338,12 +15304,14 @@
       key: "connectedCallback",
       value: function connectedCallback() {
         this.dataset.status = "connected";
+        var mdview_plugins = this.closest('mdview-plugins');
+        mdview_plugins.dataset.loaded++;
       }
     }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, old_value, new_value) {
         //console.log(this.tagName,name, new_value)
-        if (new_value == "loaded" || new_value == "reloaded") {
+        if (new_value == "content_loaded" || new_value == "content_reloaded") {
           this.init();
         }
       }
@@ -15357,19 +15325,105 @@
     return MDViewPluginToc;
   }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
 
-  var MDViewPluginMath = /*#__PURE__*/function (_HTMLElement4) {
-    _inherits(MDViewPluginMath, _HTMLElement4);
+  var MDViewPluginHighlight = /*#__PURE__*/function (_HTMLElement4) {
+    _inherits(MDViewPluginHighlight, _HTMLElement4);
 
-    var _super4 = _createSuper(MDViewPluginMath);
+    var _super4 = _createSuper(MDViewPluginHighlight);
 
-    function MDViewPluginMath() {
+    function MDViewPluginHighlight() {
       var _this4;
 
-      _classCallCheck(this, MDViewPluginMath);
+      _classCallCheck(this, MDViewPluginHighlight);
 
       _this4 = _super4.call(this);
       _this4.dataset.status = "assigned";
       return _this4;
+    }
+
+    _createClass(MDViewPluginHighlight, [{
+      key: "init",
+      value: function init() {
+        var mdview_content = this.closest('mdview-content');
+        GrobalAddHook(mdview_content.id, "code_highlight", function (code, lang) {
+          if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
+            return hljs.highlightAuto(code, [lang]).value;
+          }
+        });
+        GrobalAddHook(mdview_content.id, "content_loaded", function (target) {
+          console.log("hooked");
+          var code_array = target.querySelectorAll("code[class*=\"language\"]");
+
+          for (var i in code_array) {
+            var class_list = code_array[i].classList;
+
+            if (class_list && class_list.value.match(/language/)) {
+              var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2]; //console.log(code_array[i].innerHTML)
+
+              code_array[i].setAttribute("data-language", lang);
+
+              if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
+                code_array[i].setAttribute("data-highlight", true);
+              } else {
+                code_array[i].setAttribute("data-highlight", false);
+              }
+            }
+
+            if (code_array[i].parentNode) {
+              code_array[i].parentNode.classList.add("code");
+            }
+
+            if (code_array[i].dataset && code_array[i].dataset.highlight && code_array[i].dataset.highlight == "true") {
+              hljs.lineNumbersBlock(code_array[i], {
+                singleLine: false
+              });
+            }
+          }
+        });
+      }
+    }, {
+      key: "connectedCallback",
+      value: function connectedCallback() {
+        var _this5 = this;
+
+        this.dataset.status = "connected";
+        var scripts = ["https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js", "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js"];
+        var styles = ["https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"];
+        ScriptLoader(scripts, function () {
+          _this5.init();
+
+          var mdview_plugins = _this5.closest('mdview-plugins');
+
+          mdview_plugins.dataset.loaded++;
+        });
+        StyleLoader(styles);
+      }
+    }, {
+      key: "attributeChangedCallback",
+      value: function attributeChangedCallback(name, old_value, new_value) {// console.log(this.tagName,name, new_value)
+      }
+    }], [{
+      key: "observedAttributes",
+      get: function get() {
+        return ['data-status'];
+      }
+    }]);
+
+    return MDViewPluginHighlight;
+  }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
+
+  var MDViewPluginMath = /*#__PURE__*/function (_HTMLElement5) {
+    _inherits(MDViewPluginMath, _HTMLElement5);
+
+    var _super5 = _createSuper(MDViewPluginMath);
+
+    function MDViewPluginMath() {
+      var _this6;
+
+      _classCallCheck(this, MDViewPluginMath);
+
+      _this6 = _super5.call(this);
+      _this6.dataset.status = "assigned";
+      return _this6;
     }
 
     _createClass(MDViewPluginMath, [{
@@ -15388,22 +15442,26 @@
     }, {
       key: "connectedCallback",
       value: function connectedCallback() {
-        var _this5 = this;
-
         this.dataset.status = "connected";
-        ScriptLoader(["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"], function (message) {
-          if (message == "loaded") {
-            _this5.init();
-
-            _this5.dataset.status = "loaded";
-          }
-        });
+        var mdview_plugins = this.closest('mdview-plugins');
+        mdview_plugins.dataset.loaded++;
       }
     }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, old_value, new_value) {
+        var _this7 = this;
+
         //console.log (this.parentNode.parentNode.id, this.tagName, name, new_value)
-        if (new_value == "reloaded") {
+        if (new_value == "content_loaded") {
+          ScriptLoader(["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"], function (message) {
+            if (message == "loaded") {
+              _this7.init(); //this.dataset.status = "loaded"
+
+            }
+          });
+        }
+
+        if (new_value == "content_reloaded") {
           this.init();
         }
       }
@@ -15417,19 +15475,19 @@
     return MDViewPluginMath;
   }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
 
-  var MDViewPluginGraph = /*#__PURE__*/function (_HTMLElement5) {
-    _inherits(MDViewPluginGraph, _HTMLElement5);
+  var MDViewPluginGraph = /*#__PURE__*/function (_HTMLElement6) {
+    _inherits(MDViewPluginGraph, _HTMLElement6);
 
-    var _super5 = _createSuper(MDViewPluginGraph);
+    var _super6 = _createSuper(MDViewPluginGraph);
 
     function MDViewPluginGraph() {
-      var _this6;
+      var _this8;
 
       _classCallCheck(this, MDViewPluginGraph);
 
-      _this6 = _super5.call(this);
-      _this6.dataset.status = "assigned";
-      return _this6;
+      _this8 = _super6.call(this);
+      _this8.dataset.status = "assigned";
+      return _this8;
     }
 
     _createClass(MDViewPluginGraph, [{
@@ -15458,23 +15516,26 @@
     }, {
       key: "connectedCallback",
       value: function connectedCallback() {
-        var _this7 = this;
-
         this.dataset.status = "connected";
-        ScriptLoader(["https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js", "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"], function (message) {
-          if (message === 'loaded') {
-            _this7.init();
-
-            _this7.dataset.status = "loaded";
-          }
-        });
-        StyleLoader(["https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"]);
+        var mdview_plugins = this.closest('mdview-plugins');
+        mdview_plugins.dataset.loaded++;
       }
     }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, old_value, new_value) {
+        var _this9 = this;
+
         //console.log(this.tagName,name, new_value)
-        if (new_value == "reloaded") {
+        if (new_value == "content_loaded") {
+          ScriptLoader(["https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js", "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"], function (message) {
+            if (message === 'loaded') {
+              _this9.init();
+            }
+          });
+          StyleLoader(["https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"]);
+        }
+
+        if (new_value == "content_reloaded") {
           this.init();
         }
       }
@@ -15488,19 +15549,19 @@
     return MDViewPluginGraph;
   }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
 
-  var MDViewPluginChart = /*#__PURE__*/function (_HTMLElement6) {
-    _inherits(MDViewPluginChart, _HTMLElement6);
+  var MDViewPluginChart = /*#__PURE__*/function (_HTMLElement7) {
+    _inherits(MDViewPluginChart, _HTMLElement7);
 
-    var _super6 = _createSuper(MDViewPluginChart);
+    var _super7 = _createSuper(MDViewPluginChart);
 
     function MDViewPluginChart() {
-      var _this8;
+      var _this10;
 
       _classCallCheck(this, MDViewPluginChart);
 
-      _this8 = _super6.call(this);
-      _this8.dataset.status = "assigned";
-      return _this8;
+      _this10 = _super7.call(this);
+      _this10.dataset.status = "assigned";
+      return _this10;
     }
 
     _createClass(MDViewPluginChart, [{
@@ -15526,22 +15587,26 @@
     }, {
       key: "connectedCallback",
       value: function connectedCallback() {
-        var _this9 = this;
-
         this.dataset.status = "connected";
-        ScriptLoader(["https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"], function (message) {
-          if (message === 'loaded') {
-            _this9.init();
-
-            _this9.dataset.status = "loaded";
-          }
-        });
+        var mdview_plugins = this.closest('mdview-plugins');
+        mdview_plugins.dataset.loaded++;
       }
     }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, old_value, new_value) {
+        var _this11 = this;
+
         //console.log(this.tagName,name, new_value)
-        if (new_value == "reloaded") {
+        if (new_value == "content_loaded") {
+          ScriptLoader(["https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"], function (message) {
+            if (message === 'loaded') {
+              _this11.init(); //this.dataset.status = "loaded"
+
+            }
+          });
+        }
+
+        if (new_value == "content_reloaded") {
           this.init();
         }
       }
@@ -15554,17 +15619,33 @@
 
     return MDViewPluginChart;
   }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
+  /*
+  const scripts = [
+    //"https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.2.0/markdown-it.min.js",
+    //"https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.1.4/markdown-it-attrs.browser.js",
+    //"https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js",
+    //"https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
+    //"https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"
+  ]
+  const styles = [
+    "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
+  ]
+  ScriptLoader(scripts, () => {
+    customElements.define('mdview-content', MarkdownViewer);
+    //customElements.define('mdview-toc', MDViewToc);
+  })
+  StyleLoader(styles)
+  */
 
-  var scripts = [//"https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.2.0/markdown-it.min.js",
-  //"https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.1.4/markdown-it-attrs.browser.js",
-  //"https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js",
-  //"https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js", "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js" //"https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"
-  ];
-  var styles = ["https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"];
-  ScriptLoader(scripts, function () {
-    customElements.define('mdview-content', MarkdownViewer); //customElements.define('mdview-toc', MDViewToc);
-  });
-  StyleLoader(styles);
+
+  customElements.define('mdview-plugins', MDViewPlugin);
+  customElements.define('mdview-plugin-toc', MDViewPluginToc);
+  customElements.define('mdview-plugin-highlight', MDViewPluginHighlight);
+  customElements.define('mdview-plugin-math', MDViewPluginMath);
+  customElements.define('mdview-plugin-graph', MDViewPluginGraph);
+  customElements.define('mdview-plugin-chart', MDViewPluginChart);
+  customElements.define('mdview-content', MarkdownViewer);
 
 })();
