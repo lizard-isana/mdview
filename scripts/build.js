@@ -5,8 +5,6 @@ const autoprefixer = require('autoprefixer');
 const postcss = require('postcss');
 const cssnano = require('cssnano');
 
-
-
 const path = {
   "sass":{
     "src":"./dev/scss/",
@@ -34,10 +32,8 @@ const dist_compiled_css = `${path.css.dist}${path.css.name}.css`;
 const dist_minified_css = `${path.css.dist}${path.css.name}.min.css`;
 const compiled_js = `${path.js.src}${path.js.name}.rc.js`;
 const dist_compiled_js = `${path.js.dist}${path.js.name}.js`;
-
-
-//console.log(`${path.sass.src}${path.sass.name}.scss`);
-//console.log(`${path.css.src}${path.css.name}.rc.css`);
+const minified_js = `${path.js.src}${path.js.name}.min.rc.js`;
+const dist_minified_js = `${path.js.dist}${path.js.name}.min.js`;
 
 const process_js = async () =>{
   console.log("js processing start.")
@@ -95,6 +91,7 @@ const copy_files = async  () =>{
   await fs.copyFileSync(minified_css, dist_minified_css)
   console.log("copy js files from dev to dist")
   await fs.copyFileSync(compiled_js, dist_compiled_js)
+  await fs.copyFileSync(minified_js, dist_minified_js)
   console.log("copy files from dist to docs")
   fs.copySync('./dist/', './docs/')
 }
