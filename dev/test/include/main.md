@@ -1,4 +1,3 @@
----
 ## メインページ(main.md)
 
 以下のリンクをクリックすると、ページ遷移せずにこの領域が切り替わります。
@@ -9,7 +8,7 @@
 [サブページへのリンク(sub.md)](sub.md)
 ```
 
-## URLクエリによるページの読み込み
+### URLクエリによるページの読み込み
 SPAモードでは、URLクエリでページの読み込みを行うことができます。以下のようなURLで、`id=main`
 
 
@@ -29,15 +28,14 @@ index.html?main=index.md
 
 ### データディレクトリの指定
 
-Skosh は初期化されたディレクトリをデータディレクトリとみなします。つまり、以下のように別ディレクトリのファイルで初期化すると、以後、URL クエリで指定されたファイルは、`./data/`以下にあるものとみなします。
+MDView は、`<mdview-content>`で指定されたディレクトリをデータディレクトリとみなします。つまり、以下のように別ディレクトリのファイルで初期化すると、以後、URL クエリで指定されたファイルは、`./data/`以下にあるものとみなします。
 
 ```
-  var main = new Skosh("main");
-  main.load("./data/index.md");
+<mdview-content id="main" src="./data/main.md"></mdview-content>
 
 ```
 
-上記のように初期化すると、Skosh は以下の指定で`./data/sub_page.md`を表示します。
+上記のように初期化すると、MDView は以下の指定で`./data/sub_page.md`を表示します。
 
 ```
 index.html?main=sub_page.md
