@@ -9,7 +9,6 @@ import {ScriptLoader,StyleLoader,DataLoader} from './loaders.js'
 const GrobalStorage = {}
 GrobalStorage.mdview = [];
 GrobalStorage.highlight_exception = ["math","graph","chart"];
-GrobalStorage.plugins_loaded = false;
 GrobalStorage.popstate;
 
 const ChangePluginStatus = (target,message)=>{
@@ -246,11 +245,12 @@ class MarkdownViewer extends HTMLElement {
     this.status =  message;
     this.dataset.status = message
 
-    var code_array = document.querySelectorAll(`code[class*="language"]`)
+    var code_array = loading_target.querySelectorAll(`code[class*="language"]`)
     for (var i in code_array) {
       var class_list = code_array[i].classList;
       if (class_list && class_list.value.match(/language/)) {
         var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
+        console.log(code_array[i].innerHTML)
         code_array[i].setAttribute("data-language", lang);
         if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
           code_array[i].setAttribute("data-highlight", true);
@@ -335,14 +335,13 @@ class MarkdownViewer extends HTMLElement {
   attributeChangedCallback(name, old_value, new_value){
     console.log(this.tagName,this.id ,name, new_value);
     if(name =='data-status' && new_value == "content_loaded"){
-      if(GrobalStorage.plugins_loaded == false ){
+      /*
         customElements.define('mdview-plugins', MDViewPlugin);
         customElements.define('mdview-plugin-toc', MDViewPluginToc);
         customElements.define('mdview-plugin-math', MDViewPluginMath);
         customElements.define('mdview-plugin-graph', MDViewPluginGraph);
         customElements.define('mdview-plugin-chart', MDViewPluginChart);
-        GrobalStorage.plugins_loaded = true;
-      }
+        */
     }
   
   }
@@ -452,6 +451,7 @@ class MDViewPluginMath extends HTMLElement {
   init(){
     window.MathJax.startup.promise.then(() => {
       var math_element = document.querySelectorAll(".language-math");
+      console.log(math_element)
       math_element.forEach((element, index) => {
         MathJax.typesetPromise(element.childNodes);
         const svg = document.createRange().createContextualFragment(element.innerHTML);
@@ -465,19 +465,21 @@ class MDViewPluginMath extends HTMLElement {
   }
   connectedCallback() {
     this.dataset.status = "connected"
-    ScriptLoader([
-      "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
-    ],(message)=>{
-      const mdview_plugins = this.closest('mdview-plugins');
-      mdview_plugins.dataset.loaded++
-      if(message=="loaded"){
-        this.init();
-        //this.dataset.status = "loaded"
-      }
-    })
   }
   attributeChangedCallback(name, old_value, new_value){
     //console.log (this.parentNode.parentNode.id, this.tagName, name, new_value)
+    if(new_value == "content_loaded"){
+      ScriptLoader([
+        "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      ],(message)=>{
+        const mdview_plugins = this.closest('mdview-plugins');
+        mdview_plugins.dataset.loaded++
+        if(message=="loaded"){
+          this.init();
+          //this.dataset.status = "loaded"
+        }
+      })
+    }
     if(new_value == "content_reloaded"){
       this.init();
     }
@@ -514,23 +516,25 @@ class MDViewPluginGraph extends HTMLElement {
   }
   connectedCallback() {
     this.dataset.status = "connected"
-
-    ScriptLoader([
-      "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"
-    ],(message)=>{
-      const mdview_plugins = this.closest('mdview-plugins');
-      mdview_plugins.dataset.loaded++
-      if(message==='loaded'){
-        this.init();
-      }
-    })
-    StyleLoader([
-      "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"
-    ])
   }
   attributeChangedCallback(name, old_value, new_value){
     //console.log(this.tagName,name, new_value)
+    if(new_value == "content_loaded"){
+      ScriptLoader([
+        "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"
+      ],(message)=>{
+        const mdview_plugins = this.closest('mdview-plugins');
+        mdview_plugins.dataset.loaded++
+        if(message==='loaded'){
+          this.init();
+        }
+      })
+      StyleLoader([
+        "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.css"
+      ])
+    }
+    
     if(new_value == "content_reloaded"){
       this.init();
     }
@@ -564,19 +568,22 @@ class MDViewPluginChart extends HTMLElement {
   }
   connectedCallback() {
     this.dataset.status = "connected"
-    ScriptLoader([
-      "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
-    ],(message)=>{
-    const mdview_plugins = this.closest('mdview-plugins');
-    mdview_plugins.dataset.loaded++
-      if(message==='loaded'){
-        this.init();
-        this.dataset.status = "loaded"
-      }
-    })
+
   }
   attributeChangedCallback(name, old_value, new_value){
     //console.log(this.tagName,name, new_value)
+    if(new_value == "content_loaded"){
+      ScriptLoader([
+        "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
+      ],(message)=>{
+      const mdview_plugins = this.closest('mdview-plugins');
+      mdview_plugins.dataset.loaded++
+        if(message==='loaded'){
+          //this.init();
+          //this.dataset.status = "loaded"
+        }
+      })
+    }
     if(new_value == "content_reloaded"){
       this.init();
     }
@@ -600,3 +607,9 @@ ScriptLoader(scripts, () => {
   //customElements.define('mdview-toc', MDViewToc);
 })
 StyleLoader(styles)
+
+customElements.define('mdview-plugins', MDViewPlugin);
+customElements.define('mdview-plugin-toc', MDViewPluginToc);
+customElements.define('mdview-plugin-math', MDViewPluginMath);
+customElements.define('mdview-plugin-graph', MDViewPluginGraph);
+customElements.define('mdview-plugin-chart', MDViewPluginChart);
