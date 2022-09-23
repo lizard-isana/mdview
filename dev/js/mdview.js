@@ -10,6 +10,7 @@ const GrobalStorage = {}
 GrobalStorage.mdview = [];
 GrobalStorage.highlight_exception = ["math","graph","chart"];
 GrobalStorage.popstate;
+GrobalStorage.Hook = {}
 
 const ChangePluginStatus = (target,message)=>{
   const plugins_wrapper = target.querySelector('mdview-plugins');
@@ -22,13 +23,30 @@ const ChangePluginStatus = (target,message)=>{
   }  
 }
 
+const GrobalAddHook = (id,hook,f) =>{
+  if (!GrobalStorage.Hook[id]){
+    GrobalStorage.Hook[id]={}
+  }
+  if (!GrobalStorage.Hook[id][hook]){
+    GrobalStorage.Hook[id][hook] = []
+  }
+  GrobalStorage.Hook[id][hook].push(f);
+}
+
 class MarkdownViewer extends HTMLElement {
   constructor() {
     super();
+    GrobalStorage.Hook[this.id]={}
     if(GrobalStorage.mdview.indexOf(this.id)<0){
       GrobalStorage.mdview.push(this.id);
     }
     this.dataset.status = "assigned"
+    const plugins = this.querySelector("mdview-plugins");
+    if(plugins){
+      this.is_plugin = true;
+    }else{
+      this.is_plugin = false;
+    }
     this.Storage = {};
     this.Storage.CodeHighlightHook = [];
     this.Storage.allowed_attributes = ['id', 'class', 'style'];
@@ -104,7 +122,6 @@ class MarkdownViewer extends HTMLElement {
   }
 
   load = async (target) => {
-
     const mdview_content = document.querySelector(`mdview-content#${this.id}`);
 
     let loading_target;
@@ -114,21 +131,12 @@ class MarkdownViewer extends HTMLElement {
       loading_target = document.querySelector(`#${this.id}`);
     }
 
-    //console.log(this,Object.keys(this.query).length > 0)
-
     if(target){
       loading_target.dataset.status = "reloading";
     }else{
       loading_target.dataset.status = "loading";
       this.status = 'loading';
     }
-    /*
-
-    if(this.status != 'reloading'){
-      this.status = 'loading';
-      this.dataset.status = "loading";
-    }
-    */
    
     let markdown;
     let src = this.getAttribute("src")
@@ -171,7 +179,7 @@ class MarkdownViewer extends HTMLElement {
       }
     }
 
-      ChangePluginStatus(mdview_content, "markdown_loaded");
+    ChangePluginStatus(mdview_content, "markdown_loaded");
 
 
     let html = this.renderer.render(markdown);
@@ -207,23 +215,6 @@ class MarkdownViewer extends HTMLElement {
         }
       }
     }
-    /*
-    const change_status = (tgt) => {
-      const plugins_wrapper = tgt.querySelector('mdview-plugins');
-      console.log(plugins_wrapper)
-      if(plugins_wrapper){
-        const plugins = plugins_wrapper.children;
-        const plugins_array = [...plugins]
-        plugins_array.forEach((element,index)=>{
-          if(tgt.dataset.status == 'reloading'){
-            element.dataset.status = "reloaded";
-          }else{
-            element.dataset.status = "loaded";
-          }
-        })
-      }  
-    }
-    */
 
     const new_section = document.createElement("section");
     new_section.appendChild(dom);
@@ -244,13 +235,18 @@ class MarkdownViewer extends HTMLElement {
 
     this.status =  message;
     this.dataset.status = message
-
+    if (GrobalStorage.Hook[this.id].content_loaded) {
+      for (var i in GrobalStorage.Hook[this.id].content_loaded) {
+        GrobalStorage.Hook[this.id].content_loaded[i](loading_target);
+      }
+    }
+    /*
     var code_array = loading_target.querySelectorAll(`code[class*="language"]`)
     for (var i in code_array) {
       var class_list = code_array[i].classList;
       if (class_list && class_list.value.match(/language/)) {
         var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
-        console.log(code_array[i].innerHTML)
+        //console.log(code_array[i].innerHTML)
         code_array[i].setAttribute("data-language", lang);
         if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
           code_array[i].setAttribute("data-highlight", true);
@@ -265,6 +261,8 @@ class MarkdownViewer extends HTMLElement {
         hljs.lineNumbersBlock(code_array[i],{singleLine: false});
       }
     }
+    */
+
   }
 
   init = async () => {
@@ -274,6 +272,15 @@ class MarkdownViewer extends HTMLElement {
       breaks: true,
       typographer: true,
       highlight: (code, lang) => {
+        if (GrobalStorage.Hook[this.id].code_highlight) {
+          for (var i in GrobalStorage.Hook[this.id].code_highlight) {
+            code = GrobalStorage.Hook[this.id].code_highlight[i](
+              code,
+              lang
+            );
+          }
+        }
+        /*
         if (this.Storage.CodeHighlightHook.length > 0) {
           for (var i in this.Storage.CodeHighlightHook) {
             code = this.Storage.CodeHighlightHook[i](
@@ -282,6 +289,7 @@ class MarkdownViewer extends HTMLElement {
             );
           }
         }
+        */
         return code;
       }
     });
@@ -304,7 +312,6 @@ class MarkdownViewer extends HTMLElement {
         return hljs.highlightAuto(code, [lang]).value;
       }
     });
-    this.load();
 
     // browser back
     if(this.Storage.mode == 'include' && this.option.spa == true){
@@ -325,25 +332,33 @@ class MarkdownViewer extends HTMLElement {
       });
     }
   }
+
   static get observedAttributes() {
     return ['data-status'];
   };
+
   connectedCallback() {
     this.dataset.status = "connected"
     this.init();
+    if(this.is_plugin === false){
+      this.load();
+    }
   }
   attributeChangedCallback(name, old_value, new_value){
     console.log(this.tagName,this.id ,name, new_value);
+    if(name =='data-status' && new_value == "plugin_loaded"){
+      this.load();
+    }
+    
+    /*
     if(name =='data-status' && new_value == "content_loaded"){
-      /*
         customElements.define('mdview-plugins', MDViewPlugin);
         customElements.define('mdview-plugin-toc', MDViewPluginToc);
         customElements.define('mdview-plugin-math', MDViewPluginMath);
         customElements.define('mdview-plugin-graph', MDViewPluginGraph);
         customElements.define('mdview-plugin-chart', MDViewPluginChart);
-        */
     }
-  
+    */  
   }
 }
 
@@ -436,10 +451,86 @@ class MDViewPluginToc extends HTMLElement {
     mdview_plugins.dataset.loaded++
   }
   attributeChangedCallback(name, old_value, new_value){
-    console.log(this.tagName,name, new_value)
+    //console.log(this.tagName,name, new_value)
     if(new_value == "content_loaded"|| new_value == "content_reloaded"){
       this.init();
     }
+  }
+}
+
+class MDViewPluginHighlight extends HTMLElement {
+  constructor(){
+    super();
+    this.dataset.status = "assigned"
+  }
+  init(){
+    const mdview_content = this.closest('mdview-content');
+
+    GrobalAddHook(mdview_content.id,"code_highlight",(code,lang)=>{
+      if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
+        return hljs.highlightAuto(code, [lang]).value;
+      }
+    })
+
+    GrobalAddHook(mdview_content.id,"content_loaded",(target)=>{
+      console.log("hooked")
+      var code_array = target.querySelectorAll(`code[class*="language"]`)
+      for (var i in code_array) {
+        var class_list = code_array[i].classList;
+        if (class_list && class_list.value.match(/language/)) {
+          var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
+          //console.log(code_array[i].innerHTML)
+          code_array[i].setAttribute("data-language", lang);
+          if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
+            code_array[i].setAttribute("data-highlight", true);
+          } else {
+            code_array[i].setAttribute("data-highlight", false);
+          }
+        }
+        if (code_array[i].parentNode) {
+          code_array[i].parentNode.classList.add("code")
+        }
+        if (code_array[i].dataset && code_array[i].dataset.highlight && code_array[i].dataset.highlight == "true") {
+          hljs.lineNumbersBlock(code_array[i],{singleLine: false});
+        }
+      }
+    })
+  }
+  static get observedAttributes() {
+    return ['data-status'];
+  }
+  connectedCallback() {
+    this.dataset.status = "connected"
+
+    //const mdview_content = this.closest('mdview-content');
+
+      const scripts = [
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
+      ]
+      const styles = [
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
+      ]
+      ScriptLoader(scripts, () => {
+        this.init();
+        const mdview_plugins = this.closest('mdview-plugins');
+        mdview_plugins.dataset.loaded++
+      })
+      StyleLoader(styles)
+  }
+  attributeChangedCallback(name, old_value, new_value){
+    console.log(this.tagName,name, new_value)
+    
+    /*
+    if(new_value == "content_loaded"){
+      this.init();
+    }    
+
+    if(new_value == "content_reloaded"){
+      this.init();
+    }
+    */
+
   }
 }
 
@@ -451,7 +542,6 @@ class MDViewPluginMath extends HTMLElement {
   init(){
     window.MathJax.startup.promise.then(() => {
       var math_element = document.querySelectorAll(".language-math");
-      console.log(math_element)
       math_element.forEach((element, index) => {
         MathJax.typesetPromise(element.childNodes);
         const svg = document.createRange().createContextualFragment(element.innerHTML);
@@ -465,15 +555,15 @@ class MDViewPluginMath extends HTMLElement {
   }
   connectedCallback() {
     this.dataset.status = "connected"
-  }
+    const mdview_plugins = this.closest('mdview-plugins');
+    mdview_plugins.dataset.loaded++
+}
   attributeChangedCallback(name, old_value, new_value){
     //console.log (this.parentNode.parentNode.id, this.tagName, name, new_value)
     if(new_value == "content_loaded"){
       ScriptLoader([
         "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
       ],(message)=>{
-        const mdview_plugins = this.closest('mdview-plugins');
-        mdview_plugins.dataset.loaded++
         if(message=="loaded"){
           this.init();
           //this.dataset.status = "loaded"
@@ -516,7 +606,9 @@ class MDViewPluginGraph extends HTMLElement {
   }
   connectedCallback() {
     this.dataset.status = "connected"
-  }
+    const mdview_plugins = this.closest('mdview-plugins');
+    mdview_plugins.dataset.loaded++
+}
   attributeChangedCallback(name, old_value, new_value){
     //console.log(this.tagName,name, new_value)
     if(new_value == "content_loaded"){
@@ -524,8 +616,6 @@ class MDViewPluginGraph extends HTMLElement {
         "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"
       ],(message)=>{
-        const mdview_plugins = this.closest('mdview-plugins');
-        mdview_plugins.dataset.loaded++
         if(message==='loaded'){
           this.init();
         }
@@ -568,6 +658,8 @@ class MDViewPluginChart extends HTMLElement {
   }
   connectedCallback() {
     this.dataset.status = "connected"
+    const mdview_plugins = this.closest('mdview-plugins');
+    mdview_plugins.dataset.loaded++
 
   }
   attributeChangedCallback(name, old_value, new_value){
@@ -576,10 +668,8 @@ class MDViewPluginChart extends HTMLElement {
       ScriptLoader([
         "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
       ],(message)=>{
-      const mdview_plugins = this.closest('mdview-plugins');
-      mdview_plugins.dataset.loaded++
         if(message==='loaded'){
-          //this.init();
+          this.init();
           //this.dataset.status = "loaded"
         }
       })
@@ -589,7 +679,7 @@ class MDViewPluginChart extends HTMLElement {
     }
   }
 }
-
+/*
 const scripts = [
   //"https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.2.0/markdown-it.min.js",
   //"https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.1.4/markdown-it-attrs.browser.js",
@@ -607,9 +697,11 @@ ScriptLoader(scripts, () => {
   //customElements.define('mdview-toc', MDViewToc);
 })
 StyleLoader(styles)
-
+*/
 customElements.define('mdview-plugins', MDViewPlugin);
 customElements.define('mdview-plugin-toc', MDViewPluginToc);
+customElements.define('mdview-plugin-highlight', MDViewPluginHighlight);
 customElements.define('mdview-plugin-math', MDViewPluginMath);
 customElements.define('mdview-plugin-graph', MDViewPluginGraph);
 customElements.define('mdview-plugin-chart', MDViewPluginChart);
+customElements.define('mdview-content', MarkdownViewer);
