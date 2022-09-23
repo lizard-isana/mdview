@@ -4,28 +4,38 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown Viewer Component</title>
-  <link rel="stylesheet" href="./css/default.css">
+  <title>MDView - Markdown Viewer Component | Usage</title>
+  <!--
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/css/default.css">
+  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/js/mdview.js"></script>
+  -->
+  <link rel="stylesheet" href="./css/default.rc.css">
   <script src="./js/mdview.rc.js"></script>
 </head>
 <body>
 <main>
 
-<mdview-content id="main" data-html="true" data-sanitize="false">
-  <mdview-plugins>
-    <mdview-plugin-math></mdview-plugin-math>
-    <mdview-plugin-graph></mdview-plugin-graph>
-    <mdview-plugin-chart></mdview-plugin-chart>
-  </mdview-plugins>
-</mdview-content>
-
 <template data-target="main">
-<!-- markdown starts here -->
 
 # Markdown Viewer Component
-Markdownをレンダリングして表示する Web Component です。ライブラリをリンクして、タグを書き込むだけで動作します。MarkdownをHTMLファイル内に直接記述する「インラインモード」とMarkdownを外部ファイルから読み込む「インクルードモード」の両方に対応しています。
+Markdownをレンダリングして要素内に表示する Web Component です。HTMLファイルにライブラリをリンクしてタグを書き込むだけで動作します。
 
-<mdview-toc></mdview-toc>
+Markdownのレンダリングには [Markdown-It](https://github.com/markdown-it/markdown-it) を使用しています。
+
+toc{.toc}
+
+## Source
+https://github.com/lizard-isana/mdview
+
+## CDN
+スクリプトとスタイルシートをCDNから読み込むことで、HTMLファイル一つで動作させることができます。
+
+```HTML
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/js/mdview.js"></script>
+```
+※ 上記の例では、常に最新版を読み込みます。互換性などの問題から特定のバージョンが必要な場合は、下記からリンクを取得してください。
+cf. [lizard-isana/mdview CDN by jsDelivr](https://www.jsdelivr.com/package/gh/lizard-isana/mdview)
 
 ## Usage
 
@@ -37,16 +47,13 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 3. `&lt;template&gt;`に Markdown を書く(上の`id`と同じ値を`data-target`に指定する)
 
 ```HTML
-<link rel="stylesheet" href="./css/default.css">
-<script src="./js/mdview.js"></script>
-
 <mdview-content id="main">
-  template内のmarkdownがレンダリングされてここに挿入される
+  templateタグ内のMarkdownがレンダリングされてここに表示されます。
 </mdview-content>
 
-<template class="markdown" data-target="main">
+<template data-target="main">
   # Title
-  Markdownをここに直接書く
+  Markdownをここに直接書くと...
 </template>
 ```
 
@@ -54,14 +61,21 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 外部の Markdown ファイルを指定して読み込みます。外部ファイルを動的に読み込むので動作にはWebサーバが必要です(http:// や https:// で運用する必要があります。file:// では動きません)。
 
 1. スクリプトとスタイルシートを読みこむ
-2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`と外部markdownファイルを指定する)
+2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`と外部Markdownファイルを指定する)
 
 ```HTML
-<link rel="stylesheet" href="./css/default.css">
-<script src="./js/mdview.js"></script>
-
 <mdview-content id="main" src="main.md">
-  main.mdの内容がレンダリングされてここに挿入される
+  main.mdの内容が読み込まれ、内容がレンダリングされてここに表示されます。
+</mdview-content>
+```
+
+### SPA(Single Page Application) モード
+インクルードモードで以下のように`data-spa=true`を指定すると、読み込まれたMarkdownファイルからリンクされている別のMarkdownファイルをページ遷移なしで開くSPAモードが使えます。 
+
+```HTML
+<mdview-content id="main" src="main.md" data-spa="true">
+  main.mdからリンクされた別のMarkdownファイルをクリックすると
+  ファイルが読み込まれ、内容がレンダリングされて、ここに表示されます。
 </mdview-content>
 ```
 
@@ -71,26 +85,7 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 - 脚注
 - タスクリスト
 - id, class, style 属性の付加
-- コードハイライト
 - HTML直書き(Markdown内のJavaScriptの実行&スタイルの再適用)
-
-<!--
-#### 画像
-![alt text](https://picsum.photos/seed/picsum/1200/900/ "Title")
--->
-
-### 目次
-
-`<mdview-toc></mdview-toc>`のタグを挿入することで、目次を表示します。
-`data-initial="close"` にすると、初期状態が閉じた状態になります。
-
-```HTML
-
-<mdview-toc data-initial="close"></mdview-toc>
-
-```
-
-<mdview-toc data-initial="close"></mdview-toc>
 
 ### 脚注
 MarkdownのPandoc拡張記法で、脚注の表示ができます。
@@ -128,7 +123,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 ```
 クラスを指定(スタイルタグと組み合わせてCSSを適用することができます){.custom_class}
 
-<style>.custom_class{color:steelblue}</style>
+<style>.custom_class {color:steelblue}</style>
 
 スタイルを直接指定することもできます{style="color:red"}
 
@@ -137,7 +132,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 
 クラスを指定(スタイルタグと組み合わせてCSSを適用することができます){.custom_class}
 
-<style>.custom_class{color:steelblue}</style>
+<style>.custom_class {color:steelblue}</style>
 
 スタイルを直接指定することもできます{style="color:red"}
 
@@ -146,17 +141,22 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 表示には[markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)を利用しています。
 
 
-### コードハイライト
+### HTML直書き／スクリプトタグの埋め込み
+
+以下のように、optionで `data-html="true"`を指定すると本文中でHTMLタグが使えるようになり、さらに `data-sanitize="false"`を指定するとスクリプトが使えるようになります。
+
+※ 
 
 ```HTML
-<mdview-content data-src="main"></mdview-content>
-<template class="markdown" id="main">
+<mdview-content id="main" data-html="true" data-sanitize="false"></mdview-content>
+<template class="markdown" data-target="main">
   # H1
   Markdownをここに直接書く
 </template>
 ```
 
-### HTML直書き／スクリプトタグの埋め込み
+以下の例では、スクリプトタグを含む Twitter の埋め込みタグを表示しています。
+
 ```HTML
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">A life is like a garden. Perfect moments can be had, but not preserved, except in memory. LLAP</p>&mdash; Leonard Nimoy (@TheRealNimoy) <a href="https://twitter.com/TheRealNimoy/status/569762773204217857?ref_src=twsrc%5Etfw">February 23, 2015</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
@@ -167,14 +167,91 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 
 
 ## 組み込みプラグイン
-以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にコンポーネントを追記することでアクティブになります。
+以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にプラグインコンポーネントを追記することでアクティブになります。
 
+- 目次
+- コードハイライト
 - 数式(MathJax)
 - グラフ(C3.js)
-- チャート（Mermaid.js）
+- チャート(Mermaid.js）
 
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
+    <mdview-plugin-math></mdview-plugin-math>
+    <mdview-plugin-graph></mdview-plugin-graph>
+    <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
+</mdview-content>
+```
 
-### MathJax(数式)
+### 目次
+
+MarkdownのPandoc拡張記法で任意の文字列に`{.toc}`のクラスを指定することで目次を表示します。
+文字列は要素を生成するためのダミーなので、なんでも構いません。生成後は削除されます。
+
+```HTML
+
+toc{.toc}
+
+```
+
+toc{.toc}
+
+以下のように、`.close`のクラスを追加すると、初期状態で閉じた状態になります。
+
+```HTML
+
+toc{.toc .close}
+
+```
+
+toc{.toc .close}
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-toc&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
+  </mdview-plugins>
+</mdview-content>
+```
+
+### コードハイライト(highlight.js)
+コードブロックに言語名を付加することでコードが色分けされ、行番号が表示されます。
+
+````
+```HTML
+<mdview-content id="main"></mdview-content>
+<template class="markdown" data-target="main">
+  # H1
+  Markdownをここに直接書く
+</template>
+```
+````
+
+```HTML
+<mdview-content id="main"></mdview-content>
+<template class="markdown" data-target="main">
+  # H1
+  Markdownをここに直接書く
+</template>
+```
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-highlight&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
+  </mdview-plugins>
+</mdview-content>
+```
+
+### 数式(MathJax)
 
 コードブロックに `math`を指定するとMathJaxでレンダリングして表示します
 
@@ -196,13 +273,13 @@ x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
 です。
 ```
 
----
-
-この機能はプラグインとして提供されています。`&lt;mdview-content&gt;`内に`&lt;markdown-plugin-math&gt;`コンポーネントを追加することでアクティブになります。
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-math&gt;`コンポーネントを追加することでアクティブになります。
 
 ```HTML
 <mdview-content id="main">
-  <markdown-plugin-math></markdown-plugin-math>
+  <mdview-plugins>
+    <mdview-plugin-math></mdview-plugin-math>
+  </mdview-plugins>
 </mdview-content>
 ```
 
@@ -262,58 +339,85 @@ cf. ([c3.js](https://c3js.org/))
 
 ---
 
-この機能はプラグインとして提供されています。`&lt;mdview-content&gt;`内に`&lt;markdown-plugin-graph&gt;`コンポーネントを追加することでアクティブになります。
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-graph&gt;`コンポーネントを追加することでアクティブになります。
 
 ```HTML
 <mdview-content id="main">
-  <markdown-plugin-graph></markdown-plugin-graph>
+  <mdview-plugins>
+    <mdview-plugin-graph></mdview-plugin-graph>
+  </mdview-plugins>
 </mdview-content>
 ```
 
 
-### チャート（Mermaid.js）※optional
+### チャート(Mermaid.js)
 コードブロックに `chart`を指定すると Mermaid.js でレンダリングして表示します。
+
+````
+```chart
+sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->>John: Hello John, how are you?
+  loop Healthcheck
+      John->>John: Fight against hypochondria
+  end
+  Note right of John: Rational thoughts <br/>prevail!
+  John-->>Alice: Great!
+  John->>Bob: How about you?
+  Bob-->>John: Jolly good!
+```
+````
 
 ```chart
 sequenceDiagram
-    participant Alice
-    participant Bob
-    Alice->>John: Hello John, how are you?
-    loop Healthcheck
-        John->>John: Fight against hypochondria
-    end
-    Note right of John: Rational thoughts <br/>prevail!
-    John-->>Alice: Great!
-    John->>Bob: How about you?
-    Bob-->>John: Jolly good!
+  participant Alice
+  participant Bob
+  Alice->>John: Hello John, how are you?
+  loop Healthcheck
+      John->>John: Fight against hypochondria
+  end
+  Note right of John: Rational thoughts <br/>prevail!
+  John-->>Alice: Great!
+  John->>Bob: How about you?
+  Bob-->>John: Jolly good!
 ```
 
 ---
 
-この機能はプラグインとして提供されています。`&lt;mdview-content&gt;`内に`&lt;markdown-plugin-chart&gt;`コンポーネントを追加することでアクティブになります。
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-chart&gt;`コンポーネントを追加することでアクティブになります。
 
 ```HTML
 <mdview-content id="main">
-  <markdown-plugin-chart></markdown-plugin-chart>
+  <mdview-plugins>
+    <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
 </mdview-content>
 ```
 
-<!-- markdown ends here -->
+## Copyrights/Credits
+MDView depends on below superb libraries.
+- [markdown-it.js](https://github.com/markdown-it/markdown-it) ([MIT License](https://github.com/markdown-it/markdown-it/blob/master/LICENSE))
+- [markdown-it-footnote](https://github.com//markdown-it/markdown-it-footnote) ([MIT License](https://github.com/markdown-it/markdown-it-footnote/blob/master/LICENSE))
+- [markdown-it-task-lists.js](https://github.com/revin/markdown-it-task-lists) ([ISC License](https://github.com/revin/markdown-it-task-lists/blob/master/LICENSE))
+- [markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)([MIT License](https://github.com/arve0/markdown-it-attrs/blob/master/LICENSE))
+- [DOMPurify](https://github.com/cure53/DOMPurify)([Apache/Mozilla Public License](https://github.com/cure53/DOMPurify/blob/master/LICENSE))
+- [highlight.js](https://highlightjs.org/) ([BSD License](https://github.com/highlightjs/highlight.js/blob/master/LICENSE))
+- [MathJax](https://www.mathjax.org/) ([Apache License 2.0](https://github.com/mathjax/MathJax/blob/master/LICENSE))
+- [C3.js](https://c3js.org/) ([The MIT License](https://github.com/c3js/c3/blob/master/LICENSE))
+- [Mermaid.js](https://mermaid-js.github.io/) ([MIT License](https://github.com/mermaid-js/mermaid/blob/develop/LICENSE))
+
 </template>
 
-<mdview-content id="sub"></mdview-content>
-<template data-target="sub">
-## これは二つ目のMarkdownです
-
-`&lt;mdview-content&gt;`の`id`と `&lt;template&gt;` の `data-target` の組み合わせを変えることで、複数のmarkdownを記述できます。
-
-```HTML
-<mdview-content id="sub"></mdview-content>
-<template data-target="sub">
-  ## これは二つ目のMarkdownです
-</template>
-```
-</template>
+<mdview-content id="main" data-html="true" data-sanitize="false">
+  <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
+    <mdview-plugin-math></mdview-plugin-math>
+    <mdview-plugin-graph></mdview-plugin-graph>
+    <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
+</mdview-content>
 
 </main>
 <footer>
@@ -335,6 +439,8 @@ Powered by [MDView](https://github.com/lizard-isana/mdview) &copy; Isana Kashiwa
   text-decoration:underline;
 }
 </style>
+
+</template>
 </footer>
 </body>
 </html>

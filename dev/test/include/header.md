@@ -1,4 +1,4 @@
-[test](./){.header_title}
+[MDView Include Mode](./){.header_title}
 
 - [home](/)
 - [main](main.md)

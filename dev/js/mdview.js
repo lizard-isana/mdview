@@ -49,7 +49,7 @@ class MarkdownViewer extends HTMLElement {
     }
     this.Storage = {};
     this.Storage.CodeHighlightHook = [];
-    this.Storage.allowed_attributes = ['id', 'class', 'style'];
+    this.Storage.allowed_attributes = ['id', 'class', 'style', 'target'];
     this.query = this.QueryDecoder();
     this.status;
     this.SetDefaults();
@@ -64,22 +64,13 @@ class MarkdownViewer extends HTMLElement {
       if(this.dataset.format){this.option.format = this.dataset.format}
       if(this.dataset.spa){this.option.spa = JSON.parse(this.dataset.spa)}
       if(this.dataset.link_target){this.option.link_target = this.dataset.link_target}
-      /*
-      const config = {
-        "html":true,
-        "sanitize":false,
-        "format":"markdown",
-        "query":true,
-        "query_path":"./"
-      }
-      */
     }
     if(this.option.html == undefined){this.option.html = false}
     if(this.option.sanitize == undefined){this.option.sanitize = true}
     if(this.option.format == undefined){this.option.format = "markdown"}
     if(this.option.spa == undefined){this.option.spa = false}
     if(this.option.link_target == undefined){this.option.link_target = this.id}
-
+    if(this.getAttribute("src")){this.option.mode = 'include'}else{this.option.mode = 'inline'};
   }
 
   EscapeEntity = function (str) {
@@ -117,9 +108,6 @@ class MarkdownViewer extends HTMLElement {
     return query;
   };
 
-  code_highlight_hook = (f) => {
-    this.Storage.CodeHighlightHook.push(f);
-  }
 
   load = async (target) => {
     const mdview_content = document.querySelector(`mdview-content#${this.id}`);
@@ -143,7 +131,7 @@ class MarkdownViewer extends HTMLElement {
     this.option.default_path = './'
 
     if(src){
-      this.Storage.mode = 'include';
+      this.option.mode = 'include';
       const path_array = src.split("/");
       if(path_array.length>1){
         path_array.pop()
@@ -170,7 +158,7 @@ class MarkdownViewer extends HTMLElement {
     }else{
       const md_element = document.querySelector(`template[data-target="${this.id}"]`);
       if(md_element){
-        this.Storage.mode = 'inline';
+        this.option.mode = 'inline';
         markdown = md_element.innerHTML;
         markdown = markdown.replace(/(&gt;)/g, '>');
         markdown = markdown.replace(/(&lt;)/g, '<');
@@ -181,14 +169,13 @@ class MarkdownViewer extends HTMLElement {
 
     ChangePluginStatus(mdview_content, "markdown_loaded");
 
-
     let html = this.renderer.render(markdown);
     if (this.option.sanitize == true) {
       html = DOMPurify.sanitize(html);
     };
     let dom = document.createRange().createContextualFragment(html);
 
-    if(this.Storage.mode == 'include' && this.option.spa == true){
+    if(this.option.mode == 'include' && this.option.spa == true){
       const link_array = dom.querySelectorAll("a");
       let href;
       for (var i = 0, ln = link_array.length; i < ln; i++) {
@@ -240,29 +227,6 @@ class MarkdownViewer extends HTMLElement {
         GrobalStorage.Hook[this.id].content_loaded[i](loading_target);
       }
     }
-    /*
-    var code_array = loading_target.querySelectorAll(`code[class*="language"]`)
-    for (var i in code_array) {
-      var class_list = code_array[i].classList;
-      if (class_list && class_list.value.match(/language/)) {
-        var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
-        //console.log(code_array[i].innerHTML)
-        code_array[i].setAttribute("data-language", lang);
-        if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
-          code_array[i].setAttribute("data-highlight", true);
-        } else {
-          code_array[i].setAttribute("data-highlight", false);
-        }
-      }
-      if (code_array[i].parentNode) {
-        code_array[i].parentNode.classList.add("code")
-      }
-      if (code_array[i].dataset && code_array[i].dataset.highlight && code_array[i].dataset.highlight == "true") {
-        hljs.lineNumbersBlock(code_array[i],{singleLine: false});
-      }
-    }
-    */
-
   }
 
   init = async () => {
@@ -274,22 +238,11 @@ class MarkdownViewer extends HTMLElement {
       highlight: (code, lang) => {
         if (GrobalStorage.Hook[this.id].code_highlight) {
           for (var i in GrobalStorage.Hook[this.id].code_highlight) {
-            code = GrobalStorage.Hook[this.id].code_highlight[i](
-              code,
-              lang
-            );
+            code = GrobalStorage.Hook[this.id].code_highlight[i]( code,lang);
           }
+        }else{
+          code =  this.EscapeEntity(code)
         }
-        /*
-        if (this.Storage.CodeHighlightHook.length > 0) {
-          for (var i in this.Storage.CodeHighlightHook) {
-            code = this.Storage.CodeHighlightHook[i](
-              code,
-              lang
-            );
-          }
-        }
-        */
         return code;
       }
     });
@@ -305,23 +258,15 @@ class MarkdownViewer extends HTMLElement {
       allowedAttributes: this.Storage.allowed_attributes
     });
     
-    //--
-
-    this.code_highlight_hook((code, lang) => {
-      if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
-        return hljs.highlightAuto(code, [lang]).value;
-      }
-    });
-
     // browser back
-    if(this.Storage.mode == 'include' && this.option.spa == true){
+    console.log(this.option.mode,this.option.spa)
+    if(this.option.mode == 'include' && this.option.spa == true){
       GrobalStorage.popstate = window.addEventListener("popstate", () => {
         const q = this.QueryDecoder();
         if(q[this.id]){
             this.dataset.status = "reloading";
             this.load(q[this.id])
         }else{
-          //const query_keys = Object.keys(q);
           const query_keys = Object.keys(q).filter(i => GrobalStorage.mdview.indexOf(i) >= 0);
           if(query_keys.length==0){
             this.dataset.status = "reloading";
@@ -345,20 +290,10 @@ class MarkdownViewer extends HTMLElement {
     }
   }
   attributeChangedCallback(name, old_value, new_value){
-    console.log(this.tagName,this.id ,name, new_value);
+    //console.log(this.tagName,this.id ,name, new_value);
     if(name =='data-status' && new_value == "plugin_loaded"){
       this.load();
     }
-    
-    /*
-    if(name =='data-status' && new_value == "content_loaded"){
-        customElements.define('mdview-plugins', MDViewPlugin);
-        customElements.define('mdview-plugin-toc', MDViewPluginToc);
-        customElements.define('mdview-plugin-math', MDViewPluginMath);
-        customElements.define('mdview-plugin-graph', MDViewPluginGraph);
-        customElements.define('mdview-plugin-chart', MDViewPluginChart);
-    }
-    */  
   }
 }
 
@@ -473,13 +408,11 @@ class MDViewPluginHighlight extends HTMLElement {
     })
 
     GrobalAddHook(mdview_content.id,"content_loaded",(target)=>{
-      console.log("hooked")
       var code_array = target.querySelectorAll(`code[class*="language"]`)
       for (var i in code_array) {
         var class_list = code_array[i].classList;
         if (class_list && class_list.value.match(/language/)) {
           var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
-          //console.log(code_array[i].innerHTML)
           code_array[i].setAttribute("data-language", lang);
           if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
             code_array[i].setAttribute("data-highlight", true);
@@ -501,36 +434,22 @@ class MDViewPluginHighlight extends HTMLElement {
   }
   connectedCallback() {
     this.dataset.status = "connected"
-
-    //const mdview_content = this.closest('mdview-content');
-
-      const scripts = [
-        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
-      ]
-      const styles = [
-        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
-      ]
-      ScriptLoader(scripts, () => {
-        this.init();
-        const mdview_plugins = this.closest('mdview-plugins');
-        mdview_plugins.dataset.loaded++
-      })
-      StyleLoader(styles)
+    const scripts = [
+      "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
+    ]
+    const styles = [
+      "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
+    ]
+    ScriptLoader(scripts, () => {
+      this.init();
+      const mdview_plugins = this.closest('mdview-plugins');
+      mdview_plugins.dataset.loaded++
+    })
+    StyleLoader(styles)
   }
   attributeChangedCallback(name, old_value, new_value){
-    console.log(this.tagName,name, new_value)
-    
-    /*
-    if(new_value == "content_loaded"){
-      this.init();
-    }    
-
-    if(new_value == "content_reloaded"){
-      this.init();
-    }
-    */
-
+   // console.log(this.tagName,name, new_value)
   }
 }
 
@@ -566,7 +485,6 @@ class MDViewPluginMath extends HTMLElement {
       ],(message)=>{
         if(message=="loaded"){
           this.init();
-          //this.dataset.status = "loaded"
         }
       })
     }
@@ -637,8 +555,6 @@ class MDViewPluginChart extends HTMLElement {
     this.dataset.status = "assigned"
   }
   init(){
-    //const viewer = this.closest('mdview-content');
-    //if(viewer){
       var chart_array = document.querySelectorAll(".language-chart");
       chart_array.forEach((element,index)=>{
         var p_node = element.parentNode;
@@ -650,8 +566,6 @@ class MDViewPluginChart extends HTMLElement {
       })
       mermaid.initialize({ startOnLoad: false });
       mermaid.init()
-      //this.remove();
-    //}
   }
   static get observedAttributes() {
     return ['data-status'];
@@ -670,7 +584,6 @@ class MDViewPluginChart extends HTMLElement {
       ],(message)=>{
         if(message==='loaded'){
           this.init();
-          //this.dataset.status = "loaded"
         }
       })
     }
@@ -679,29 +592,13 @@ class MDViewPluginChart extends HTMLElement {
     }
   }
 }
-/*
-const scripts = [
-  //"https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.2.0/markdown-it.min.js",
-  //"https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.1.4/markdown-it-attrs.browser.js",
-  //"https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js",
-  //"https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
-  //"https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"
-]
-const styles = [
-  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
-]
-ScriptLoader(scripts, () => {
+
+window.addEventListener('DOMContentLoaded', function() {
+  customElements.define('mdview-plugins', MDViewPlugin);
+  customElements.define('mdview-plugin-toc', MDViewPluginToc);
+  customElements.define('mdview-plugin-highlight', MDViewPluginHighlight);
+  customElements.define('mdview-plugin-math', MDViewPluginMath);
+  customElements.define('mdview-plugin-graph', MDViewPluginGraph);
+  customElements.define('mdview-plugin-chart', MDViewPluginChart);
   customElements.define('mdview-content', MarkdownViewer);
-  //customElements.define('mdview-toc', MDViewToc);
 })
-StyleLoader(styles)
-*/
-customElements.define('mdview-plugins', MDViewPlugin);
-customElements.define('mdview-plugin-toc', MDViewPluginToc);
-customElements.define('mdview-plugin-highlight', MDViewPluginHighlight);
-customElements.define('mdview-plugin-math', MDViewPluginMath);
-customElements.define('mdview-plugin-graph', MDViewPluginGraph);
-customElements.define('mdview-plugin-chart', MDViewPluginChart);
-customElements.define('mdview-content', MarkdownViewer);

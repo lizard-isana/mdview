@@ -1,7 +1,14 @@
 # MDView: Markdown Viewer Component
 The web components renders and displays markdown documents. It works by simply linking libraries and writing component tags.
 
-https://lizard-isana.github.io/mdview/
+## Source
+https://github.com/lizard-isana/mdview
+
+## CDN
+```HTML
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/js/mdview.js"></script>
+```
 
 ## Usage
 
@@ -9,29 +16,51 @@ https://lizard-isana.github.io/mdview/
 Write markdown directly in the HTML file. It does not dynamically load the file, so it works even if you open the HTML file directly from a browser ("file://" will also work).
 
 ```HTML
-<link rel="stylesheet" href="./dist/default.css">
-<script src="./dist/mdview.js"></script>
+<link rel="stylesheet" href="/dist/css/default.css">
+<script src="/dist/js/mdview.js"></script>
+
+<template class="markdown" data-target="main">
+  # The markdown document is here.
+</template>
 
 <mdview-content id="main">
   The HTML document will be rendered here.
 </mdview-content>
 
-<template class="markdown" data-target="main">
-  # The markdown document is here.
-</template>
 ```
 
 ### Include mode
 Loads an external markdown file. Since the external file is loaded dynamically, a web server is required ("https://" or "http://" is required, "file://" will not work).
 
 ```HTML
-<link rel="stylesheet" href="./dist/default.css">
-<script src="./dist/mdview.js"></script>
+<link rel="stylesheet" href="/dist/css/default.css">
+<script src="/dist/js/mdview.js"></script>
 
 <mdview-content id="main" src="main.md">
   The main.md will be rendered here.
 </mdview-content>
 ```
+
+### SPA(Single Page Application) Mode
+If you specify `data-spa=true` in the include mode as follows, you can use SPA mode to open another Markdown file linked from the loaded Markdown file without page transition. 
+
+```HTML
+<link rel="stylesheet" href="/dist/css/default.css">
+<script src="/dist/js/mdview.js"></script>
+
+<mdview-content id="main" src="main.md" data-spa="true">
+  The main.md will be rendered here.
+  And links within main.md will be open and rendered here.
+</mdview-content>
+```
+
+## Documentation/Sample site
+日本語: https://lizard-isana.github.io/mdview/usage.ja.html
+English: WIP
+
+
+## License
+© 2022 Isana Kashiwai ([MIT license](https://github.com/lizard-isana/mdview/blob/main/LICENSE))
 
 ## Copyrights/Credits
 MDView depends on below superb libraries.
