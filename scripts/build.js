@@ -24,8 +24,7 @@ const path = {
     "name":"mdview"
   },
 }
-// src.scss → src.rc.css  → dist.css 
-// src.rc.css → src.min.rc.css  → dist.min.css
+
 const src_scss = `${path.sass.src}${path.sass.name}.scss`;
 const compiled_css = `${path.css.src}${path.css.name}.rc.css`;
 const compiled_css_map = `${path.css.src}${path.css.name}.rc.map.css`;
@@ -33,13 +32,12 @@ const minified_css = `${path.css.src}${path.css.name}.min.rc.css`;
 const minified_css_map = `${path.css.src}${path.css.name}.min.rc.map.css`;
 const dist_compiled_css = `${path.css.dist}${path.css.name}.css`;
 const dist_minified_css = `${path.css.dist}${path.css.name}.min.css`;
-
-// src.js → src.rc.js  → dist.js 
-// src.rc.js → src.min.rc.js  → dist.min.js
 const compiled_js = `${path.js.src}${path.js.name}.rc.js`;
-const minified_js = `${path.js.src}${path.js.name}.min.rc.js`;
 const dist_compiled_js = `${path.js.dist}${path.js.name}.js`;
-const dist_minified_js = `${path.js.dist}${path.js.name}.min.js`;
+
+
+//console.log(`${path.sass.src}${path.sass.name}.scss`);
+//console.log(`${path.css.src}${path.css.name}.rc.css`);
 
 const process_js = async () =>{
   console.log("js processing start.")
@@ -93,11 +91,12 @@ const process_css = async  () =>{
 // Copy files
 const copy_files = async  () =>{
   console.log("copy css files from dev to dist")
-  await fs.copyFileSync(compiled_css, dist_compiled_css);
-  await fs.copyFileSync(minified_css, dist_minified_css);
+  await fs.copyFileSync(compiled_css, dist_compiled_css)
+  await fs.copyFileSync(minified_css, dist_minified_css)
   console.log("copy js files from dev to dist")
-  await fs.copyFileSync(compiled_js, dist_compiled_js);
-  await fs.copyFileSync(minified_js, dist_minified_js);
+  await fs.copyFileSync(compiled_js, dist_compiled_js)
+  console.log("copy files from dist to docs")
+  fs.copySync('./dist/', './docs/')
 }
 
 const build = async () => {
