@@ -15076,6 +15076,8 @@
                       for (var i in GrobalStorage.Hook[_this.id].code_highlight) {
                         code = GrobalStorage.Hook[_this.id].code_highlight[i](code, lang);
                       }
+                    } else {
+                      code = _this.EscapeEntity(code);
                     }
 
                     return code;
@@ -15163,8 +15165,7 @@
     }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, old_value, new_value) {
-        console.log(this.tagName, this.id, name, new_value);
-
+        //console.log(this.tagName,this.id ,name, new_value);
         if (name == 'data-status' && new_value == "plugin_loaded") {
           this.load();
         }
@@ -15350,15 +15351,13 @@
           }
         });
         GrobalAddHook(mdview_content.id, "content_loaded", function (target) {
-          console.log("hooked");
           var code_array = target.querySelectorAll("code[class*=\"language\"]");
 
           for (var i in code_array) {
             var class_list = code_array[i].classList;
 
             if (class_list && class_list.value.match(/language/)) {
-              var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2]; //console.log(code_array[i].innerHTML)
-
+              var lang = class_list.value.match(/(|\s)language-(.*)(|\s)/)[2];
               code_array[i].setAttribute("data-language", lang);
 
               if (GrobalStorage.highlight_exception.indexOf(lang) < 0) {
@@ -15455,8 +15454,7 @@
         if (new_value == "content_loaded") {
           ScriptLoader(["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"], function (message) {
             if (message == "loaded") {
-              _this7.init(); //this.dataset.status = "loaded"
-
+              _this7.init();
             }
           });
         }
@@ -15567,8 +15565,6 @@
     _createClass(MDViewPluginChart, [{
       key: "init",
       value: function init() {
-        //const viewer = this.closest('mdview-content');
-        //if(viewer){
         var chart_array = document.querySelectorAll(".language-chart");
         chart_array.forEach(function (element, index) {
           var p_node = element.parentNode;
@@ -15581,8 +15577,7 @@
         mermaid.initialize({
           startOnLoad: false
         });
-        mermaid.init(); //this.remove();
-        //}
+        mermaid.init();
       }
     }, {
       key: "connectedCallback",
@@ -15600,8 +15595,7 @@
         if (new_value == "content_loaded") {
           ScriptLoader(["https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"], function (message) {
             if (message === 'loaded') {
-              _this11.init(); //this.dataset.status = "loaded"
-
+              _this11.init();
             }
           });
         }
@@ -15619,33 +15613,15 @@
 
     return MDViewPluginChart;
   }( /*#__PURE__*/_wrapNativeSuper(HTMLElement));
-  /*
-  const scripts = [
-    //"https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.2.0/markdown-it.min.js",
-    //"https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.1.4/markdown-it-attrs.browser.js",
-    //"https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js",
-    //"https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js",
-    //"https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"
-  ]
-  const styles = [
-    "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"
-  ]
-  ScriptLoader(scripts, () => {
+
+  window.addEventListener('DOMContentLoaded', function () {
+    customElements.define('mdview-plugins', MDViewPlugin);
+    customElements.define('mdview-plugin-toc', MDViewPluginToc);
+    customElements.define('mdview-plugin-highlight', MDViewPluginHighlight);
+    customElements.define('mdview-plugin-math', MDViewPluginMath);
+    customElements.define('mdview-plugin-graph', MDViewPluginGraph);
+    customElements.define('mdview-plugin-chart', MDViewPluginChart);
     customElements.define('mdview-content', MarkdownViewer);
-    //customElements.define('mdview-toc', MDViewToc);
-  })
-  StyleLoader(styles)
-  */
-
-
-  customElements.define('mdview-plugins', MDViewPlugin);
-  customElements.define('mdview-plugin-toc', MDViewPluginToc);
-  customElements.define('mdview-plugin-highlight', MDViewPluginHighlight);
-  customElements.define('mdview-plugin-math', MDViewPluginMath);
-  customElements.define('mdview-plugin-graph', MDViewPluginGraph);
-  customElements.define('mdview-plugin-chart', MDViewPluginChart);
-  customElements.define('mdview-content', MarkdownViewer);
+  });
 
 })();

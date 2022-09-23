@@ -70,7 +70,6 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 - 脚注
 - タスクリスト
 - id, class, style 属性の付加
-- コードハイライト
 - HTML直書き(Markdown内のJavaScriptの実行&スタイルの再適用)
 
 ### 脚注
@@ -127,16 +126,6 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 表示には[markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)を利用しています。
 
 
-### コードハイライト
-
-```HTML
-<mdview-content id="main"></mdview-content>
-<template class="markdown" data-target="main">
-  # H1
-  Markdownをここに直接書く
-</template>
-```
-
 ### HTML直書き／スクリプトタグの埋め込み
 
 以下のように、optionで `data-html="true"`を指定すると本文中でHTMLタグが使えるようになり、さらに `data-sanitize="false"`を指定するとスクリプトが使えるようになります。
@@ -164,6 +153,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にプラグインコンポーネントを追記することでアクティブになります。
 
 - 目次
+- コードハイライト
 - 数式(MathJax)
 - グラフ(C3.js)
 - チャート(Mermaid.js）
@@ -172,6 +162,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 <mdview-content id="main">
   <mdview-plugins>
     <mdview-plugin-toc></mdview-plugin-toc>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
     <mdview-plugin-math></mdview-plugin-math>
     <mdview-plugin-graph></mdview-plugin-graph>
     <mdview-plugin-chart></mdview-plugin-chart>
@@ -212,6 +203,37 @@ toc{.toc .close}
 </mdview-content>
 ```
 
+### コードハイライト(highlight.js)
+コードブロックに言語名を付加することでコードが色分けされ、行番号が表示されます。
+
+````
+```HTML
+<mdview-content id="main"></mdview-content>
+<template class="markdown" data-target="main">
+  # H1
+  Markdownをここに直接書く
+</template>
+```
+````
+
+```HTML
+<mdview-content id="main"></mdview-content>
+<template class="markdown" data-target="main">
+  # H1
+  Markdownをここに直接書く
+</template>
+```
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-highlight&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
+  </mdview-plugins>
+</mdview-content>
+```
+
 ### 数式(MathJax)
 
 コードブロックに `math`を指定するとMathJaxでレンダリングして表示します
@@ -233,8 +255,6 @@ x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
 \]
 です。
 ```
-
----
 
 この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-math&gt;`コンポーネントを追加することでアクティブになります。
 
