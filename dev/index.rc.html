@@ -4,32 +4,38 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown Viewer Component</title>
-  <link rel="stylesheet" href="./css/default.css">
+  <title>MDView - Markdown Viewer Component | Usage</title>
+  <!--
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/css/default.css">
+  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/js/mdview.js"></script>
+  -->
+  <link rel="stylesheet" href="./css/default.rc.css">
   <script src="./js/mdview.rc.js"></script>
 </head>
 <body>
 <main>
 
-<mdview-content id="main" data-html="true" data-sanitize="false">
-  <mdview-plugins>
-    <mdview-plugin-toc></mdview-plugin-toc>
-    <mdview-plugin-highlight></mdview-plugin-highlight>
-    <mdview-plugin-math></mdview-plugin-math>
-    <mdview-plugin-graph></mdview-plugin-graph>
-    <mdview-plugin-chart></mdview-plugin-chart>
-  </mdview-plugins>
-</mdview-content>
-
 <template data-target="main">
 
 # Markdown Viewer Component
-Markdownをレンダリングして表示する Web Component です。ライブラリをリンクして、タグを書き込むだけで動作します。MarkdownをHTMLファイル内に直接記述する「インラインモード」とMarkdownを外部ファイルから読み込む「インクルードモード」の両方に対応しています。
+Markdownをレンダリングして要素内に表示する Web Component です。HTMLファイルにライブラリをリンクしてタグを書き込むだけで動作します。
+
+Markdownのレンダリングには [Markdown-It](https://github.com/markdown-it/markdown-it) を使用しています。
 
 toc{.toc}
 
 ## Source
 https://github.com/lizard-isana/mdview
+
+## CDN
+スクリプトとスタイルシートをCDNから読み込むことで、HTMLファイル一つで動作させることができます。
+
+```HTML
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/js/mdview.js"></script>
+```
+※ 上記の例では、常に最新版を読み込みます。互換性などの問題から特定のバージョンが必要な場合は、下記からリンクを取得してください。
+cf. [lizard-isana/mdview CDN by jsDelivr](https://www.jsdelivr.com/package/gh/lizard-isana/mdview)
 
 ## Usage
 
@@ -41,18 +47,14 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 3. `&lt;template&gt;`に Markdown を書く(上の`id`と同じ値を`data-target`に指定する)
 
 ```HTML
-<link rel="stylesheet" href="default.css">
-<script src="mdview.js"></script>
-
-<template class="markdown" data-target="main">
-  # Title
-  Markdownをここに直接書くと...
-</template>
-
 <mdview-content id="main">
   templateタグ内のMarkdownがレンダリングされてここに表示されます。
 </mdview-content>
 
+<template data-target="main">
+  # Title
+  Markdownをここに直接書くと...
+</template>
 ```
 
 ### インクルードモード
@@ -62,9 +64,6 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`と外部Markdownファイルを指定する)
 
 ```HTML
-<link rel="stylesheet" href="default.css">
-<script src="mdview.js"></script>
-
 <mdview-content id="main" src="main.md">
   main.mdの内容が読み込まれ、内容がレンダリングされてここに表示されます。
 </mdview-content>
@@ -74,9 +73,6 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 インクルードモードで以下のように`data-spa=true`を指定すると、読み込まれたMarkdownファイルからリンクされている別のMarkdownファイルをページ遷移なしで開くSPAモードが使えます。 
 
 ```HTML
-<link rel="stylesheet" href="default.css">
-<script src="mdview.js"></script>
-
 <mdview-content id="main" src="main.md" data-spa="true">
   main.mdからリンクされた別のMarkdownファイルをクリックすると
   ファイルが読み込まれ、内容がレンダリングされて、ここに表示されます。
@@ -89,7 +85,6 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 - 脚注
 - タスクリスト
 - id, class, style 属性の付加
-- コードハイライト
 - HTML直書き(Markdown内のJavaScriptの実行&スタイルの再適用)
 
 ### 脚注
@@ -146,19 +141,11 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 表示には[markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)を利用しています。
 
 
-### コードハイライト
-
-```HTML
-<mdview-content id="main"></mdview-content>
-<template class="markdown" data-target="main">
-  # H1
-  Markdownをここに直接書く
-</template>
-```
-
 ### HTML直書き／スクリプトタグの埋め込み
 
 以下のように、optionで `data-html="true"`を指定すると本文中でHTMLタグが使えるようになり、さらに `data-sanitize="false"`を指定するとスクリプトが使えるようになります。
+
+※ 
 
 ```HTML
 <mdview-content id="main" data-html="true" data-sanitize="false"></mdview-content>
@@ -183,6 +170,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にプラグインコンポーネントを追記することでアクティブになります。
 
 - 目次
+- コードハイライト
 - 数式(MathJax)
 - グラフ(C3.js)
 - チャート(Mermaid.js）
@@ -191,6 +179,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 <mdview-content id="main">
   <mdview-plugins>
     <mdview-plugin-toc></mdview-plugin-toc>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
     <mdview-plugin-math></mdview-plugin-math>
     <mdview-plugin-graph></mdview-plugin-graph>
     <mdview-plugin-chart></mdview-plugin-chart>
@@ -231,6 +220,37 @@ toc{.toc .close}
 </mdview-content>
 ```
 
+### コードハイライト(highlight.js)
+コードブロックに言語名を付加することでコードが色分けされ、行番号が表示されます。
+
+````
+```HTML
+<mdview-content id="main"></mdview-content>
+<template class="markdown" data-target="main">
+  # H1
+  Markdownをここに直接書く
+</template>
+```
+````
+
+```HTML
+<mdview-content id="main"></mdview-content>
+<template class="markdown" data-target="main">
+  # H1
+  Markdownをここに直接書く
+</template>
+```
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-highlight&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
+  </mdview-plugins>
+</mdview-content>
+```
+
 ### 数式(MathJax)
 
 コードブロックに `math`を指定するとMathJaxでレンダリングして表示します
@@ -252,8 +272,6 @@ x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
 \]
 です。
 ```
-
----
 
 この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-math&gt;`コンポーネントを追加することでアクティブになります。
 
@@ -390,6 +408,16 @@ MDView depends on below superb libraries.
 - [Mermaid.js](https://mermaid-js.github.io/) ([MIT License](https://github.com/mermaid-js/mermaid/blob/develop/LICENSE))
 
 </template>
+
+<mdview-content id="main" data-html="true" data-sanitize="false">
+  <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
+    <mdview-plugin-math></mdview-plugin-math>
+    <mdview-plugin-graph></mdview-plugin-graph>
+    <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
+</mdview-content>
 
 </main>
 <footer>

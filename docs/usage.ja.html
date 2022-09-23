@@ -14,12 +14,24 @@
 <template data-target="main">
 
 # Markdown Viewer Component
-Markdownをレンダリングして表示する Web Component です。ライブラリをリンクして、タグを書き込むだけで動作します。MarkdownをHTMLファイル内に直接記述する「インラインモード」とMarkdownを外部ファイルから読み込む「インクルードモード」の両方に対応しています。
+Markdownをレンダリングして要素内に表示する Web Component です。HTMLファイルにライブラリをリンクしてタグを書き込むだけで動作します。
+
+Markdownのレンダリングには [Markdown-It](https://github.com/markdown-it/markdown-it) を使用しています。
 
 toc{.toc}
 
 ## Source
 https://github.com/lizard-isana/mdview
+
+## CDN
+スクリプトとスタイルシートをCDNから読み込むことで、HTMLファイル一つで動作させることができます。
+
+```HTML
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/js/mdview.js"></script>
+```
+※ 上記の例では、常に最新版を読み込みます。互換性などの問題から特定のバージョンが必要な場合は、下記からリンクを取得してください。
+cf. https://www.jsdelivr.com/package/gh/lizard-isana/mdview
 
 ## Usage
 
@@ -31,15 +43,14 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 3. `&lt;template&gt;`に Markdown を書く(上の`id`と同じ値を`data-target`に指定する)
 
 ```HTML
-<template class="markdown" data-target="main">
-  # Title
-  Markdownをここに直接書くと...
-</template>
-
 <mdview-content id="main">
   templateタグ内のMarkdownがレンダリングされてここに表示されます。
 </mdview-content>
 
+<template data-target="main">
+  # Title
+  Markdownをここに直接書くと...
+</template>
 ```
 
 ### インクルードモード
@@ -70,7 +81,7 @@ HTMLファイル内に Markdown を直接記述します。ファイルの動的
 - 脚注
 - タスクリスト
 - id, class, style 属性の付加
-- HTML直書き(Markdown内のJavaScriptの実行&スタイルの再適用)
+- インラインHTML
 
 ### 脚注
 MarkdownのPandoc拡張記法で、脚注の表示ができます。
@@ -126,9 +137,11 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 表示には[markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)を利用しています。
 
 
-### HTML直書き／スクリプトタグの埋め込み
+### インラインHTML
 
-以下のように、optionで `data-html="true"`を指定すると本文中でHTMLタグが使えるようになり、さらに `data-sanitize="false"`を指定するとスクリプトが使えるようになります。
+不特定多数のユーザーがコンテンツをアップロード/編集できる環境では、セキュリティリスクが増すため、以下の指定を変更することは推奨しません。{style="color:red;font-weight:bold"}
+
+MDViewはデフォルトの状態では、DOMPurifyを使って、生成されるHTML上でスクリプトが動作するのを抑制しています。そのため、スクリプトタグを始めとして、一部のタグが動作しません。以下のように、optionで `data-html="true"`を指定すると本文中でHTMLタグが使えるようになり、さらに `data-sanitize="false"`を指定するとスクリプトが使えるようになります。
 
 ```HTML
 <mdview-content id="main" data-html="true" data-sanitize="false"></mdview-content>
@@ -153,10 +166,12 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にプラグインコンポーネントを追記することでアクティブになります。
 
 - 目次
-- コードハイライト
+- コードハイライト(highlight.js)
 - 数式(MathJax)
 - グラフ(C3.js)
 - チャート(Mermaid.js）
+
+組み込みプラグインを全て有効にすると以下のような記述になります。
 
 ```HTML
 <mdview-content id="main">
@@ -205,6 +220,7 @@ toc{.toc .close}
 
 ### コードハイライト(highlight.js)
 コードブロックに言語名を付加することでコードが色分けされ、行番号が表示されます。
+cf.[highlight.js](https://highlightjs.org/)
 
 ````
 ```HTML
@@ -235,8 +251,8 @@ toc{.toc .close}
 ```
 
 ### 数式(MathJax)
-
-コードブロックに `math`を指定するとMathJaxでレンダリングして表示します
+コードブロックに `math`を指定するとMathJaxでレンダリングして表示します。
+cf.[MathJax](https://www.mathjax.org/)
 
 ````plaintext
 ```math
@@ -335,6 +351,7 @@ cf. ([c3.js](https://c3js.org/))
 
 ### チャート(Mermaid.js)
 コードブロックに `chart`を指定すると Mermaid.js でレンダリングして表示します。
+cf.[Mermaid.js](https://mermaid-js.github.io/) 
 
 ````
 ```chart

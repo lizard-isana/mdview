@@ -18,9 +18,12 @@ html {
 }
 body {
   background: white;
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 400;
-  line-height: 1.75;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic Pro", "Yu Gothic", "YuGothic", "Meiryo",system-ui, sans-serif;
+  font-weight: 300;
+  font-kerning: auto;
+  font-variant-ligatures: none;
+  letter-spacing: .25px;
+  line-height: 1.75em;
   letter-spacing: 0.03rem;
   color: #3f3c3c;
 }

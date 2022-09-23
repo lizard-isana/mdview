@@ -49,7 +49,7 @@ class MarkdownViewer extends HTMLElement {
     }
     this.Storage = {};
     this.Storage.CodeHighlightHook = [];
-    this.Storage.allowed_attributes = ['id', 'class', 'style'];
+    this.Storage.allowed_attributes = ['id', 'class', 'style', 'target'];
     this.query = this.QueryDecoder();
     this.status;
     this.SetDefaults();
@@ -70,7 +70,7 @@ class MarkdownViewer extends HTMLElement {
     if(this.option.format == undefined){this.option.format = "markdown"}
     if(this.option.spa == undefined){this.option.spa = false}
     if(this.option.link_target == undefined){this.option.link_target = this.id}
-
+    if(this.getAttribute("src")){this.option.mode = 'include'}else{this.option.mode = 'inline'};
   }
 
   EscapeEntity = function (str) {
@@ -131,7 +131,7 @@ class MarkdownViewer extends HTMLElement {
     this.option.default_path = './'
 
     if(src){
-      this.Storage.mode = 'include';
+      this.option.mode = 'include';
       const path_array = src.split("/");
       if(path_array.length>1){
         path_array.pop()
@@ -158,7 +158,7 @@ class MarkdownViewer extends HTMLElement {
     }else{
       const md_element = document.querySelector(`template[data-target="${this.id}"]`);
       if(md_element){
-        this.Storage.mode = 'inline';
+        this.option.mode = 'inline';
         markdown = md_element.innerHTML;
         markdown = markdown.replace(/(&gt;)/g, '>');
         markdown = markdown.replace(/(&lt;)/g, '<');
@@ -175,7 +175,7 @@ class MarkdownViewer extends HTMLElement {
     };
     let dom = document.createRange().createContextualFragment(html);
 
-    if(this.Storage.mode == 'include' && this.option.spa == true){
+    if(this.option.mode == 'include' && this.option.spa == true){
       const link_array = dom.querySelectorAll("a");
       let href;
       for (var i = 0, ln = link_array.length; i < ln; i++) {
@@ -259,7 +259,8 @@ class MarkdownViewer extends HTMLElement {
     });
     
     // browser back
-    if(this.Storage.mode == 'include' && this.option.spa == true){
+    console.log(this.option.mode,this.option.spa)
+    if(this.option.mode == 'include' && this.option.spa == true){
       GrobalStorage.popstate = window.addEventListener("popstate", () => {
         const q = this.QueryDecoder();
         if(q[this.id]){

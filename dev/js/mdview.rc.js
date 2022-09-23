@@ -14843,6 +14843,12 @@
         if (_this.option.link_target == undefined) {
           _this.option.link_target = _this.id;
         }
+
+        if (_this.getAttribute("src")) {
+          _this.option.mode = 'include';
+        } else {
+          _this.option.mode = 'inline';
+        }
       });
 
       _defineProperty(_assertThisInitialized(_this), "EscapeEntity", function (str) {
@@ -14905,7 +14911,7 @@
                     break;
                   }
 
-                  _this.Storage.mode = 'include';
+                  _this.option.mode = 'include';
                   path_array = src.split("/");
 
                   if (path_array.length > 1) {
@@ -14978,7 +14984,7 @@
                   md_element = document.querySelector("template[data-target=\"".concat(_this.id, "\"]"));
 
                   if (md_element) {
-                    _this.Storage.mode = 'inline';
+                    _this.option.mode = 'inline';
                     markdown = md_element.innerHTML;
                     markdown = markdown.replace(/(&gt;)/g, '>');
                     markdown = markdown.replace(/(&lt;)/g, '<');
@@ -14995,7 +15001,7 @@
                   }
                   dom = document.createRange().createContextualFragment(html);
 
-                  if (_this.Storage.mode == 'include' && _this.option.spa == true) {
+                  if (_this.option.mode == 'include' && _this.option.spa == true) {
                     link_array = dom.querySelectorAll("a");
 
                     for (i = 0, ln = link_array.length; i < ln; i++) {
@@ -15093,7 +15099,9 @@
                 }); // browser back
 
 
-                if (_this.Storage.mode == 'include' && _this.option.spa == true) {
+                console.log(_this.option.mode, _this.option.spa);
+
+                if (_this.option.mode == 'include' && _this.option.spa == true) {
                   GrobalStorage.popstate = window.addEventListener("popstate", function () {
                     var q = _this.QueryDecoder();
 
@@ -15117,7 +15125,7 @@
                   });
                 }
 
-              case 4:
+              case 5:
               case "end":
                 return _context2.stop();
             }
@@ -15143,7 +15151,7 @@
 
       _this.Storage = {};
       _this.Storage.CodeHighlightHook = [];
-      _this.Storage.allowed_attributes = ['id', 'class', 'style'];
+      _this.Storage.allowed_attributes = ['id', 'class', 'style', 'target'];
       _this.query = _this.QueryDecoder();
       _this.status;
 
