@@ -36,7 +36,11 @@ mdview-content{
   width: 100%;
   margin: auto;
 
-  p {margin-bottom: 1rem;}
+  p {
+    margin-bottom: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   h1, h2, h3, h4, h5 {
     margin: 3rem 0 1.38rem;
@@ -106,6 +110,7 @@ mdview-content{
   }
 
   ul{
+    padding-left: 2rem;
     li{
       position: relative;
       list-style: none;
@@ -121,9 +126,11 @@ mdview-content{
         border-right: 1.5px solid #bbb;
         border-bottom: 1.5px solid #bbb;
         transform: rotate(-45deg);
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       &>ul{
-        margin-left: initial;
+        padding-left: 2rem;
       }
     }
     &.contains-task-list{
@@ -138,6 +145,8 @@ mdview-content{
   ol{
     li{
       margin-top: 0.3rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   }
