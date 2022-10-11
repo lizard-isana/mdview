@@ -41,7 +41,7 @@ If you specify `data-spa=true` in the include mode as follows, you can use SPA m
 ```HTML
 <mdview-content id="main" src="main.md" data-spa="true">
   The main.md will be rendered here.
-  And links within main.md will be open and rendered here.
+  And links to .md files within main.md will be open and rendered here.
 </mdview-content>
 ```
 
