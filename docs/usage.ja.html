@@ -250,6 +250,17 @@ cf.[highlight.js](https://highlightjs.org/)
 </mdview-content>
 ```
 
+#### スタイル
+以下のように、`&lt;markdown-plugin-highlight&gt;`に、`data-style`を指定することで、highlight.jsのスタイルを指定できます。何も指定しないと、`github`スタイルが適用されます。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-highlight data-style="github"></mdview-plugin-highlight>
+  </mdview-plugins>
+</mdview-content>
+```
+
 ### 数式(MathJax)
 コードブロックに `math`を指定するとMathJaxでレンダリングして表示します。
 cf.[MathJax](https://www.mathjax.org/)

@@ -57,7 +57,7 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
+mdview-content {
   background: white;
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic Pro", "Yu Gothic", "YuGothic", "Meiryo", system-ui, sans-serif;
   font-weight: 300;
@@ -68,7 +68,6 @@ body {
   letter-spacing: 0.03rem;
   color: #3f3c3c;
 }
-
 mdview-content > section {
   padding: 60px 20px;
   max-width: 900px;
@@ -77,6 +76,8 @@ mdview-content > section {
 }
 mdview-content > section p {
   margin-bottom: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 mdview-content > section h1, mdview-content > section h2, mdview-content > section h3, mdview-content > section h4, mdview-content > section h5 {
   margin: 3rem 0 1.38rem;
@@ -140,6 +141,9 @@ mdview-content > section hr:after {
   padding: 0 0.5em;
   line-height: 1.75em;
 }
+mdview-content > section ul {
+  padding-left: 2rem;
+}
 mdview-content > section ul li {
   position: relative;
   list-style: none;
@@ -156,9 +160,11 @@ mdview-content > section ul li::after {
   border-right: 1.5px solid #bbb;
   border-bottom: 1.5px solid #bbb;
   transform: rotate(-45deg);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 mdview-content > section ul li > ul {
-  margin-left: initial;
+  padding-left: 2rem;
 }
 mdview-content > section ul.contains-task-list {
   margin-left: -1em;
@@ -168,6 +174,8 @@ mdview-content > section ul.contains-task-list li::after {
 }
 mdview-content > section ol li {
   margin-top: 0.3rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 mdview-content table {
@@ -216,37 +224,39 @@ mdview-content {
   /* highlight.js */
 }
 mdview-content code {
-  background-color: #f6f8fa;
   border-radius: 3px;
   padding: 0 3px;
-  line-height: 1.5;
-  display: inline-block;
-  vertical-align: text-top;
   white-space: pre-wrap;
   overflow: auto;
+  line-height: 1.5;
+}
+mdview-content code:not(.hljs) {
+  background-color: rgba(0, 0, 0, 0.03);
+  display: inline-block;
+  margin: 0 3px;
+  vertical-align: -0.4em;
 }
 mdview-content pre:not(.code) {
   padding: 1em;
   margin: 0;
   margin-bottom: 1rem;
 }
+mdview-content pre:not(.code) > code {
+  background: transparent;
+}
 mdview-content pre.code {
-  background-color: #fff;
   margin: 0;
   width: 100%;
   margin-bottom: 1rem;
 }
 mdview-content pre.code > code {
-  background: transparent;
   margin: 0;
   padding: 0;
   width: 100%;
+  display: block;
 }
 mdview-content pre.code > code[class*=language] {
-  background-color: #f6f8fa;
-  display: inline-block;
-  font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
-  line-height: 1.2em;
+  display: block;
   position: relative;
   word-break: break-word;
   white-space: break-spaces;

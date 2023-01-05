@@ -1,13 +1,17 @@
 mdview-content{
 code{
-  background-color: #f6f8fa;
+  //background-color: #f6f8fa;
   border-radius: 3px;
   padding: 0 3px;
-  line-height: 1.5;
-  display: inline-block;
-  vertical-align: text-top;
   white-space: pre-wrap;
   overflow: auto;
+  line-height: 1.5;
+  &:not(.hljs){
+    background-color: rgba(0, 0, 0, 0.03);
+    display: inline-block;
+    margin: 0 3px;
+    vertical-align: -0.4em;
+  }
 }
 
 pre{
@@ -15,23 +19,26 @@ pre{
     padding: 1em;
     margin: 0;
     margin-bottom: 1rem;
+    &>code{
+      background: transparent;
+    }
   }
   &.code{
-    background-color: #fff;
+    //background-color: #fff;
     margin: 0;
     width: 100%;
     margin-bottom: 1rem;
     &>code{
-      background: transparent;
+      //background: transparent;
       margin: 0;
       padding: 0;
       width:100%;
-
+      display: block;
       &[class*="language"] {
-        background-color: #f6f8fa;
-        display: inline-block;
-        font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
-        line-height: 1.2em;
+        //background-color: #f6f8fa;
+        display: block;
+        //font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+        //line-height: 1.2em;
         position: relative;
         word-break: break-word;
         white-space: break-spaces;

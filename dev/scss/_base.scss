@@ -16,7 +16,8 @@ html {
   font-size: 16px;
   scroll-behavior: smooth;
 }
-body {
+
+mdview-content{
   background: white;
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic Pro", "Yu Gothic", "YuGothic", "Meiryo",system-ui, sans-serif;
   font-weight: 300;
@@ -26,9 +27,6 @@ body {
   line-height: 1.75em;
   letter-spacing: 0.03rem;
   color: #3f3c3c;
-}
-
-mdview-content{
 
 &>section {
   padding: 60px 20px;

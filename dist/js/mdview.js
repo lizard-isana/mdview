@@ -15375,6 +15375,9 @@
               }
             }
 
+            code_array[i].classList.add("hljs");
+            console.log(code_array[i]);
+
             if (code_array[i].parentNode) {
               code_array[i].parentNode.classList.add("code");
             }
@@ -15393,8 +15396,14 @@
         var _this5 = this;
 
         this.dataset.status = "connected";
-        var scripts = ["https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js", "https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js"];
-        var styles = ["https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css"];
+        var highlight_style = "github";
+
+        if (this.dataset.style) {
+          highlight_style = this.dataset.style;
+        }
+
+        var scripts = ["https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/highlight.min.js", "https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js@latest/dist/highlightjs-line-numbers.min.js"];
+        var styles = ["https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/styles/".concat(highlight_style, ".min.css")];
         ScriptLoader(scripts, function () {
           _this5.init();
 
