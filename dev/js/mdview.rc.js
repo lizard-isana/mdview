@@ -15375,8 +15375,9 @@
               }
             }
 
-            code_array[i].classList.add("hljs");
-            console.log(code_array[i]);
+            if (class_list) {
+              class_list.add("hljs");
+            }
 
             if (code_array[i].parentNode) {
               code_array[i].parentNode.classList.add("code");

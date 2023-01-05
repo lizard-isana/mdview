@@ -259,7 +259,7 @@ class MarkdownViewer extends HTMLElement {
     });
     
     // browser back
-    console.log(this.option.mode,this.option.spa)
+    //console.log(this.option.mode,this.option.spa)
     if(this.option.mode == 'include' && this.option.spa == true){
       GrobalStorage.popstate = window.addEventListener("popstate", () => {
         const q = this.QueryDecoder();
@@ -420,8 +420,9 @@ class MDViewPluginHighlight extends HTMLElement {
             code_array[i].setAttribute("data-highlight", false);
           }
         }
-        code_array[i].classList.add("hljs");
-        console.log(code_array[i])
+        if (class_list) {
+          class_list.add("hljs");
+        }
         if (code_array[i].parentNode) {
           code_array[i].parentNode.classList.add("code")
         }
@@ -455,7 +456,7 @@ class MDViewPluginHighlight extends HTMLElement {
     StyleLoader(styles)
   }
   attributeChangedCallback(name, old_value, new_value){
-   // console.log(this.tagName,name, new_value)
+   //console.log(this.tagName,name, new_value)
   }
 }
 
