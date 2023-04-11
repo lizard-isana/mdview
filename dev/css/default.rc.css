@@ -181,8 +181,6 @@ mdview-content > section ul.contains-task-list li::after {
 }
 mdview-content > section ol li {
   margin-top: 0.3rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 mdview-content table {

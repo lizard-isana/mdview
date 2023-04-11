@@ -15097,9 +15097,8 @@
                 _this.renderer.use(markdownitFootnote).use(markdownitTaskLists).use(markdownItAttrs, {
                   allowedAttributes: _this.Storage.allowed_attributes
                 }); // browser back
+                //console.log(this.option.mode,this.option.spa)
 
-
-                console.log(_this.option.mode, _this.option.spa);
 
                 if (_this.option.mode == 'include' && _this.option.spa == true) {
                   GrobalStorage.popstate = window.addEventListener("popstate", function () {
@@ -15125,7 +15124,7 @@
                   });
                 }
 
-              case 5:
+              case 4:
               case "end":
                 return _context2.stop();
             }
@@ -15416,7 +15415,7 @@
       }
     }, {
       key: "attributeChangedCallback",
-      value: function attributeChangedCallback(name, old_value, new_value) {// console.log(this.tagName,name, new_value)
+      value: function attributeChangedCallback(name, old_value, new_value) {//console.log(this.tagName,name, new_value)
       }
     }], [{
       key: "observedAttributes",
