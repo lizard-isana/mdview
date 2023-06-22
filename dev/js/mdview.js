@@ -212,6 +212,11 @@ class MarkdownViewer extends HTMLElement {
     }
     loading_target.appendChild(new_section);
 
+    window.scroll({
+      top: 0,
+      behavior: "instant"
+    });
+    
     let message;
     if(loading_target.dataset.status == "reloading"){ 
       message = "content_reloaded"

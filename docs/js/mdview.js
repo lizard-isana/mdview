@@ -15037,6 +15037,10 @@
                   }
 
                   loading_target.appendChild(new_section);
+                  window.scroll({
+                    top: 0,
+                    behavior: "instant"
+                  });
 
                   if (loading_target.dataset.status == "reloading") {
                     message = "content_reloaded";
@@ -15054,7 +15058,7 @@
                     }
                   }
 
-                case 51:
+                case 52:
                 case "end":
                   return _context.stop();
               }
