@@ -80,6 +80,25 @@ mdview-content > section p {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+mdview-content > section a {
+  color: #6699cc;
+}
+mdview-content > section a:link {
+  color: #6699cc;
+  text-decoration: none;
+}
+mdview-content > section a:visited {
+  text-decoration: none;
+  color: #778899;
+}
+mdview-content > section a:active {
+  text-decoration: none;
+  color: #6699cc;
+}
+mdview-content > section a:hover {
+  text-decoration: none;
+  color: #6699cc;
+}
 mdview-content > section h1, mdview-content > section h2, mdview-content > section h3, mdview-content > section h4, mdview-content > section h5 {
   margin: 3rem 0 1.38rem;
   font-family: "Noto Sans JP", sans-serif;
@@ -91,14 +110,20 @@ mdview-content > section h1 {
   font-size: 2.488rem;
 }
 mdview-content > section h2 {
-  font-size: 2.074rem;
+  font-size: 1.85rem;
   border-bottom: 1px solid #bbb;
+  line-height: 1.5;
 }
 mdview-content > section h3 {
-  font-size: 1.728rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-bottom: #bbb 1px dashed;
+  margin-bottom: 0.5rem;
 }
 mdview-content > section h4 {
-  font-size: 1.44rem;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 mdview-content > section h5 {
   font-size: 1.2rem;
@@ -117,11 +142,32 @@ mdview-content > section pre {
 mdview-content > section pre.mermaid {
   background-color: initial;
 }
-mdview-content > section blockquote {
-  border-left: 5px solid #d8d8d8;
-  padding: 1rem 2rem;
-  margin-bottom: 1.75rem;
+mdview-content > section sup, mdview-content > section sub {
+  vertical-align: baseline;
   position: relative;
+  top: -0.4em;
+}
+mdview-content > section sub {
+  top: 0.4em;
+}
+mdview-content > section blockquote {
+  position: relative;
+  border-left: none;
+  padding: 2rem 0 2rem 5rem;
+  margin-bottom: 0;
+}
+mdview-content > section blockquote:before {
+  content: open-quote;
+  position: absolute;
+  top: 60px;
+  left: 3rem;
+  font-size: 10rem;
+  opacity: 0.1;
+  font-family: "Times New Roman", Times;
+  transform: scaleY(110%);
+}
+mdview-content > section blockquote:after {
+  content: no-close-quote;
 }
 mdview-content > section hr {
   line-height: 1em;
@@ -134,6 +180,7 @@ mdview-content > section hr {
   -webkit-user-select: text;
      -moz-user-select: text;
           user-select: text;
+  margin: 1rem auto;
 }
 mdview-content > section hr:after {
   content: "*";
@@ -147,7 +194,7 @@ mdview-content > section hr:after {
   line-height: 1.75em;
 }
 mdview-content > section ul {
-  padding-left: 2rem;
+  padding-left: 2.5rem;
 }
 mdview-content > section ul li {
   position: relative;
@@ -169,7 +216,7 @@ mdview-content > section ul li::after {
   text-overflow: ellipsis;
 }
 mdview-content > section ul li > ul {
-  padding-left: 2rem;
+  padding-left: 2.5rem;
 }
 mdview-content > section ul.contains-task-list {
   margin-left: -1em;
