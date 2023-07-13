@@ -3,6 +3,7 @@ import * as markdown_it from './vendors/markdown-it.js';
 import * as markdown_it_footnote from './vendors/markdown-it-footnote.js';
 import * as markdown_it_task_lists from './vendors/markdown-it-task-lists.js';
 import * as markdown_it_attrs from './vendors/markdown-it-attrs.js';
+import markdownItMetaYaml from './vendors/markdown-it-meta-yaml.js'
 import * as purify from './vendors/purify.js'
 import {ScriptLoader,StyleLoader,DataLoader} from './loaders.js'
 
@@ -11,6 +12,12 @@ GrobalStorage.mdview = [];
 GrobalStorage.highlight_exception = ["math","graph","chart"];
 GrobalStorage.popstate;
 GrobalStorage.Hook = {}
+
+window.MDView = window.MDView || {
+  VERSION: "0.1.0 (20230625)",
+  AUTHOR: "Isana Kashiwai",
+  LICENSE: "MIT"
+};
 
 const ChangePluginStatus = (target,message)=>{
   const plugins_wrapper = target.querySelector('mdview-plugins');
@@ -40,6 +47,7 @@ class MarkdownViewer extends HTMLElement {
     if(GrobalStorage.mdview.indexOf(this.id)<0){
       GrobalStorage.mdview.push(this.id);
     }
+    window.MDView[this.id] = {}
     this.dataset.status = "assigned"
     const plugins = this.querySelector("mdview-plugins");
     if(plugins){
@@ -64,12 +72,20 @@ class MarkdownViewer extends HTMLElement {
       if(this.dataset.format){this.option.format = this.dataset.format}
       if(this.dataset.spa){this.option.spa = JSON.parse(this.dataset.spa)}
       if(this.dataset.link_target){this.option.link_target = this.dataset.link_target}
+      if(this.dataset.frontmatter){
+        if(this.dataset.frontmatter === "true"){
+          this.option.frontmatter = true;
+        }else{
+          this.option.frontmatter = false;          
+        }
+      }
     }
     if(this.option.html == undefined){this.option.html = false}
     if(this.option.sanitize == undefined){this.option.sanitize = true}
     if(this.option.format == undefined){this.option.format = "markdown"}
     if(this.option.spa == undefined){this.option.spa = false}
     if(this.option.link_target == undefined){this.option.link_target = this.id}
+    if(this.option.frontmatter == undefined){this.option.frontmatter = true}
     if(this.getAttribute("src")){this.option.mode = 'include'}else{this.option.mode = 'inline'};
   }
 
@@ -211,7 +227,6 @@ class MarkdownViewer extends HTMLElement {
       loading_target_section.remove()
     }
     loading_target.appendChild(new_section);
-
     window.scroll({
       top: 0,
       behavior: "instant"
@@ -224,7 +239,6 @@ class MarkdownViewer extends HTMLElement {
       message = "content_loaded"
     }
     ChangePluginStatus(loading_target,message);
-
     this.status =  message;
     this.dataset.status = message
     if (GrobalStorage.Hook[this.id].content_loaded) {
@@ -260,8 +274,18 @@ class MarkdownViewer extends HTMLElement {
       .use(markdownitFootnote)
       .use(markdownitTaskLists)
       .use(markdownItAttrs, {
-      allowedAttributes: this.Storage.allowed_attributes
-    });
+        allowedAttributes: this.Storage.allowed_attributes
+      })
+
+      if(this.option.frontmatter == true){
+        this.renderer.use(markdownItMetaYaml, {
+          cb: (meta) => {
+            if(meta){
+              window.MDView[this.id].meta = meta;
+            }
+          }
+        })
+      }
     
     // browser back
     //console.log(this.option.mode,this.option.spa)

@@ -40,6 +40,27 @@ mdview-content{
     text-overflow: ellipsis;
   }
 
+
+  a{
+    color: #6699cc;
+    &:link {
+      color: #6699cc;
+      text-decoration: none;
+    }
+    &:visited {
+      text-decoration: none;
+      color: #778899;
+    }
+    &:active {
+      text-decoration: none;
+      color: #6699cc;
+    }
+    &:hover {
+      text-decoration: none;
+      color: #6699cc;
+    }
+  }
+
   h1, h2, h3, h4, h5 {
     margin: 3rem 0 1.38rem;
     font-family: 'Noto Sans JP', sans-serif;
@@ -50,17 +71,26 @@ mdview-content{
   h1 {
     margin-top: 0;
     font-size: 2.488rem;
-    
   }
 
   h2 {
-    font-size: 2.074rem;
+    font-size: 1.85rem;
     border-bottom: 1px solid #bbb;
+    line-height: 1.5;
   }
 
-  h3 {font-size: 1.728rem;}
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    border-bottom: #bbb 1px dashed;
+    margin-bottom: 0.5rem;
+  }
 
-  h4 {font-size: 1.44rem;}
+  h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
 
   h5 {font-size: 1.2rem;}
 
@@ -78,12 +108,35 @@ mdview-content{
       background-color:initial;
     }
   }
-  blockquote{
-    border-left: 5px solid #d8d8d8;
-    //background-color: #f6f8fa;
-    padding: 1rem 2rem;
-    margin-bottom: 1.75rem;
+
+  sup, sub {
+    vertical-align: baseline;
     position: relative;
+    top: -0.4em;
+  }
+
+  sub { 
+    top: 0.4em; 
+  }
+  
+  blockquote{
+    position: relative;
+    border-left:none;
+    padding:2rem 0 2rem 5rem;
+    margin-bottom: 0;
+    &:before{
+      content:open-quote;
+      position:absolute;
+      top: 60px;
+      left: 3rem;
+      font-size:10rem;
+      opacity:0.1;
+      font-family: 'Times New Roman', Times;
+      transform:scaleY(110%);
+    }
+    &:after{
+      content: no-close-quote;
+    }
   }
 
   hr {
@@ -95,6 +148,7 @@ mdview-content{
     text-align: center;
     height: 1.75em;
     user-select: text;
+    margin: 1rem auto;
   }
 
   hr:after {
@@ -108,7 +162,7 @@ mdview-content{
   }
 
   ul{
-    padding-left: 2rem;
+    padding-left: 2.5rem;
     li{
       position: relative;
       list-style: none;
@@ -128,7 +182,7 @@ mdview-content{
         text-overflow: ellipsis;
       }
       &>ul{
-        padding-left: 2rem;
+        padding-left: 2.5rem;
       }
     }
     &.contains-task-list{
