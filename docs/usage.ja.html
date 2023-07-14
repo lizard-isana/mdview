@@ -5,14 +5,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MDView - Markdown Viewer Component | Usage</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.1.0/dist/css/default.css">
-  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.1.0/dist/js/mdview.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.1.1/dist/css/default.css">
+  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.1.1/dist/js/mdview.js"></script>
 </head>
 <body>
 <main>
 
 <template data-target="main">
-
 # Markdown Viewer Component
 Markdownをレンダリングして要素内に表示する Web Component です。HTMLファイルにライブラリをリンクしてタグを書き込むだけで動作します。
 
@@ -161,6 +160,55 @@ MDViewはデフォルトの状態では、DOMPurifyを使って、生成され�
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">A life is like a garden. Perfect moments can be had, but not preserved, except in memory. LLAP</p>&mdash; Leonard Nimoy (@TheRealNimoy) <a href="https://twitter.com/TheRealNimoy/status/569762773204217857?ref_src=twsrc%5Etfw">February 23, 2015</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
+
+### Front Matter (experimental)
+YAML形式のフロントマター(Front Matter)に対応しています。Markdownファイルの冒頭に下記のようにYAML形式でメタ情報を書き込んでおくと、JavaScriptから`MDView[id].meta`でアクセスすることができます。
+
+cf.[Front Matter | Jekyll](https://jekyllrb.com/docs/front-matter/)
+
+```
+---
+title: "Page Title"
+date: "2023-07-09 12:00"
+update: "2023-07-10 12:00"
+author: "Isana Kashiwai"
+---
+```
+
+Markdownで上記の記述をすると、該当ページのJavaScript内で以下のように指定したのと同じことになります。
+
+```JavaScript
+/* <mdview-content id="main"></mdview-content> 内に読み込んだ場合を想定 */
+MDView.main.meta = {
+  title: "Page Title",
+  date: "2023-07-09 12:00",
+  update: "2023-07-10 12:00",
+  author: "Isana Kashiwai"
+}
+```
+
+以下の例では、フロントマターに`title`が存在する場合に、ページのタイトルタグにその値を設定し、フロントマターが存在しない場合には本文内の最初のH1タグの内容を設定するように指定しています。
+
+```JavaScript
+const target = document.querySelector("mdview-content#main");
+const observer = new MutationObserver( (mutations) => {
+  const content = mutations[0].target;
+  if(MDView.main.meta.title){
+      document.title = `${MDView.main.meta.title}`
+  }else{
+    const h1 = content.querySelector("h1");
+    if(h1){
+      document.title = `${h1.innerHTML}`
+    }
+  }
+});
+observer.observe(target, {
+    childList: true,
+    subtree: true
+});
+```
+
+※ページの内容を取得するために`MutationObserver`を使っていることに注意してください。ページが読み込まれた時点ではMarkdownのレンダリングが終わっていないため、ページの内容を取得するためには、Observerでコンポーネント内が書き換えられたことを検知する必要があります。
 
 ## 組み込みプラグイン
 以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にプラグインコンポーネントを追記することでアクティブになります。
@@ -417,13 +465,13 @@ MDView depends on below superb libraries.
 - [MathJax](https://www.mathjax.org/) ([Apache License 2.0](https://github.com/mathjax/MathJax/blob/master/LICENSE))
 - [C3.js](https://c3js.org/) ([The MIT License](https://github.com/c3js/c3/blob/master/LICENSE))
 - [Mermaid.js](https://mermaid-js.github.io/) ([MIT License](https://github.com/mermaid-js/mermaid/blob/develop/LICENSE))
-
+  
 </template>
 
 <mdview-content id="main" data-html="true" data-sanitize="false">
   <mdview-plugins>
     <mdview-plugin-toc></mdview-plugin-toc>
-    <mdview-plugin-highlight></mdview-plugin-highlight>
+    <mdview-plugin-highlight data-style="github"></mdview-plugin-highlight>
     <mdview-plugin-math></mdview-plugin-math>
     <mdview-plugin-graph></mdview-plugin-graph>
     <mdview-plugin-chart></mdview-plugin-chart>

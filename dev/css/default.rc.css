@@ -85,18 +85,18 @@ mdview-content > section a {
 }
 mdview-content > section a:link {
   color: #6699cc;
-  text-decoration: none;
+  text-decoration: underline;
 }
 mdview-content > section a:visited {
-  text-decoration: none;
+  text-decoration: underline;
   color: #778899;
 }
 mdview-content > section a:active {
-  text-decoration: none;
+  text-decoration: underline;
   color: #6699cc;
 }
 mdview-content > section a:hover {
-  text-decoration: none;
+  text-decoration: underline;
   color: #6699cc;
 }
 mdview-content > section h1, mdview-content > section h2, mdview-content > section h3, mdview-content > section h4, mdview-content > section h5 {

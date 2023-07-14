@@ -45,18 +45,18 @@ mdview-content{
     color: #6699cc;
     &:link {
       color: #6699cc;
-      text-decoration: none;
+      text-decoration: underline;
     }
     &:visited {
-      text-decoration: none;
+      text-decoration: underline;
       color: #778899;
     }
     &:active {
-      text-decoration: none;
+      text-decoration: underline;
       color: #6699cc;
     }
     &:hover {
-      text-decoration: none;
+      text-decoration: underline;
       color: #6699cc;
     }
   }
@@ -118,7 +118,7 @@ mdview-content{
   sub { 
     top: 0.4em; 
   }
-  
+
   blockquote{
     position: relative;
     border-left:none;
