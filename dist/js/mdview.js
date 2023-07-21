@@ -15038,6 +15038,13 @@
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
+                  if (_this.option.spa == true) {
+                    window.scroll({
+                      top: 0,
+                      behavior: "instant"
+                    });
+                  }
+
                   mdview_content = document.querySelector("mdview-content#".concat(_this.id));
 
                   if (target && _this.id !== _this.option.link_target) {
@@ -15057,7 +15064,7 @@
                   _this.option.default_path = './';
 
                   if (!src) {
-                    _context.next = 33;
+                    _context.next = 34;
                     break;
                   }
 
@@ -15070,25 +15077,25 @@
                   }
 
                   if (!target) {
-                    _context.next = 13;
+                    _context.next = 14;
                     break;
                   }
 
                   file = _this.option.default_path + target;
-                  _context.next = 27;
+                  _context.next = 28;
                   break;
 
-                case 13:
+                case 14:
                   if (!(_this.option.spa == true && Object.keys(_this.query).length > 0)) {
-                    _context.next = 26;
+                    _context.next = 27;
                     break;
                   }
 
                   _context.t0 = _regeneratorRuntime().keys(_this.query);
 
-                case 15:
+                case 16:
                   if ((_context.t1 = _context.t0()).done) {
-                    _context.next = 24;
+                    _context.next = 25;
                     break;
                   }
 
@@ -15096,13 +15103,13 @@
                   tgt_elem = document.getElementById(key);
 
                   if (tgt_elem) {
-                    _context.next = 20;
+                    _context.next = 21;
                     break;
                   }
 
-                  return _context.abrupt("continue", 15);
+                  return _context.abrupt("continue", 16);
 
-                case 20:
+                case 21:
 
                   if (key == _this.id) {
                     file = _this.option.default_path + _this.query[key].split("/").reverse()[0];
@@ -15110,27 +15117,27 @@
                     file = src;
                   }
 
-                  _context.next = 15;
+                  _context.next = 16;
                   break;
 
-                case 24:
-                  _context.next = 27;
+                case 25:
+                  _context.next = 28;
                   break;
-
-                case 26:
-                  file = src;
 
                 case 27:
+                  file = src;
+
+                case 28:
                   loader = new DataLoader();
-                  _context.next = 30;
+                  _context.next = 31;
                   return loader.load(file);
 
-                case 30:
+                case 31:
                   markdown = _context.sent;
-                  _context.next = 35;
+                  _context.next = 36;
                   break;
 
-                case 33:
+                case 34:
                   md_element = document.querySelector("template[data-target=\"".concat(_this.id, "\"]"));
 
                   if (md_element) {
@@ -15142,7 +15149,7 @@
                     console.error("No markdown document is found.");
                   }
 
-                case 35:
+                case 36:
                   ChangePluginStatus(mdview_content, "markdown_loaded");
                   html = _this.renderer.render(markdown);
 
@@ -15187,10 +15194,6 @@
                   }
 
                   loading_target.appendChild(new_section);
-                  window.scroll({
-                    top: 0,
-                    behavior: "instant"
-                  });
 
                   if (loading_target.dataset.status == "reloading") {
                     message = "content_reloaded";

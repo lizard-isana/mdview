@@ -126,6 +126,12 @@ class MarkdownViewer extends HTMLElement {
 
 
   load = async (target) => {
+    if(this.option.spa == true){
+      window.scroll({
+        top: 0,
+        behavior: "instant"
+      });
+    }
     const mdview_content = document.querySelector(`mdview-content#${this.id}`);
 
     let loading_target;
@@ -227,11 +233,7 @@ class MarkdownViewer extends HTMLElement {
       loading_target_section.remove()
     }
     loading_target.appendChild(new_section);
-    window.scroll({
-      top: 0,
-      behavior: "instant"
-    });
-    
+
     let message;
     if(loading_target.dataset.status == "reloading"){ 
       message = "content_reloaded"
