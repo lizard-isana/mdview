@@ -38,6 +38,7 @@ mdview-content{
       margin: 0 auto;
       display: table-row;
       counter-increment: toc;
+      text-indent: initial;
       &:before{
         padding-right: 0.25em;
         display: table-cell;

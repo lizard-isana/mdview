@@ -167,10 +167,11 @@ mdview-content{
       position: relative;
       list-style: none;
       margin-top: 0.3rem;
+      text-indent: -12px;
       &::before{
         content: "";
         display: inline-block;
-        vertical-align: middle;
+        vertical-align: 2px;
         position: relative;
         margin-right: 0.5rem;
         width: 6px;
@@ -191,7 +192,7 @@ mdview-content{
                 width: 4px;
                 height: 4px;
                 background-color: #bbb;
-
+                vertical-align: 3px;
               }
             }
           }

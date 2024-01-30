@@ -200,11 +200,12 @@ mdview-content > section ul li {
   position: relative;
   list-style: none;
   margin-top: 0.3rem;
+  text-indent: -12px;
 }
 mdview-content > section ul li::before {
   content: "";
   display: inline-block;
-  vertical-align: middle;
+  vertical-align: 2px;
   position: relative;
   margin-right: 0.5rem;
   width: 6px;
@@ -223,6 +224,7 @@ mdview-content > section ul li > ul > li > ul > li::before {
   width: 4px;
   height: 4px;
   background-color: #bbb;
+  vertical-align: 3px;
 }
 mdview-content > section ul.contains-task-list {
   margin-left: -1em;
@@ -402,6 +404,7 @@ mdview-content .toc ul li {
   margin: 0 auto;
   display: table-row;
   counter-increment: toc;
+  text-indent: initial;
 }
 mdview-content .toc ul li:before {
   padding-right: 0.25em;
