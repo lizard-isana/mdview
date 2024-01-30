@@ -162,35 +162,49 @@ mdview-content{
   }
 
   ul{
-    padding-left: 2.5rem;
+    padding-left: 2rem;
     li{
       position: relative;
       list-style: none;
       margin-top: 0.3rem;
-      &::after{
+      &::before{
         content: "";
-        display: block;
-        position: absolute;
-        top: 0.6em;
-        left: -1em;
-        width: 8px;
-        height: 8px;
-        border-right: 1.5px solid #bbb;
-        border-bottom: 1.5px solid #bbb;
-        transform: rotate(-45deg);
-        overflow: hidden;
-        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+        position: relative;
+        margin-right: 0.5rem;
+        width: 6px;
+        height: 6px;
+        background-color: #bbb;
+        border-radius: 10px;
       }
       &>ul{
-        padding-left: 2.5rem;
+        padding-left: 2rem;
+        &>li{
+          &::before{
+            border: 1px solid #bbb;
+            background-color: initial;
+          }
+          &>ul{
+            &>li{
+              &::before{
+                width: 4px;
+                height: 4px;
+                background-color: #bbb;
+
+              }
+            }
+          }
+        }
       }
     }
     &.contains-task-list{
       margin-left: -1em;
       li{
-        &::after{
+        &::before{
           content: none;
         }
+
       }
     }
   }

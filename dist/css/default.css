@@ -189,34 +189,40 @@ mdview-content > section hr:after {
   line-height: 1.75em;
 }
 mdview-content > section ul {
-  padding-left: 2.5rem;
+  padding-left: 2rem;
 }
 mdview-content > section ul li {
   position: relative;
   list-style: none;
   margin-top: 0.3rem;
 }
-mdview-content > section ul li::after {
+mdview-content > section ul li::before {
   content: "";
-  display: block;
-  position: absolute;
-  top: 0.6em;
-  left: -1em;
-  width: 8px;
-  height: 8px;
-  border-right: 1.5px solid #bbb;
-  border-bottom: 1.5px solid #bbb;
-  transform: rotate(-45deg);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  margin-right: 0.5rem;
+  width: 6px;
+  height: 6px;
+  background-color: #bbb;
+  border-radius: 10px;
 }
 mdview-content > section ul li > ul {
-  padding-left: 2.5rem;
+  padding-left: 2rem;
+}
+mdview-content > section ul li > ul > li::before {
+  border: 1px solid #bbb;
+  background-color: initial;
+}
+mdview-content > section ul li > ul > li > ul > li::before {
+  width: 4px;
+  height: 4px;
+  background-color: #bbb;
 }
 mdview-content > section ul.contains-task-list {
   margin-left: -1em;
 }
-mdview-content > section ul.contains-task-list li::after {
+mdview-content > section ul.contains-task-list li::before {
   content: none;
 }
 mdview-content > section ol li {
@@ -398,6 +404,9 @@ mdview-content .toc ul li:before {
   padding-right: 0.25em;
   display: table-cell;
   content: counters(toc, ".") ".";
+  vertical-align: initial;
+  background-color: initial;
+  border: initial;
 }
 mdview-content .toc ul li:after {
   content: none;
