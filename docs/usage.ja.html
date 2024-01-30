@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MDView - Markdown Viewer Component | Usage</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.1.1/dist/css/default.css">
+  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.1.1/dist/js/mdview.js"></script>
+</head>
+<body>
+<main>
+
+<template data-target="main">
+# Markdown Viewer Component
+Markdownをレンダリングして要素内に表示する Web Component です。HTMLファイルにライブラリをリンクしてタグを書き込むだけで動作します。
+
+Markdownのレンダリングには [Markdown-It](https://github.com/markdown-it/markdown-it) を使用しています。
+
+toc{.toc}
+
+## Source
+https://github.com/lizard-isana/mdview
+
+## CDN
+スクリプトとスタイルシートをCDNから読み込むことで、HTMLファイル一つで動作させることができます。
+
+```HTML
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@latest/dist/js/mdview.js"></script>
+```
+※ 上記の例では、常に最新版を読み込みます。互換性などの問題から特定のバージョンが必要な場合は、下記からリンクを取得してください。
+cf. https://www.jsdelivr.com/package/gh/lizard-isana/mdview
+
+## Usage
+
+### インラインモード
+HTMLファイル内に Markdown を直接記述します。ファイルの動的な読み込みを行わないので、ブラウザからHTMLファイルを直接開いても動きます(file://でも動作します)。
+
+1. スクリプトとスタイルシートを読みこむ
+2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`を指定する)
+3. `&lt;template&gt;`に Markdown を書く(上の`id`と同じ値を`data-target`に指定する)
+
+```HTML
+<mdview-content id="main">
+  templateタグ内のMarkdownがレンダリングされてここに表示されます。
+</mdview-content>
+
+<template data-target="main">
+  # Title
+  Markdownをここに直接書くと...
+</template>
+```
+
+### インクルードモード
+外部の Markdown ファイルを指定して読み込みます。外部ファイルを動的に読み込むので動作にはWebサーバが必要です(http:// や https:// で運用する必要があります。file:// では動きません)。
+
+1. スクリプトとスタイルシートを読みこむ
+2. `&lt;mdview-content&gt;`のタグを書く(任意の`id`と外部Markdownファイルを指定する)
+
+```HTML
+<mdview-content id="main" src="main.md">
+  main.mdの内容が読み込まれ、内容がレンダリングされてここに表示されます。
+</mdview-content>
+```
+
+### SPA(Single Page Application) モード
+インクルードモードで以下のように`data-spa=true`を指定すると、読み込まれたMarkdownファイルからリンクされている別のMarkdownファイルをページ遷移なしで開くSPAモードが使えます。 
+
+```HTML
+<mdview-content id="main" src="main.md" data-spa="true">
+  main.mdからリンクされた別のMarkdownファイルをクリックすると
+  ファイルが読み込まれ、内容がレンダリングされて、ここに表示されます。
+</mdview-content>
+```
+
+## Features
+[CommonMark](https://spec.commonmark.org/)で使えるMarkdown記法（レンダリングには[markdown-it](https://github.com/markdown-it/markdown-it)を使用）に加えて、以下の機能が追加されています。
+- 目次
+- 脚注
+- タスクリスト
+- id, class, style 属性の付加
+- インラインHTML
+
+### 脚注
+MarkdownのPandoc拡張記法で、脚注の表示ができます。
+```
+こんな感じで[^1]、脚注の表示ができます^[行内に書くパターン]。
+
+[^1]:脚注部分を別行に書くパターン。
+```
+
+こんな感じで[^1]、脚注の表示ができます^[行内に書くパターン]。
+
+[^1]:脚注部分を別行に書くパターン。
+
+表示には[markdown-it-footnote](https://github.com//markdown-it/markdown-it-footnote)を利用しています。
+
+
+### タスクリスト
+MarkdownのGithub拡張記法で、タスクリスト(チェックボックス)の表示ができます。ただし、ページ上でクリックしてもMarkdownは更新されません。
+
+```
+- [x] 項目1
+- [ ] 項目2
+  - [ ] 項目2-2
+```
+
+- [x] 項目1
+- [ ] 項目2
+  - [ ] 項目2-2
+
+表示には[markdown-it-task-lists](https://github.com/revin/markdown-it-task-lists)を利用しています。
+
+### id, class, style 属性の付加
+MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定ができます。
+
+```
+クラスを指定(スタイルタグと組み合わせてCSSを適用することができます){.custom_class}
+
+<style>.custom_class {color:steelblue}</style>
+
+スタイルを直接指定することもできます{style="color:red"}
+
+ただし、それ以外の属性を指定しても無視されます。{onmouseover="alert('alert!')"}
+```
+
+クラスを指定(スタイルタグと組み合わせてCSSを適用することができます){.custom_class}
+
+<style>.custom_class {color:steelblue}</style>
+
+スタイルを直接指定することもできます{style="color:red"}
+
+ただし、それ以外の属性を指定しても無視されます。{onmouseover="alert('alert!')"}
+
+表示には[markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)を利用しています。
+
+
+### インラインHTML
+
+不特定多数のユーザーがコンテンツをアップロード/編集できる環境では、セキュリティリスクが増すため、以下の指定を変更することは推奨しません。{style="color:red;font-weight:bold"}
+
+MDViewはデフォルトの状態では、DOMPurifyを使って、生成されるHTML上でスクリプトが動作するのを抑制しています。そのため、スクリプトタグを始めとして、一部のタグが動作しません。以下のように、optionで `data-html="true"`を指定すると本文中でHTMLタグが使えるようになり、さらに `data-sanitize="false"`を指定するとスクリプトが使えるようになります。
+
+```HTML
+<mdview-content id="main" data-html="true" data-sanitize="false"></mdview-content>
+<template class="markdown" data-target="main">
+  # H1
+  Markdownをここに直接書く
+</template>
+```
+
+以下の例では、スクリプトタグを含む Twitter の埋め込みタグを表示しています。
+
+```HTML
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">A life is like a garden. Perfect moments can be had, but not preserved, except in memory. LLAP</p>&mdash; Leonard Nimoy (@TheRealNimoy) <a href="https://twitter.com/TheRealNimoy/status/569762773204217857?ref_src=twsrc%5Etfw">February 23, 2015</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+```
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">A life is like a garden. Perfect moments can be had, but not preserved, except in memory. LLAP</p>&mdash; Leonard Nimoy (@TheRealNimoy) <a href="https://twitter.com/TheRealNimoy/status/569762773204217857?ref_src=twsrc%5Etfw">February 23, 2015</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+### Front Matter (experimental)
+YAML形式のフロントマター(Front Matter)に対応しています。Markdownファイルの冒頭に下記のようにYAML形式でメタ情報を書き込んでおくと、JavaScriptから`MDView[id].meta`でアクセスすることができます。
+
+cf.[Front Matter | Jekyll](https://jekyllrb.com/docs/front-matter/)
+
+```
+---
+title: "Page Title"
+date: "2023-07-09 12:00"
+update: "2023-07-10 12:00"
+author: "Isana Kashiwai"
+---
+```
+
+Markdownで上記の記述をすると、該当ページのJavaScript内で以下のように指定したのと同じことになります。
+
+```JavaScript
+/* <mdview-content id="main"></mdview-content> 内に読み込んだ場合を想定 */
+MDView.main.meta = {
+  title: "Page Title",
+  date: "2023-07-09 12:00",
+  update: "2023-07-10 12:00",
+  author: "Isana Kashiwai"
+}
+```
+
+以下の例では、フロントマターに`title`が存在する場合に、ページのタイトルタグにその値を設定し、フロントマターが存在しない場合には本文内の最初のH1タグの内容を設定するように指定しています。
+
+```JavaScript
+const target = document.querySelector("mdview-content#main");
+const observer = new MutationObserver( (mutations) => {
+  const content = mutations[0].target;
+  if(MDView.main.meta.title){
+      document.title = `${MDView.main.meta.title}`
+  }else{
+    const h1 = content.querySelector("h1");
+    if(h1){
+      document.title = `${h1.innerHTML}`
+    }
+  }
+});
+observer.observe(target, {
+    childList: true,
+    subtree: true
+});
+```
+
+※ページの内容を取得するために`MutationObserver`を使っていることに注意してください。ページが読み込まれた時点ではMarkdownのレンダリングが終わっていないため、ページの内容を取得するためには、Observerでコンポーネント内が書き換えられたことを検知する必要があります。
+
+## 組み込みプラグイン
+以下の機能は組み込みプラグインとして提供されています。`&lt;mdview-content&gt;`内にプラグインコンポーネントを追記することでアクティブになります。
+
+- 目次
+- コードハイライト(highlight.js)
+- 数式(MathJax)
+- グラフ(C3.js)
+- チャート(Mermaid.js）
+
+組み込みプラグインを全て有効にすると以下のような記述になります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
+    <mdview-plugin-math></mdview-plugin-math>
+    <mdview-plugin-graph></mdview-plugin-graph>
+    <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
+</mdview-content>
+```
+
+### 目次
+
+MarkdownのPandoc拡張記法で任意の文字列に`{.toc}`のクラスを指定することで目次を表示します。
+文字列は要素を生成するためのダミーなので、なんでも構いません。生成後は削除されます。
+
+```HTML
+
+toc{.toc}
+
+```
+
+toc{.toc}
+
+以下のように、`.close`のクラスを追加すると、初期状態で閉じた状態になります。
+
+```HTML
+
+toc{.toc .close}
+
+```
+
+toc{.toc .close}
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-toc&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
+  </mdview-plugins>
+</mdview-content>
+```
+
+### コードハイライト(highlight.js)
+コードブロックに言語名を付加することでコードが色分けされ、行番号が表示されます。
+cf.[highlight.js](https://highlightjs.org/)
+
+````
+```HTML
+<mdview-content id="main"></mdview-content>
+<template class="markdown" data-target="main">
+  # H1
+  Markdownをここに直接書く
+</template>
+```
+````
+
+```HTML
+<mdview-content id="main"></mdview-content>
+<template class="markdown" data-target="main">
+  # H1
+  Markdownをここに直接書く
+</template>
+```
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-highlight&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-highlight></mdview-plugin-highlight>
+  </mdview-plugins>
+</mdview-content>
+```
+
+#### スタイル
+以下のように、`&lt;markdown-plugin-highlight&gt;`に、`data-style`を指定することで、highlight.jsのスタイルを指定できます。何も指定しないと、`github`スタイルが適用されます。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-highlight data-style="github"></mdview-plugin-highlight>
+  </mdview-plugins>
+</mdview-content>
+```
+
+### 数式(MathJax)
+コードブロックに `math`を指定するとMathJaxでレンダリングして表示します。
+cf.[MathJax](https://www.mathjax.org/)
+
+````plaintext
+```math
+二次方程式 \(ax^{2}+bx+c=0\) の解は
+\[
+x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
+\]
+です。
+```
+````
+
+```math
+二次方程式 \(ax^{2}+bx+c=0\) の解は
+\[
+x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
+\]
+です。
+```
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-math&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-math></mdview-plugin-math>
+  </mdview-plugins>
+</mdview-content>
+```
+
+### グラフ(C3.js)
+コードブロックに `graph`を指定すると c3.js でレンダリングして表示します。
+cf. ([c3.js](https://c3js.org/))
+
+````
+```graph
+{
+    "data": {
+    "columns": [
+        ["data1", 30, 200, 100, 400, 150, 250],
+        ["data2", 50, 20, 10, 40, 15, 25]
+    ]
+    }
+}
+```
+````
+
+```graph
+{
+    "data": {
+    "columns": [
+        ["data1", 30, 200, 100, 400, 150, 250],
+        ["data2", 50, 20, 10, 40, 15, 25]
+    ]
+    }
+}
+```
+
+````
+```graph
+{
+  "data": {
+    "type": "pie",
+    "columns": [
+        ["data1", 30],
+        ["data2", 120]
+    ]
+  }
+}
+```
+````
+
+```graph
+{
+  "data": {
+    "type": "pie",
+    "columns": [
+        ["data1", 30],
+        ["data2", 120]
+    ]
+  }
+}
+```
+
+---
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-graph&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-graph></mdview-plugin-graph>
+  </mdview-plugins>
+</mdview-content>
+```
+
+
+### チャート(Mermaid.js)
+コードブロックに `chart`を指定すると Mermaid.js でレンダリングして表示します。
+cf.[Mermaid.js](https://mermaid-js.github.io/) 
+
+````
+```chart
+sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->>John: Hello John, how are you?
+  loop Healthcheck
+      John->>John: Fight against hypochondria
+  end
+  Note right of John: Rational thoughts <br/>prevail!
+  John-->>Alice: Great!
+  John->>Bob: How about you?
+  Bob-->>John: Jolly good!
+```
+````
+
+```chart
+sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->>John: Hello John, how are you?
+  loop Healthcheck
+      John->>John: Fight against hypochondria
+  end
+  Note right of John: Rational thoughts <br/>prevail!
+  John-->>Alice: Great!
+  John->>Bob: How about you?
+  Bob-->>John: Jolly good!
+```
+
+---
+
+この機能はプラグインとして提供されています。以下のように`&lt;markdown-plugin-chart&gt;`コンポーネントを追加することでアクティブになります。
+
+```HTML
+<mdview-content id="main">
+  <mdview-plugins>
+    <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
+</mdview-content>
+```
+
+## Copyrights/Credits
+MDView depends on below superb libraries.
+- [markdown-it.js](https://github.com/markdown-it/markdown-it) ([MIT License](https://github.com/markdown-it/markdown-it/blob/master/LICENSE))
+- [markdown-it-footnote](https://github.com//markdown-it/markdown-it-footnote) ([MIT License](https://github.com/markdown-it/markdown-it-footnote/blob/master/LICENSE))
+- [markdown-it-task-lists.js](https://github.com/revin/markdown-it-task-lists) ([ISC License](https://github.com/revin/markdown-it-task-lists/blob/master/LICENSE))
+- [markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)([MIT License](https://github.com/arve0/markdown-it-attrs/blob/master/LICENSE))
+- [DOMPurify](https://github.com/cure53/DOMPurify)([Apache/Mozilla Public License](https://github.com/cure53/DOMPurify/blob/master/LICENSE))
+- [highlight.js](https://highlightjs.org/) ([BSD License](https://github.com/highlightjs/highlight.js/blob/master/LICENSE))
+- [MathJax](https://www.mathjax.org/) ([Apache License 2.0](https://github.com/mathjax/MathJax/blob/master/LICENSE))
+- [C3.js](https://c3js.org/) ([The MIT License](https://github.com/c3js/c3/blob/master/LICENSE))
+- [Mermaid.js](https://mermaid-js.github.io/) ([MIT License](https://github.com/mermaid-js/mermaid/blob/develop/LICENSE))
+  
+</template>
+
+<mdview-content id="main" data-html="true" data-sanitize="false">
+  <mdview-plugins>
+    <mdview-plugin-toc></mdview-plugin-toc>
+    <mdview-plugin-highlight data-style="github"></mdview-plugin-highlight>
+    <mdview-plugin-math></mdview-plugin-math>
+    <mdview-plugin-graph></mdview-plugin-graph>
+    <mdview-plugin-chart></mdview-plugin-chart>
+  </mdview-plugins>
+</mdview-content>
+
+</main>
+<footer>
+<mdview-content id="footer" data-html="true"></mdview-content>
+<template data-target="footer">
+Powered by [MDView](https://github.com/lizard-isana/mdview) &copy; Isana Kashiwai{.footer}
+<style>
+.footer{
+  text-align:right;
+  color:#bbb;
+  font-size:10px;
+  padding: 5px;
+}
+.footer a{
+  color:#bbb;
+  text-decoration:none;
+}
+.footer a:hover{
+  text-decoration:underline;
+}
+</style>
+
+</template>
+</footer>
+</body>
+</html>
