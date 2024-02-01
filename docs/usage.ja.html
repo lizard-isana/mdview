@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MDView - Markdown Viewer Component | Usage</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.1.1/dist/css/default.css">
-  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.1.1/dist/js/mdview.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.0/dist/css/default.css">
+  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.0/dist/js/mdview.min.js"></script>
 </head>
 <body>
 <main>
@@ -180,10 +180,10 @@ Markdownで上記の記述をすると、該当ページのJavaScript内で以�
 ```JavaScript
 /* <mdview-content id="main"></mdview-content> 内に読み込んだ場合を想定 */
 MDView.main.meta = {
-  title: "Page Title",
-  date: "2023-07-09 12:00",
-  update: "2023-07-10 12:00",
-  author: "Isana Kashiwai"
+  "title":"Page Title",
+  "date":"2023-07-09 12:00",
+  "update": "2023-07-10 12:00",
+  "author": "Isana Kashiwai"
 }
 ```
 
@@ -460,12 +460,12 @@ MDView depends on below superb libraries.
 - [markdown-it-footnote](https://github.com//markdown-it/markdown-it-footnote) ([MIT License](https://github.com/markdown-it/markdown-it-footnote/blob/master/LICENSE))
 - [markdown-it-task-lists.js](https://github.com/revin/markdown-it-task-lists) ([ISC License](https://github.com/revin/markdown-it-task-lists/blob/master/LICENSE))
 - [markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)([MIT License](https://github.com/arve0/markdown-it-attrs/blob/master/LICENSE))
+- [markdown-it-front-matter](https://github.com/kricsleo/markdown-it-meta-yaml)([MIT License](https://github.com/kricsleo/markdown-it-meta-yaml/blob/master/LICENSE))
 - [DOMPurify](https://github.com/cure53/DOMPurify)([Apache/Mozilla Public License](https://github.com/cure53/DOMPurify/blob/master/LICENSE))
 - [highlight.js](https://highlightjs.org/) ([BSD License](https://github.com/highlightjs/highlight.js/blob/master/LICENSE))
 - [MathJax](https://www.mathjax.org/) ([Apache License 2.0](https://github.com/mathjax/MathJax/blob/master/LICENSE))
 - [C3.js](https://c3js.org/) ([The MIT License](https://github.com/c3js/c3/blob/master/LICENSE))
 - [Mermaid.js](https://mermaid-js.github.io/) ([MIT License](https://github.com/mermaid-js/mermaid/blob/develop/LICENSE))
-  
 </template>
 
 <mdview-content id="main" data-html="true" data-sanitize="false">
