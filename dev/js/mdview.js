@@ -281,7 +281,7 @@ class MarkdownViewer extends HTMLElement {
     });
 
     this.renderer.linkify.set({
-      fuzzyLink: false
+      fuzzyEmail: false
     });
 
     this.renderer
