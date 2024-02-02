@@ -15494,6 +15494,7 @@
               switch (_context.prev = _context.next) {
                 case 0:
                   if (_this.option.spa == true) {
+                    document.querySelector('body').style.display = "none";
                     window.scroll({
                       top: 0,
                       behavior: "instant"
@@ -15618,6 +15619,9 @@
                     loading_target_section.remove();
                   }
                   loading_target.appendChild(new_section);
+                  if (_this.option.spa == true) {
+                    document.querySelector('body').style.display = "initial";
+                  }
                   if (loading_target.dataset.status == "reloading") {
                     message = "content_reloaded";
                   } else {
@@ -15631,7 +15635,7 @@
                       GrobalStorage.Hook[_this.id].content_loaded[i](loading_target);
                     }
                   }
-                case 52:
+                case 53:
                 case "end":
                   return _context.stop();
               }
@@ -15664,7 +15668,7 @@
                   }
                 });
                 _this.renderer.linkify.set({
-                  fuzzyLink: false
+                  fuzzyEmail: false
                 });
                 _this.renderer.use(markdownitFootnote).use(markdownitTaskLists).use(markdownItAttrs, {
                   allowedAttributes: _this.Storage.allowed_attributes

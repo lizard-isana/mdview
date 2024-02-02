@@ -92,6 +92,8 @@ const copy_files = async  () =>{
   console.log("copy js files from dev to dist")
   await fs.copyFileSync(compiled_js, dist_compiled_js)
   await fs.copyFileSync(minified_js, dist_minified_js)
+  console.log("copy img files from dev to dist")
+  await fs.copySync('./dev/img/', './dist/img/')
   console.log("copy files from dist to docs")
   fs.copySync('./dist/', './docs/')
 }
