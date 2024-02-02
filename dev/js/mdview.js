@@ -199,7 +199,7 @@ class MarkdownViewer extends HTMLElement {
     };
     let dom = document.createRange().createContextualFragment(html);
 
-    if(this.option.mode == 'include' && this.option.spa == true){
+    if(this.option.mode == 'include'){
       const link_array = dom.querySelectorAll("a");
       let href;
       for (var i = 0, ln = link_array.length; i < ln; i++) {

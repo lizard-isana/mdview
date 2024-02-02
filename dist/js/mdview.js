@@ -15586,7 +15586,7 @@
                     html = DOMPurify.sanitize(html);
                   }
                   dom = document.createRange().createContextualFragment(html);
-                  if (_this.option.mode == 'include' && _this.option.spa == true) {
+                  if (_this.option.mode == 'include') {
                     link_array = dom.querySelectorAll("a");
                     for (i = 0, ln = link_array.length; i < ln; i++) {
                       href = link_array[i].getAttribute("href");
