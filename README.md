@@ -46,8 +46,8 @@ If you specify `data-spa=true` in the include mode as follows, you can use SPA m
 ```
 
 ## Documentation/Sample site
-日本語: https://lizard-isana.github.io/mdview/usage.ja.html
-English: WIP
+- 日本語: https://lizard-isana.github.io/mdview/usage.ja.html
+- English: WIP
 
 
 ## License
