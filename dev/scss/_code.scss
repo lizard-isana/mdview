@@ -21,6 +21,7 @@ pre{
     margin-bottom: 1rem;
     &>code{
       background: transparent;
+      font-size: calc(14/16)+rem;
     }
   }
   &.code{
@@ -48,7 +49,7 @@ pre{
         display: table;
         border:1px solid #bbb;
         width:100%;
-        font-size:14px;
+        font-size: calc(14/16)+rem;
         margin-bottom: 0;
         td, th , tr{
           padding:3px !important;

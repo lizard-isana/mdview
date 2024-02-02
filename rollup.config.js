@@ -1,10 +1,14 @@
 import {babel} from '@rollup/plugin-babel';
 import {terser} from 'rollup-plugin-terser';
+import resolve from '@rollup/plugin-node-resolve';
 
-module.exports = [
-  {
+
+export default [{
     input: 'dev/js/mdview.js',
     plugins: [
+      resolve({
+        browser: true
+      }),
       babel({
         exclude: "node_modules/**",
         babelHelpers: "bundled",
@@ -22,6 +26,9 @@ module.exports = [
   {
     input: 'dev/js/mdview.js',
     plugins: [
+      resolve({
+        browser: true
+      }),
       babel({
         exclude: "node_modules/**",
         babelHelpers: "bundled",
@@ -36,5 +43,4 @@ module.exports = [
       if (warning.code === 'THIS_IS_UNDEFINED') return;
       defaultHandler(warning)
     }
-  }
-];
+  }];

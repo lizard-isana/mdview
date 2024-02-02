@@ -1,5 +1,5 @@
 /* A Modern CSS Reset */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;400;700;800&display=swap");
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -296,6 +296,7 @@ mdview-content pre:not(.code) {
 }
 mdview-content pre:not(.code) > code {
   background: transparent;
+  font-size: 0.875rem;
 }
 mdview-content pre.code {
   margin: 0;
@@ -319,7 +320,7 @@ mdview-content pre.code > code table {
   display: table;
   border: 1px solid #bbb;
   width: 100%;
-  font-size: 14px;
+  font-size: 0.875rem;
   margin-bottom: 0;
 }
 mdview-content pre.code > code table td, mdview-content pre.code > code table th, mdview-content pre.code > code table tr {

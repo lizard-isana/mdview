@@ -221,7 +221,6 @@ class MarkdownViewer extends HTMLElement {
             target_element.dataset.status = "reloading";
 
             this.load(file);
-            console.log(this.Storage.History)
             window.history.pushState(null, null, url);
             this.Storage.History.push({
               url:url,
@@ -289,9 +288,9 @@ class MarkdownViewer extends HTMLElement {
 
       if(this.option.frontmatter == true){
         this.renderer.use(markdownItMetaYaml, {
-          cb: (meta) => {
-            if(meta){
-              window.MDView[this.id].meta = meta;
+          cb: (json,row) => {
+            if(json){
+              window.MDView[this.id].meta = json;
             }
           }
         })
