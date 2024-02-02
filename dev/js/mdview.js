@@ -128,6 +128,7 @@ class MarkdownViewer extends HTMLElement {
   load = async (target) => {
     
     if(this.option.spa == true){
+      document.querySelector('body').style.display = "none";  
       window.scroll({
         top: 0,
         behavior: "instant"
@@ -241,6 +242,10 @@ class MarkdownViewer extends HTMLElement {
     }
     loading_target.appendChild(new_section);
     
+    if(this.option.spa == true){
+      document.querySelector('body').style.display = "initial";  
+    }
+
     let message;
     if(loading_target.dataset.status == "reloading"){ 
       message = "content_reloaded"
