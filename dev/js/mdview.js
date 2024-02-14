@@ -14,7 +14,7 @@ GrobalStorage.popstate;
 GrobalStorage.Hook = {}
 
 window.MDView = window.MDView || {
-  VERSION: "0.1.0 (20230625)",
+  VERSION: "0.2.4 (20240215)",
   AUTHOR: "Isana Kashiwai",
   LICENSE: "MIT"
 };
@@ -470,7 +470,7 @@ class MDViewPluginHighlight extends HTMLElement {
           code_array[i].parentNode.classList.add("code")
         }
         if (code_array[i].dataset && code_array[i].dataset.highlight && code_array[i].dataset.highlight == "true") {
-          hljs.lineNumbersBlock(code_array[i],{singleLine: false});
+          hljs.lineNumbersBlock(code_array[i],{singleLine: true});
         }
       }
     })
