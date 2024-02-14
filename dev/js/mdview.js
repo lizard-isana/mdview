@@ -513,9 +513,14 @@ class MDViewPluginMath extends HTMLElement {
       var math_element = document.querySelectorAll(".language-math");
       math_element.forEach((element, index) => {
         MathJax.typesetPromise(element.childNodes);
-        const svg = document.createRange().createContextualFragment(element.innerHTML);
-        element.parentNode.insertBefore(svg, element);
-        element.style.display = "none";
+        const p_node = element.parentNode;
+        const math_id = "math_" + index;
+        const math_element = document.createElement('div');
+        math_element.setAttribute("id", math_id)
+        math_element.setAttribute("class", "math")
+        math_element.innerHTML = element.innerHTML;
+        p_node.parentNode.insertBefore(math_element, p_node);
+        p_node.style.display = "none";
       })
     })
   }
