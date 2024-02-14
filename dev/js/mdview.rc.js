@@ -15969,9 +15969,14 @@
           var math_element = document.querySelectorAll(".language-math");
           math_element.forEach(function (element, index) {
             MathJax.typesetPromise(element.childNodes);
-            var svg = document.createRange().createContextualFragment(element.innerHTML);
-            element.parentNode.insertBefore(svg, element);
-            element.style.display = "none";
+            var p_node = element.parentNode;
+            var math_id = "math_" + index;
+            var math_element = document.createElement('div');
+            math_element.setAttribute("id", math_id);
+            math_element.setAttribute("class", "math");
+            math_element.innerHTML = element.innerHTML;
+            p_node.parentNode.insertBefore(math_element, p_node);
+            p_node.style.display = "none";
           });
         });
       }

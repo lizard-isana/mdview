@@ -235,6 +235,9 @@ mdview-content > section ul.contains-task-list li::before {
 mdview-content > section ol li {
   margin-top: 0.3rem;
 }
+mdview-content > section .math {
+  margin-bottom: 1rem;
+}
 
 mdview-content table {
   border-collapse: collapse;
