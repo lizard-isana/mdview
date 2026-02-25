@@ -6,8 +6,8 @@ https://github.com/lizard-isana/mdview
 
 ## CDN
 ```HTML
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.4/dist/css/default.css">
-  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.4/dist/js/mdview.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/css/default.css">
+  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/js/mdview.min.js"></script>
 ```
 
 ## Usage
