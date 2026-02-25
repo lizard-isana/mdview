@@ -1,13 +1,14 @@
+
 # MDView: Markdown Viewer Component
-The web component renders and displays markdown documents. It works by simply linking libraries and writing component tags.
+The web components renders and displays markdown documents. It works by simply linking libraries and writing component tags.
 
 ## Source
 https://github.com/lizard-isana/mdview
 
 ## CDN
 ```HTML
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.4/dist/css/default.css">
-  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.4/dist/js/mdview.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.4/dist/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.4/dist/js/mdview.min.js"></script>
 ```
 
 ## Usage
@@ -59,7 +60,6 @@ MDView depends on below superb libraries.
 - [markdown-it-footnote](https://github.com//markdown-it/markdown-it-footnote) ([MIT License](https://github.com/markdown-it/markdown-it-footnote/blob/master/LICENSE))
 - [markdown-it-task-lists.js](https://github.com/revin/markdown-it-task-lists) ([ISC License](https://github.com/revin/markdown-it-task-lists/blob/master/LICENSE))
 - [markdown-it-attrs](https://github.com/arve0/markdown-it-attrs)([MIT License](https://github.com/arve0/markdown-it-attrs/blob/master/LICENSE))
-- [markdown-it-meta-yaml](https://github.com/kricsleo/markdown-it-meta-yaml)([MIT License](https://github.com/kricsleo/markdown-it-meta-yaml/blob/master/LICENSE))
 - [DOMPurify](https://github.com/cure53/DOMPurify)([Apache/Mozilla Public License](https://github.com/cure53/DOMPurify/blob/master/LICENSE))
 - [highlight.js](https://highlightjs.org/) ([BSD License](https://github.com/highlightjs/highlight.js/blob/master/LICENSE))
 - [MathJax](https://www.mathjax.org/) ([Apache License 2.0](https://github.com/mathjax/MathJax/blob/master/LICENSE))

@@ -1,0 +1,68 @@
+@use "base";
+
+mdview-content{
+.toc {
+  display: inline-block;
+  border: 1px solid #a2a9b1;
+  padding: 5px;
+  margin: 1em 0;
+  width: 50%;
+  //background: #f8f9fa;
+  font-size: 0.85em;
+  line-height: 1.5em;
+  word-break: normal;
+  @include base.sp{
+    width: 100%;
+  }
+  h2 {
+    font-size: 1.2em;
+    font-weight: 500;
+    margin: 0 0.5em;
+    border-bottom: none;
+    cursor: pointer;
+    &:after{
+      content:" [hide]";
+      display:inline-flex;
+      align-items: center;
+      margin-left:10px;
+      font-weight:200;
+      font-size:0.85em;
+      color:#bbb;    
+    }
+  }
+  ul{
+    list-style-position: outside;
+    list-style-type: none;
+    counter-reset: toc;
+    margin: 0.5em auto;
+    padding-left: 0.5em;
+    li{
+      margin: 0 auto;
+      display: table-row;
+      counter-increment: toc;
+      text-indent: initial;
+      &:before{
+        padding-right: 0.25em;
+        display: table-cell;
+        content: counters(toc, ".") "."; 
+        vertical-align: initial;
+        background-color: initial;
+        border: initial;
+      }
+      &:after{
+        content:none
+      }
+    }
+  }
+  &.close {
+    h2{
+      &:after{
+        content:" [show]";
+      }
+    }
+    ul{
+      display: none;
+    }
+  }
+}
+}

@@ -1,0 +1,9 @@
+{
+  "spa": true,
+  "frontmatter": true,
+  "link_target": "main",
+  "strict_root": false,
+  "link_resolution": "relative",
+  "allow_parent": true,
+  "query_path_mode": "split"
+}
