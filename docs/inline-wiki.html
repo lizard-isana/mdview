@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MDView Inline Wiki Sample</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@0.3.0/dist/assets/css/default.css">
+  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@0.3.0/dist/assets/js/mdview.min.js"></script>
+  <style>
+    :root {
+      --wiki-bg: #f4f5f7;
+      --wiki-border: #d0d5dd;
+      --wiki-nav-bg: #ffffff;
+      --wiki-accent: #1f6feb;
+      --wiki-text: #1f2328;
+      --wiki-muted: #57606a;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #fbfbfc 0%, var(--wiki-bg) 100%);
+      color: var(--wiki-text);
+    }
+    .layout {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+    .site-header {
+      border: 1px solid var(--wiki-border);
+      background: var(--wiki-nav-bg);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .site-header h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+    .site-header p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: var(--wiki-muted);
+    }
+    .page-status {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: var(--wiki-muted);
+    }
+    .card {
+      border: 1px solid var(--wiki-border);
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    mdview-content[data-status="loading"] section,
+    mdview-content[data-status="reloading"] section {
+      opacity: 0.45;
+    }
+    code.inline-tag {
+      background: #f6f8fa;
+      border: 1px solid #d8dee4;
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+  </style>
+</head>
+<body>
+  <main class="layout">
+    <header class="site-header">
+      <h1>MDView Inline Wiki Sample</h1>
+      <p>Inline modeでテンプレートを切り替えながら疑似ページ遷移を行うサンプルです。</p>
+      <div id="page-status" class="page-status"></div>
+    </header>
+
+    <section class="card">
+      <mdview-content
+        id="wiki"
+        data-html="true"
+        data-sanitize="true"
+        data-plugins="toc,highlight"
+        data-highlight-style="github">
+      </mdview-content>
+    </section>
+  </main>
+
+<template data-target="wiki">
+# Home
+読み込み中...
+</template>
+
+<template data-page="home" data-title="Home">
+
+# Home
+
+`inline mode` だけで複数ページWikiを模擬するサンプルです。サーバを必要とせず、単一HTMLで完結させることができます。
+
+## Navigation
+- [Getting Started](?page=getting-started)
+- [Design Notes](?page=design-notes)
+- [FAQ](?page=faq)
+
+## Concept
+1. 各ページを`template[data-page]`としてHTMLに埋め込みます。
+2. 1つの`template[data-target="wiki"]`を現在ページとして使います。
+3. URLクエリ`?page=...`に合わせてテンプレートを差し替えます。
+4. `MDView`の`load()`を呼んで再描画します。
+</template>
+
+<template data-page="getting-started" data-title="Getting Started">
+# Getting Started
+
+[Home](?page=home) | [Design Notes](?page=design-notes) | [FAQ](?page=faq)
+
+## Page Source
+このページは `template[data-page="getting-started"]` の内容です。
+
+## Example Code
+```html
+<template data-page="getting-started">
+# Getting Started
+
+## Next
+- [FAQへ進む](?page=faq)
+</template>
+```
+
+## Next
+- [FAQへ進む](?page=faq)
+</template>
+
+<template data-page="design-notes" data-title="Design Notes">
+# Design Notes
+
+[Home](?page=home) | [Getting Started](?page=getting-started) | [FAQ](?page=faq)
+
+## Why this approach?
+- `file://` でも動作させたい
+- 外部Markdownを分割管理する前に、単一HTMLで検証したい
+- 小規模Wikiのプロトタイピングを速く回したい
+
+## Trade-off
+- ページ数が増えるとHTMLが肥大化しやすい
+- Markdownを外出しするInclude modeより差分管理しにくい
+</template>
+
+<template data-page="faq" data-title="FAQ">
+# FAQ
+
+[Home](?page=home) | [Getting Started](?page=getting-started) | [Design Notes](?page=design-notes)
+
+## Q. ブラウザの戻る/進むは使えますか？
+A. `history.pushState` と `popstate` を使っているので使えます。
+
+## Q. ページが存在しない場合は？
+A. `?page=unknown` のような値は `home` にフォールバックします。
+
+## Q. もっとページを増やしたい
+A. `template[data-page="new-page"]` を追加してリンクを張るだけです。
+</template>
+
+  <script>
+    (() => {
+      const viewerId = "wiki";
+      const defaultPage = "home";
+      const viewer = document.getElementById(viewerId);
+      const activeTemplate = document.querySelector(`template[data-target="${viewerId}"]`);
+      const statusElement = document.getElementById("page-status");
+      let viewerReady = false;
+      const pageTemplates = new Map(
+        Array.from(document.querySelectorAll("template[data-page]"))
+          .map((t) => [t.dataset.page, t])
+      );
+
+      const readPageFromUrl = () => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("page") || defaultPage;
+      };
+
+      const writePageToUrl = (page, mode) => {
+        const params = new URLSearchParams(window.location.search);
+        params.set("page", page);
+        const query = params.toString();
+        const nextUrl = query ? `?${query}` : "?";
+        const state = { page };
+        if (mode === "replace") {
+          window.history.replaceState(state, "", nextUrl);
+        } else {
+          window.history.pushState(state, "", nextUrl);
+        }
+      };
+
+      const applyTemplate = (requestedPage) => {
+        const template = pageTemplates.get(requestedPage) || pageTemplates.get(defaultPage);
+        const page = template ? template.dataset.page : defaultPage;
+        if (!template || !activeTemplate) {
+          return defaultPage;
+        }
+
+        activeTemplate.innerHTML = template.innerHTML;
+
+        const pageTitle = template.dataset.title || page;
+        document.title = `Inline Wiki - ${pageTitle}`;
+        if (statusElement) {
+          statusElement.innerHTML = `Current page: <code class="inline-tag">${page}</code>`;
+        }
+        return page;
+      };
+
+      const renderPage = (requestedPage, options = {}) => {
+        const push = options.push === true;
+        const mode = options.mode || "push";
+        const page = applyTemplate(requestedPage);
+        if (push) {
+          writePageToUrl(page, mode);
+        }
+        if (viewerReady && typeof viewer.load === "function") {
+          viewer.load();
+        }
+      };
+
+      viewer.addEventListener("click", (event) => {
+        const link = event.target.closest("a[href]");
+        if (!link) {
+          return;
+        }
+        const nextUrl = new URL(link.getAttribute("href"), window.location.href);
+        if (nextUrl.origin !== window.location.origin || nextUrl.pathname !== window.location.pathname) {
+          return;
+        }
+        const nextPage = nextUrl.searchParams.get("page");
+        if (!nextPage) {
+          return;
+        }
+        event.preventDefault();
+        renderPage(nextPage, { push: true, mode: "push" });
+      });
+
+      window.addEventListener("popstate", () => {
+        renderPage(readPageFromUrl(), { push: false });
+      });
+
+      if (window.MDView && window.MDView.registerHook && window.MDView.PLUGIN_EVENTS) {
+        window.MDView.registerHook(viewerId, window.MDView.PLUGIN_EVENTS.CONTENT_RENDERED, () => {
+          viewerReady = true;
+        });
+      }
+
+      const initialPage = applyTemplate(readPageFromUrl());
+      writePageToUrl(initialPage, "replace");
+    })();
+  </script>
+</body>
+</html>

@@ -7,10 +7,10 @@ code{
   overflow: auto;
   line-height: 1.5;
   &:not(.hljs){
-    background-color: rgba(0, 0, 0, 0.03);
-    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.075);
+    display: inline;
     margin: 0 3px;
-    vertical-align: -0.4em;
+    //vertical-align: -0.4em;
   }
 }
 
