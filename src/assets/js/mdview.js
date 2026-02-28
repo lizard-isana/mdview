@@ -20,6 +20,10 @@ const DEFAULT_VIEWER_OPTIONS = Object.freeze({
   sanitize: true,
   format: "markdown",
   spa: false,
+  inline_spa: false,
+  inline_spa_param: "page",
+  inline_page_attr: "data-page",
+  inline_default_page: "",
   frontmatter: true,
   strict_root: false,
   link_resolution: "root",
@@ -373,7 +377,7 @@ class MarkdownViewer extends HTMLElement {
     if(GlobalStorage.mdview.indexOf(this.id)<0){
       GlobalStorage.mdview.push(this.id);
     }
-    window.MDView[this.id] = {}
+    window.MDView[this.id] = window.MDView[this.id] || {}
     this.dataset.status = "assigned"
     this.viewerState = {};
     this.viewerState.History =[];
@@ -381,6 +385,7 @@ class MarkdownViewer extends HTMLElement {
     this.viewerState.notFoundTemplateLoaded = false;
     this.viewerState.notFoundTemplateMarkdown = null;
     this.viewerState.currentDocPath = null;
+    this.viewerState.currentInlinePage = null;
     // Backward-compatible internal alias.
     this.Storage = this.viewerState;
     this.query = this.QueryDecoder();
@@ -388,6 +393,7 @@ class MarkdownViewer extends HTMLElement {
     this._popStateHandler = null;
     this._isPopStateBound = false;
     this.option = {...DEFAULT_VIEWER_OPTIONS};
+    this.BindPublicApi();
     registerBuiltinPlugins(window.MDView, this);
     window.MDView.pluginRuntime.initViewer(this);
   } 
@@ -452,6 +458,10 @@ class MarkdownViewer extends HTMLElement {
     if(this.dataset.sanitize !== undefined){options.sanitize = this.dataset.sanitize}
     if(this.dataset.format !== undefined){options.format = this.dataset.format}
     if(this.dataset.spa !== undefined){options.spa = this.dataset.spa}
+    if(this.dataset.inlineSpa !== undefined){options.inline_spa = this.dataset.inlineSpa}
+    if(this.dataset.inlineSpaParam !== undefined){options.inline_spa_param = this.dataset.inlineSpaParam}
+    if(this.dataset.inlinePageAttr !== undefined){options.inline_page_attr = this.dataset.inlinePageAttr}
+    if(this.dataset.inlineDefaultPage !== undefined){options.inline_default_page = this.dataset.inlineDefaultPage}
     if(this.dataset.link_target || this.dataset.linkTarget){
       options.link_target = this.dataset.link_target || this.dataset.linkTarget;
     }
@@ -494,6 +504,10 @@ class MarkdownViewer extends HTMLElement {
     this.option.html = this.option.html === true || this.option.html === "true";
     this.option.sanitize = !(this.option.sanitize === false || this.option.sanitize === "false");
     this.option.spa = this.option.spa === true || this.option.spa === "true";
+    this.option.inline_spa = this.option.inline_spa === true || this.option.inline_spa === "true";
+    this.option.inline_spa_param = this.NormalizeInlineSpaParam(this.option.inline_spa_param);
+    this.option.inline_page_attr = this.NormalizeInlinePageAttr(this.option.inline_page_attr);
+    this.option.inline_default_page = String(this.option.inline_default_page || "").trim();
     this.option.frontmatter = !(this.option.frontmatter === false || this.option.frontmatter === "false");
     if(this.getAttribute("src")){this.option.mode = 'include'}else{this.option.mode = 'inline'};
   }
@@ -549,6 +563,193 @@ class MarkdownViewer extends HTMLElement {
       .map((item) => item.toLowerCase());
 
     return [...new Set([...DEFAULT_ALLOWED_ROOT_FILES, ...parsed])];
+  }
+
+  NormalizeInlineSpaParam = (value) => {
+    if (typeof value !== "string") {
+      return "page";
+    }
+    const next = value.trim();
+    if (!next) {
+      return "page";
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(next)) {
+      return "page";
+    }
+    return next;
+  }
+
+  NormalizeInlinePageAttr = (value) => {
+    if (typeof value !== "string") {
+      return "data-page";
+    }
+    const next = value.trim().toLowerCase();
+    if (!next) {
+      return "data-page";
+    }
+    if (!/^data-[a-z0-9_-]+$/.test(next)) {
+      return "data-page";
+    }
+    return next;
+  }
+
+  ReadInlinePageConfig = (option = {}) => {
+    const pageAttrSource = option.page_attr || option.pageAttr || this.option.inline_page_attr || this.dataset.inlinePageAttr || "data-page";
+    const defaultPageSource = option.default_page || option.defaultPage || this.option.inline_default_page || this.dataset.inlineDefaultPage || "";
+    const queryParamSource = option.query_param || option.queryParam || this.option.inline_spa_param || this.dataset.inlineSpaParam || "page";
+    return {
+      pageAttr: this.NormalizeInlinePageAttr(String(pageAttrSource || "data-page")),
+      defaultPage: String(defaultPageSource || "").trim(),
+      queryParam: this.NormalizeInlineSpaParam(String(queryParamSource || "page"))
+    };
+  }
+
+  GetInlineTemplateElement = () => {
+    return document.querySelector(`template[data-target="${this.id}"]`);
+  }
+
+  EnsureInlineTemplateElement = () => {
+    let target = this.GetInlineTemplateElement();
+    if (target) {
+      return target;
+    }
+    target = document.createElement("template");
+    target.dataset.target = this.id;
+    this.insertAdjacentElement("afterend", target);
+    return target;
+  }
+
+  GetInlinePageMap = (pageAttr = "data-page") => {
+    const safePageAttr = this.NormalizeInlinePageAttr(pageAttr);
+    const scoped = [];
+    const unscoped = [];
+    const templates = document.querySelectorAll(`template[${safePageAttr}]`);
+    templates.forEach((template) => {
+      const page = String(template.getAttribute(safePageAttr) || "").trim();
+      if (!page) {
+        return;
+      }
+      const pageTarget = String(template.dataset.pageTarget || "").trim();
+      if (pageTarget && pageTarget !== this.id) {
+        return;
+      }
+      if (pageTarget === this.id) {
+        scoped.push({ page: page, template: template });
+      } else {
+        unscoped.push({ page: page, template: template });
+      }
+    });
+
+    const selected = scoped.length > 0 ? scoped : unscoped;
+    const map = new Map();
+    selected.forEach((item) => {
+      map.set(item.page, item.template);
+    });
+    return map;
+  }
+
+  ResolveInlinePage = (requestedPage, option = {}) => {
+    const config = this.ReadInlinePageConfig(option);
+    const pageMap = this.GetInlinePageMap(config.pageAttr);
+    const strict = option.strict === true || option.strict === "true";
+
+    let page = String(requestedPage || "").trim();
+    if (!page || !pageMap.has(page)) {
+      if (strict) {
+        return {
+          page: null,
+          template: null,
+          config: config,
+          pages: pageMap
+        };
+      }
+      if (config.defaultPage && pageMap.has(config.defaultPage)) {
+        page = config.defaultPage;
+      } else if (pageMap.has("home")) {
+        page = "home";
+      } else if (pageMap.size > 0) {
+        page = pageMap.keys().next().value;
+      } else {
+        page = null;
+      }
+    }
+    return {
+      page: page,
+      template: page ? pageMap.get(page) : null,
+      config: config,
+      pages: pageMap
+    };
+  }
+
+  BuildInlineSpaUrl = (queryParam, page) => {
+    const safeParam = this.NormalizeInlineSpaParam(String(queryParam || "page"));
+    const safePage = String(page || "").trim();
+    const params = new URLSearchParams(window.location.search);
+    if (safePage) {
+      params.set(safeParam, safePage);
+    } else {
+      params.delete(safeParam);
+    }
+    const queryString = params.toString();
+    return queryString ? `?${queryString}` : "?";
+  }
+
+  setMarkdown = (markdown, option = {}) => {
+    if (this.getAttribute("src")) {
+      console.warn("[MDView] setMarkdown is only available in inline mode.");
+      return null;
+    }
+    const template = this.EnsureInlineTemplateElement();
+    template.innerHTML = String(markdown == undefined ? "" : markdown);
+    const shouldReload = !(option.reload === false || option.reload === "false");
+    if (shouldReload && typeof this.load === "function" && this.renderer) {
+      this.dataset.status = "reloading";
+      this.load();
+    }
+    return template;
+  }
+
+  setPage = (requestedPage, option = {}) => {
+    if (this.getAttribute("src")) {
+      console.warn("[MDView] setPage is only available in inline mode.");
+      return null;
+    }
+    const resolved = this.ResolveInlinePage(requestedPage, option);
+    if (!resolved.page || !resolved.template) {
+      return null;
+    }
+    this.viewerState.currentInlinePage = resolved.page;
+    const shouldReload = !(option.reload === false || option.reload === "false");
+    this.setMarkdown(resolved.template.innerHTML, {
+      reload: shouldReload
+    });
+
+    const updateUrl = option.update_url === true || option.update_url === "true" || option.updateUrl === true || option.updateUrl === "true";
+    if (updateUrl) {
+      const url = this.BuildInlineSpaUrl(resolved.config.queryParam, resolved.page);
+      const mode = option.history === "replace" || option.replace === true || option.replace === "true" ? "replace" : "push";
+      const state = {};
+      state[resolved.config.queryParam] = resolved.page;
+      if (mode === "replace") {
+        window.history.replaceState(state, "", url);
+      } else {
+        window.history.pushState(state, "", url);
+      }
+    }
+    return resolved.page;
+  }
+
+  BindPublicApi = () => {
+    if (!this.id) {
+      return;
+    }
+    const api = window.MDView[this.id] || {};
+    api.element = this;
+    api.load = (target, loadOption = {}) => this.load(target, loadOption);
+    api.setMarkdown = (markdown, option = {}) => this.setMarkdown(markdown, option);
+    api.setPage = (page, option = {}) => this.setPage(page, option);
+    api.getCurrentPage = () => this.viewerState.currentInlinePage || null;
+    window.MDView[this.id] = api;
   }
 
   ResolveMarkdownTarget = (input, currentDocPath = "") => {
@@ -948,7 +1149,7 @@ class MarkdownViewer extends HTMLElement {
       }
       markdown = loadResult.data;
     }else{
-      const md_element = document.querySelector(`template[data-target="${this.id}"]`);
+      const md_element = this.GetInlineTemplateElement();
       if(md_element){
         this.option.mode = 'inline';
         markdown = md_element.innerHTML;

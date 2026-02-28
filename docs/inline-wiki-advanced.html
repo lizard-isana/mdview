@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MDView Inline Wiki Advanced</title>
+<!-- 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/assets/css/default.css">
+  <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/assets/js/mdview.min.js"></script>
+ -->
+  <link rel="stylesheet" href="./assets/css/default.css">
+  <script src="./assets/js/mdview.min.js"></script>
+
+  <style>
+    :root {
+      --wiki-bg: #f4f5f7;
+      --wiki-border: #d0d5dd;
+      --wiki-nav-bg: #ffffff;
+      --wiki-accent: #1f6feb;
+      --wiki-text: #1f2328;
+      --wiki-muted: #57606a;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #fbfbfc 0%, var(--wiki-bg) 100%);
+      color: var(--wiki-text);
+    }
+    .layout {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+    .site-header {
+      border: 1px solid var(--wiki-border);
+      background: var(--wiki-nav-bg);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .site-header h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+    .site-header p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: var(--wiki-muted);
+    }
+    .page-status {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: var(--wiki-muted);
+    }
+    .demo-button {
+      margin-top: 10px;
+      border: 1px solid #b6c2cf;
+      background: #ffffff;
+      color: var(--wiki-text);
+      border-radius: 8px;
+      font-size: 12px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .demo-button:hover {
+      border-color: var(--wiki-accent);
+      color: var(--wiki-accent);
+    }
+    .card {
+      border: 1px solid var(--wiki-border);
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    mdview-content[data-status="loading"] section,
+    mdview-content[data-status="reloading"] section {
+      opacity: 0.45;
+    }
+    code.inline-tag {
+      background: #f6f8fa;
+      border: 1px solid #d8dee4;
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+  </style>
+</head>
+<body>
+  <main class="layout">
+    <header class="site-header">
+      <h1>MDView Inline Wiki Advanced</h1>
+      <p>ステータス表示とsetMarkdownデモボタンを含む拡張サンプルです。</p>
+      <div id="page-status" class="page-status"></div>
+      <button id="runtime-demo" class="demo-button" type="button">setMarkdown demo</button>
+    </header>
+
+    <section class="card">
+      <mdview-content
+        id="wiki"
+        data-inline-spa="true"
+        data-inline-default-page="home"
+        data-html="true"
+        data-sanitize="true"
+        data-plugins="toc">
+      </mdview-content>
+    </section>
+  </main>
+
+<template data-target="wiki">
+読み込み中...
+</template>
+
+<template data-page="home" data-page-target="wiki" data-title="Home">
+
+# Home
+MDViewの`inline mode` だけで複数ページWikiを模擬するサンプルです。単一HTMLで完結させることができ、サーバを必要とせず、HTMLをダブルクリックするだけで表示できます。
+
+## Navigation
+- [Getting Started](?page=getting-started)
+- [Design Notes](?page=design-notes)
+- [FAQ](?page=faq)
+
+## Concept
+1. 各ページを`template[data-page]`としてHTMLに埋め込みます。
+2. `data-inline-spa="true"`で`inline-spa`プラグインを有効化します。
+3. URLクエリ`?page=...`の変化に応じて、プラグインがページを切り替えます。
+4. 必要なら`MDView.wiki.setMarkdown(markdown)`で任意の本文に差し替えできます。
+</template>
+
+<template data-page="getting-started" data-page-target="wiki" data-title="Getting Started">
+# Getting Started
+
+[Home](?page=home) | [Design Notes](?page=design-notes) | [FAQ](?page=faq)
+
+## Page Source
+このページは `template[data-page="getting-started"]` の内容です。
+
+## Example Code
+```html
+<template data-page="getting-started">
+# Getting Started
+
+## Next
+- [FAQへ進む](?page=faq)
+</template>
+```
+
+## Next
+- [FAQへ進む](?page=faq)
+</template>
+
+<template data-page="design-notes" data-page-target="wiki" data-title="Design Notes">
+# Design Notes
+
+[Home](?page=home) | [Getting Started](?page=getting-started) | [FAQ](?page=faq)
+
+## Why this approach?
+- `file://` でも動作させたい
+- 外部Markdownを分割管理する前に、単一HTMLで検証したい
+- 小規模Wikiのプロトタイピングを速く回したい
+
+## Trade-off
+- ページ数が増えるとHTMLが肥大化しやすい
+- Markdownを外出しするInclude modeより差分管理しにくい
+</template>
+
+<template data-page="faq" data-page-target="wiki" data-title="FAQ">
+# FAQ
+
+[Home](?page=home) | [Getting Started](?page=getting-started) | [Design Notes](?page=design-notes)
+
+## Q. ブラウザの戻る/進むは使えますか？
+A. `history.pushState` と `popstate` を使っているので使えます。
+
+## Q. ページが存在しない場合は？
+A. `?page=unknown` のような値は `home` にフォールバックします。
+
+## Q. もっとページを増やしたい
+A. `template[data-page="new-page"]` を追加してリンクを張るだけです。
+</template>
+
+  <script>
+    (() => {
+      const viewerId = "wiki";
+      const statusElement = document.getElementById("page-status");
+      const demoButton = document.getElementById("runtime-demo");
+      const updateStatus = () => {
+        const api = window.MDView && window.MDView[viewerId];
+        if (!api || !statusElement) {
+          return;
+        }
+        const currentPage = api.getCurrentPage ? api.getCurrentPage() : "";
+        statusElement.innerHTML = `Current page: <code class="inline-tag">${currentPage || "-"}</code>`;
+        if (currentPage) {
+          document.title = `Inline Wiki - ${currentPage}`;
+        }
+      };
+
+      if (window.MDView && window.MDView.registerHook && window.MDView.PLUGIN_EVENTS && window.MDView[viewerId]) {
+        window.MDView.registerHook(viewerId, window.MDView.PLUGIN_EVENTS.CONTENT_RENDERED, updateStatus);
+      }
+      if (demoButton) {
+        demoButton.addEventListener("click", () => {
+          const api = window.MDView && window.MDView[viewerId];
+          if (!api || typeof api.setMarkdown !== "function") {
+            return;
+          }
+          api.setMarkdown(`
+# Runtime Markdown
+このページは \`MDView.${viewerId}.setMarkdown()\` で実行時に差し替えました。
+
+- [Home](?page=home)
+- [Getting Started](?page=getting-started)
+          `, { reload: true });
+        });
+      }
+      updateStatus();
+    })();
+  </script>
+</body>
+</html>

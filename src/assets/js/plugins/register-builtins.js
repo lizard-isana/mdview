@@ -1,13 +1,17 @@
 import { PluginConfig } from './config.js';
 
 const parseConfiguredPluginNames = (viewer) => {
-  if (!viewer.dataset.plugins) {
-    return PluginConfig.defaultPlugins;
+  const configured = viewer.dataset.plugins
+    ? viewer.dataset.plugins
+      .split(',')
+      .map((name) => name.trim().toLowerCase())
+      .filter(Boolean)
+    : [...PluginConfig.defaultPlugins];
+
+  if (viewer.dataset.inlineSpa === "true" && configured.indexOf('inline-spa') < 0) {
+    configured.push('inline-spa');
   }
-  return viewer.dataset.plugins
-    .split(',')
-    .map((name) => name.trim().toLowerCase())
-    .filter(Boolean);
+  return configured;
 };
 
 const registerBuiltinPlugins = (mdviewApi, viewer) => {

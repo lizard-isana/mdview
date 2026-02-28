@@ -1,10 +1,6 @@
 const HIGHLIGHT_EXCEPTIONS = ['math', 'graph', 'chart'];
 const HIGHLIGHT_JS_VERSION = '11.11.1';
 const HIGHLIGHT_LINE_NUMBERS_VERSION = '2.9.0';
-const LOCAL_LINE_NUMBERS_URL = new URL(
-  '../vendors/highlightjs-line-numbers.min.js',
-  import.meta.url
-).toString();
 
 const hasTokenMarkup = (codeElement) => {
   return codeElement.querySelector('[class*="hljs-"]:not(.hljs-ln-n):not(.hljs-ln-numbers):not(.hljs-ln-code)') != null;
@@ -68,7 +64,7 @@ const createHighlightPlugin = (option = {}) => {
   ];
   const lineNumberScriptUrls = [
     `https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js@${HIGHLIGHT_LINE_NUMBERS_VERSION}/dist/highlightjs-line-numbers.min.js`,
-    LOCAL_LINE_NUMBERS_URL
+    `https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/${HIGHLIGHT_LINE_NUMBERS_VERSION}/highlightjs-line-numbers.min.js`
   ];
   let resizeHandler = null;
   let resizeTimer = null;

@@ -7,8 +7,8 @@ https://github.com/lizard-isana/mdview
 
 ## CDN
 ```HTML
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@0.3.0/dist/assets/css/default.css">
-<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@0.3.0/dist/assets/js/mdview.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/assets/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/assets/js/mdview.min.js"></script>
 ```
 
 ## Usage
@@ -49,6 +49,7 @@ If you specify `data-spa=true` in the include mode as follows, you can use SPA m
 ## Documentation/Sample site
 - 日本語: https://lizard-isana.github.io/mdview/usage.ja.html
 - English: WIP
+- [Security Guide](content/security.md)
 
 
 ## License

@@ -26,6 +26,39 @@ Write markdown directly in the HTML file. It does not dynamically load the file,
 
 ```
 
+#### Runtime API for inline mode
+You can update the current inline markdown at runtime from JavaScript.
+
+```html
+<script>
+  // Replace inline markdown and re-render.
+  MDView.main.setMarkdown("# Updated at runtime");
+</script>
+```
+
+#### Inline SPA helper plugin
+If you use multiple `<template data-page="...">` blocks, you can enable page-like navigation with:
+
+```html
+<mdview-content
+  id="main"
+  data-inline-spa="true"
+  data-inline-default-page="home"
+  data-plugins="toc,inline-spa">
+</mdview-content>
+```
+
+When enabled, links like `[FAQ](?page=faq)` are handled as in-page navigation and can also be controlled via:
+
+```html
+<script>
+  MDView.main.setPage("faq", { updateUrl: true });
+</script>
+```
+
+Main sample: `docs/inline-wiki.html`  
+Advanced sample: `docs/inline-wiki-advanced.html`
+
 ### Include mode
 Loads an external markdown file. Since the external file is loaded dynamically, a web server is required ("https://" or "http://" is required, "file://" will not work).
 

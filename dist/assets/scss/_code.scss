@@ -9,16 +9,25 @@ code{
   &:not(.hljs){
     background-color: rgba(0, 0, 0, 0.075);
     display: inline;
-    margin: 0 3px;
     //vertical-align: -0.4em;
   }
+
 }
+
+p code{
+    display:inline-block;
+    margin:1px;
+    padding:0 2px;
+    background-color:#f3f3f3;  
+  }
 
 pre{
   &:not(.code){
     padding: 1em;
     margin: 0;
     margin-bottom: 1rem;
+    border: 1px #CCC solid;
+    background-color: #f6f8fa;
     &>code{
       background: transparent;
       font-size: calc(14/16)+rem;

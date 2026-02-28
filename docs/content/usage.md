@@ -12,8 +12,8 @@ https://github.com/lizard-isana/mdview
 スクリプトとスタイルシートをCDNから読み込むことで、HTMLファイル一つで動作させることができます。
 
 ```HTML
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.4/dist/css/default.css">
-<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.2.4/dist/js/mdview.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/js/mdview.min.js"></script>
 ```
 ※ 上記の例では、常に最新版を読み込みます。互換性などの問題から特定のバージョンが必要な場合は、下記からリンクを取得してください。
 cf. https://www.jsdelivr.com/package/gh/lizard-isana/mdview
@@ -125,6 +125,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 ### インラインHTML
 
 不特定多数のユーザーがコンテンツをアップロード/編集できる環境では、セキュリティリスクが増すため、以下の指定を変更することは推奨しません。{style="color:red;font-weight:bold"}
+詳細は [Security Guide](security.md) を参照してください。
 
 MDViewはデフォルトの状態では、DOMPurifyを使って、生成されるHTML上でスクリプトが動作するのを抑制しています。そのため、スクリプトタグを始めとして、一部のタグが動作しません。以下のように、optionで `data-html="true"`を指定すると本文中でHTMLタグが使えるようになり、さらに `data-sanitize="false"`を指定するとスクリプトが使えるようになります。
 
@@ -211,8 +212,7 @@ observer.observe(target, {
 <mdview-content
   id="main"
   src="./index.md"
-  data-plugins="toc,highlight,math,chart"
-  data-highlight-style="github">
+  data-plugins="toc">
 </mdview-content>
 ```
 

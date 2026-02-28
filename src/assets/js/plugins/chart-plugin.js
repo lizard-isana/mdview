@@ -1,3 +1,8 @@
+const MERMAID_SCRIPT_URLS = [
+  'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.1/mermaid.min.js'
+];
+
 const renderCharts = (root) => {
   if (!window.mermaid) {
     return;
@@ -27,14 +32,25 @@ const renderCharts = (root) => {
 
 const createChartPlugin = () => {
   let loaded = false;
+  const loadFirstAvailable = async (ctx, urls, label) => {
+    let lastError = null;
+    for (const url of urls) {
+      try {
+        await ctx.loadScripts(url);
+        return;
+      } catch (error) {
+        lastError = error;
+        console.warn(`[MDView] Failed to load ${label}: ${url}`, error);
+      }
+    }
+    throw lastError || new Error(`Failed to load ${label}`);
+  };
 
   const ensureAssets = async (ctx) => {
     if (loaded) {
       return;
     }
-    await ctx.loadScripts([
-      'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js'
-    ]);
+    await loadFirstAvailable(ctx, MERMAID_SCRIPT_URLS, 'mermaid script');
     loaded = true;
   };
 

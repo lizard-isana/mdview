@@ -43,6 +43,6 @@
 
 - `data-allowed-dirs="notes,logs"`
 - `data-allowed-files="index.md,404.md"`
-- `data-plugins="toc,highlight,math,chart"`
+- `data-plugins="toc"`
 
 詳細は `configuration.md` を参照。

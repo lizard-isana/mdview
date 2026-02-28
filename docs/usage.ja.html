@@ -5,12 +5,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MDView - Markdown Viewer Component | Usage</title>
+<!-- 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/assets/css/default.css">
   <script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/assets/js/mdview.min.js"></script>
-  <!-- 
+ -->
   <link rel="stylesheet" href="./assets/css/default.css">
   <script src="./assets/js/mdview.min.js"></script>
-   -->
 </head>
 <body>
 
@@ -51,8 +51,8 @@ https://github.com/lizard-isana/mdview
 スクリプトとスタイルシートをCDNから読み込むことで、HTMLファイル一つで動作させることができます。
 
 ```HTML
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@0.3.0/dist/assets/css/default.css">
-<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@0.3.0/dist/assets/js/mdview.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/assets/css/default.css">
+<script src="https://cdn.jsdelivr.net/gh/lizard-isana/mdview@v0.3.0/dist/assets/js/mdview.min.js"></script>
 ```
 ※ 上記の例では、常に最新版を読み込みます。互換性などの問題から特定のバージョンが必要な場合は、下記からリンクを取得してください。
 cf. https://www.jsdelivr.com/package/gh/lizard-isana/mdview
@@ -125,7 +125,7 @@ MarkdownのPandoc拡張記法で、脚注の表示ができます。
 ### タスクリスト
 MarkdownのGithub拡張記法で、タスクリスト(チェックボックス)の表示ができます。ただし、ページ上でクリックしてもMarkdownは更新されません。
 
-```
+```text
 - [x] 項目1
 - [ ] 項目2
   - [ ] 項目2-2
@@ -164,6 +164,7 @@ MarkdownのPandoc拡張記法で、HTMLのid, class, style 属性の指定がで
 ### インラインHTML
 
 不特定多数のユーザーがコンテンツをアップロード/編集できる環境では、セキュリティリスクが増すため、以下の指定を変更することは推奨しません。{style="color:red;font-weight:bold"}
+詳細は [Security Guide](./index.html?main=security.md&dir=content) を参照してください。
 
 MDViewはデフォルトの状態では、DOMPurifyを使って、生成されるHTML上でスクリプトが動作するのを抑制しています。そのため、スクリプトタグを始めとして、一部のタグが動作しません。以下のように、optionで `data-html="true"`を指定すると本文中でHTMLタグが使えるようになり、さらに `data-sanitize="false"`を指定するとスクリプトが使えるようになります。
 
@@ -191,7 +192,7 @@ YAML形式のフロントマター(Front Matter)に対応しています。Markd
 
 cf.[Front Matter | Jekyll](https://jekyllrb.com/docs/front-matter/)
 
-```
+```text
 ---
 title: "Page Title"
 date: "2023-07-09 12:00"
@@ -246,12 +247,12 @@ observer.observe(target, {
 
 以下のように、`data-plugins`属性を記述することで有効化できます
 
+
 ```html
 <mdview-content
   id="main"
   src="./index.md"
-  data-plugins="toc,highlight,math,chart"
-  data-highlight-style="github">
+  data-plugins="toc,highlight,math,graph,chart">
 </mdview-content>
 ```
 
@@ -282,15 +283,13 @@ toc{.toc .close}
 コードハイライトは`data-plugins`属性で指定しなくてもデフォルトで有効になっています。
 cf.[highlight.js](https://highlightjs.org/)
 
-````
-```HTML
-<mdview-content id="main"></mdview-content>
-<template class="markdown" data-target="main">
-  # H1
-  Markdownをここに直接書く
-</template>
-```
-````
+    ```html
+    <mdview-content id="main"></mdview-content>
+    <template class="markdown" data-target="main">
+      # H1
+      Markdownをここに直接書く
+    </template>
+    ```
 
 ```HTML
 <mdview-content id="main"></mdview-content>
@@ -308,32 +307,40 @@ cf.[highlight.js](https://highlightjs.org/)
 ```
 
 ### 数式(MathJax)
-コードブロックに `math`を指定するとMathJaxでレンダリングして表示します。
+data-plugins に `math`を指定すると本文内でMathJax/LaTex記法が使えるようになります。
 cf.[MathJax](https://www.mathjax.org/)
 
-````plaintext
-```math
-二次方程式 \(ax^{2}+bx+c=0\) の解は
-\[
+```
+二次方程式 $(ax^{2}+bx+c=0)$ の解は
+$$
 x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
-\]
+$$
 です。
 ```
-````
 
-```math
-二次方程式 \(ax^{2}+bx+c=0\) の解は
-\[
+二次方程式 $(ax^{2}+bx+c=0)$ の解は
+$$
 x = \frac{-b\pm\sqrt{b^{2}-4ac}}{2a} \tag{1}
-\]
+$$
 です。
-```
+
 
 ### グラフ(C3.js)
 コードブロックに `graph`を指定すると c3.js でレンダリングして表示します。
 cf. ([c3.js](https://c3js.org/))
 
-````
+    ```graph
+    {
+        "data": {
+        "columns": [
+            ["data1", 30, 200, 100, 400, 150, 250],
+            ["data2", 50, 20, 10, 40, 15, 25]
+        ]
+        }
+    }
+    ```
+
+
 ```graph
 {
     "data": {
@@ -342,44 +349,6 @@ cf. ([c3.js](https://c3js.org/))
         ["data2", 50, 20, 10, 40, 15, 25]
     ]
     }
-}
-```
-````
-
-```graph
-{
-    "data": {
-    "columns": [
-        ["data1", 30, 200, 100, 400, 150, 250],
-        ["data2", 50, 20, 10, 40, 15, 25]
-    ]
-    }
-}
-```
-
-````
-```graph
-{
-  "data": {
-    "type": "pie",
-    "columns": [
-        ["data1", 30],
-        ["data2", 120]
-    ]
-  }
-}
-```
-````
-
-```graph
-{
-  "data": {
-    "type": "pie",
-    "columns": [
-        ["data1", 30],
-        ["data2", 120]
-    ]
-  }
 }
 ```
 
@@ -388,21 +357,20 @@ cf. ([c3.js](https://c3js.org/))
 コードブロックに `chart`を指定すると Mermaid.js でレンダリングして表示します。
 cf.[Mermaid.js](https://mermaid-js.github.io/) 
 
-````
-```chart
-sequenceDiagram
-  participant Alice
-  participant Bob
-  Alice->>John: Hello John, how are you?
-  loop Healthcheck
-      John->>John: Fight against hypochondria
-  end
-  Note right of John: Rational thoughts <br/>prevail!
-  John-->>Alice: Great!
-  John->>Bob: How about you?
-  Bob-->>John: Jolly good!
-```
-````
+    ```chart
+    sequenceDiagram
+      participant Alice
+      participant Bob
+      Alice->>John: Hello John, how are you?
+      loop Healthcheck
+          John->>John: Fight against hypochondria
+      end
+      Note right of John: Rational thoughts <br/>prevail!
+      John-->>Alice: Great!
+      John->>Bob: How about you?
+      Bob-->>John: Jolly good!
+    ```
+
 
 ```chart
 sequenceDiagram
